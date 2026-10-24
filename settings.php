@@ -72,7 +72,16 @@ if ($hassiteconfig) {
             PARAM_TEXT
         ));
 
-        // The home shortcuts, one "Label | https://url" per line.
+        // A white logo shown over the brand hero on the home tab.
+        $settings->add(new admin_setting_configtext(
+            'local_oksigeniaaty/homelogourl',
+            new lang_string('settings:homelogourl', 'local_oksigeniaaty'),
+            new lang_string('settings:homelogourl_desc', 'local_oksigeniaaty'),
+            '',
+            PARAM_URL
+        ));
+
+        // The home shortcuts, one "Label | https://url | fas-icon" per line.
         $settings->add(new admin_setting_configtextarea(
             'local_oksigeniaaty/homeshortcuts',
             new lang_string('settings:homeshortcuts', 'local_oksigeniaaty'),

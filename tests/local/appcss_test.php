@@ -25,6 +25,8 @@
 namespace local_oksigeniaaty\local;
 
 /**
+ * Tests for the app CSS generator.
+ *
  * @covers \local_oksigeniaaty\local\appcss
  */
 #[\PHPUnit\Framework\Attributes\CoversClass(appcss::class)]
@@ -45,6 +47,10 @@ final class appcss_test extends \basic_testcase {
         // A dark block exists and gives a different primary.
         $this->assertStringContainsString(':root.dark', $css);
         $this->assertMatchesRegularExpression('/:root\.dark,\s*\n:root \.dark \{/', $css);
+
+        // The home layout CSS ships with the sheet.
+        $this->assertStringContainsString('.aty-hero', $css);
+        $this->assertStringContainsString('.aty-tile', $css);
     }
 
     /**

@@ -42,8 +42,8 @@ class appcss {
     public static function generate(string $brandhex): string {
         $brand = self::parse($brandhex);
         if ($brand === null) {
-            // A malformed colour yields no overrides rather than broken CSS.
-            return "/* local_oksigeniaaty: no valid brand colour set. */\n";
+            // A malformed colour yields no brand variables, but the home layout still ships (it uses var() fallbacks).
+            return "/* local_oksigeniaaty: no valid brand colour set. */\n" . self::homecss();
         }
 
         [$h, $s, $l] = self::torgbhsl($brand);
@@ -75,7 +75,39 @@ class appcss {
         ];
 
         return self::block(':root', $light)
-            . self::block(":root.dark,\n:root .dark", $dark);
+            . self::block(":root.dark,\n:root .dark", $dark)
+            . self::homecss();
+    }
+
+    /**
+     * The static layout of the home tab (the hero header and the shortcut mosaic).
+     *
+     * It is the same for every client and reads the brand variables above, so it follows light and dark on its own.
+     * Design: the common per-client template by the art director (agents/arte/docs/aty-app-plantilla.md).
+     *
+     * @return string
+     */
+    private static function homecss(): string {
+        return <<<CSS
+
+.aty-home { padding: 12px 16px 24px; }
+.aty-hero { border-radius: 20px; padding: 20px; background: var(--primary); color: var(--primary-contrast);
+    box-shadow: 0 10px 24px -14px rgba(var(--ion-color-primary-rgb), .7); }
+.aty-hero-logo { display: block; height: 36px; width: auto; margin: 0 0 14px; }
+.aty-hero-title { margin: 0; font-size: 1.5rem; font-weight: 800; line-height: 1.2; }
+.aty-hero-intro { margin: 6px 0 0; opacity: .9; }
+.aty-section { margin: 22px 4px 6px; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--ion-color-medium); }
+.aty-tiles { padding: 0; --ion-grid-column-padding: 6px; }
+.aty-tile { position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 104px; padding: 14px;
+    border-radius: 16px; background: var(--ion-item-background, var(--ion-background-color)); color: var(--ion-text-color);
+    text-decoration: none; box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 8px 18px -12px rgba(0, 0, 0, .35); }
+.aty-tile-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; font-size: 20px;
+    background: rgba(var(--ion-color-primary-rgb), .12); color: var(--primary); }
+.aty-tile-label { font-weight: 700; line-height: 1.25; }
+.aty-tile-out { position: absolute; top: 12px; right: 12px; font-size: 12px; color: var(--ion-color-medium); }
+:root.dark .aty-tile, :root .dark .aty-tile { box-shadow: none; outline: 1px solid rgba(255, 255, 255, .08); }
+CSS;
     }
 
     /**

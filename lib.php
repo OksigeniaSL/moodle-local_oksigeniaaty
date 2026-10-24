@@ -44,11 +44,16 @@ function local_oksigeniaaty_refresh_appcss(): void {
 }
 
 /**
- * The home shortcuts, parsed from the setting (one "Label | https://url" per line).
+ * The home shortcuts, parsed from the setting (one "Label | https://url | fas-icon" per line).
  *
- * @return array[] A list of ['label' => string, 'url' => string]; malformed lines are skipped.
+ * The icon is optional (a default is used). A shortcut is "external" when its URL does not point at this site, so the
+ * app marks the ones that leave it.
+ *
+ * @return array[] A list of ['label', 'url', 'icon', 'external']; malformed lines are skipped.
  */
 function local_oksigeniaaty_get_shortcuts(): array {
+    global $CFG;
+
     $raw = (string) get_config('local_oksigeniaaty', 'homeshortcuts');
     $shortcuts = [];
     foreach (preg_split('/\r\n|\r|\n/', $raw) as $line) {
@@ -56,11 +61,23 @@ function local_oksigeniaaty_get_shortcuts(): array {
         if ($line === '' || strpos($line, '|') === false) {
             continue;
         }
-        [$label, $url] = array_map('trim', explode('|', $line, 2));
+        $parts = array_map('trim', explode('|', $line));
+        $label = $parts[0] ?? '';
+        $url = $parts[1] ?? '';
+        $icon = $parts[2] ?? '';
         if ($label === '' || !preg_match('#^https?://#i', $url)) {
             continue;
         }
-        $shortcuts[] = ['label' => $label, 'url' => $url];
+        // Only solid Font Awesome names the app ships (fas-*); anything else falls back to a neutral icon.
+        if (!preg_match('/^fas-[a-z0-9-]+$/', $icon)) {
+            $icon = 'fas-circle-chevron-right';
+        }
+        $shortcuts[] = [
+            'label' => $label,
+            'url' => $url,
+            'icon' => $icon,
+            'external' => strpos($url, $CFG->wwwroot) !== 0,
+        ];
     }
     return $shortcuts;
 }

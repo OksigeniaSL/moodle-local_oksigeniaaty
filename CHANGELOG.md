@@ -5,6 +5,17 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-24
+
+The home design from the art director's common template.
+
+### Added
+
+- The home tab now renders a brand hero (optional white logo, heading, welcome) and the shortcuts as a two-column
+  mosaic with a Font Awesome icon each and an "opens outside the app" marker for external links. The layout CSS is
+  served as part of the generated app stylesheet, so it follows light and dark on its own.
+- Home logo setting, and the shortcut lines now take an optional icon ("Label | https://url | fas-icon").
+
 ## [0.2.0] - 2026-10-24
 
 The per-site design works in the app: brand and home from the settings.

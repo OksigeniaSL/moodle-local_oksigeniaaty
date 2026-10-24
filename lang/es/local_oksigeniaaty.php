@@ -24,15 +24,19 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['home:opensoutside'] = 'Se abre fuera de la app';
+$string['home:shortcuts'] = 'Accesos';
 $string['pluginname'] = 'Oksigenia Aty';
 $string['privacy:metadata'] = 'El plugin Oksigenia Aty solo guarda los ajustes de diseño del sitio. No guarda ningún dato personal.';
-$string['settings:design'] = 'Diseño de la app';
-$string['settings:design_desc'] = 'Cómo se ve este sitio en la app: la pestaña de inicio y la marca. Cada sitio alojado guarda sus propios valores; la app, única, se viste con ellos.';
 $string['settings:brandcolour'] = 'Color de marca';
 $string['settings:brandcolour_desc'] = 'El color principal del sitio, usado en barras, botones y acentos de la app.';
+$string['settings:design'] = 'Diseño de la app';
+$string['settings:design_desc'] = 'Cómo se ve este sitio en la app: la pestaña de inicio y la marca. Cada sitio alojado guarda sus propios valores; la app, única, se viste con ellos.';
 $string['settings:homeheading'] = 'Título del inicio';
 $string['settings:homeheading_desc'] = 'El título que aparece arriba en la pestaña de inicio. Si se deja vacío, se usa el nombre del sitio.';
 $string['settings:homeintro'] = 'Bienvenida del inicio';
 $string['settings:homeintro_desc'] = 'Una bienvenida breve, debajo del título, en la pestaña de inicio.';
+$string['settings:homelogourl'] = 'Logo del inicio';
+$string['settings:homelogourl_desc'] = 'Un logo en blanco que se muestra sobre la cabecera de marca de la pestaña de inicio. Déjalo vacío para mostrar solo el título.';
 $string['settings:homeshortcuts'] = 'Accesos del inicio';
-$string['settings:homeshortcuts_desc'] = 'Accesos que se muestran en la pestaña de inicio, uno por línea como «Etiqueta | https://url». Las líneas sin un enlace https válido no se tienen en cuenta.';
+$string['settings:homeshortcuts_desc'] = 'Accesos que se muestran en la pestaña de inicio, uno por línea como «Etiqueta | https://url | fas-icono». El icono es opcional, un nombre sólido de Font Awesome que trae la app (por ejemplo fas-calendar); las líneas sin un enlace https válido no se tienen en cuenta.';

@@ -48,10 +48,13 @@ class mobile {
         $shortcuts = local_oksigeniaaty_get_shortcuts();
 
         $data = [
+            'logourl' => !empty($config->homelogourl) ? $config->homelogourl : '',
             'heading' => $heading,
             'intro' => $intro,
+            'shortcutsheading' => get_string('home:shortcuts', 'local_oksigeniaaty'),
             'shortcuts' => $shortcuts,
             'hasshortcuts' => !empty($shortcuts),
+            'opensoutside' => get_string('home:opensoutside', 'local_oksigeniaaty'),
         ];
 
         return [

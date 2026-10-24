@@ -17,42 +17,52 @@
 {{!
     @template local_oksigeniaaty/mobile_home
 
-    The per-site home tab shown in the app.
+    The per-site home tab shown in the app: a brand hero and the shortcuts in a two-column mosaic.
+    Design: the common per-client template (agents/arte/docs/aty-app-plantilla.md).
 
     Classes required for JS:
     * none
 
     Context variables required for this template:
-    * heading - The site heading shown at the top of the home.
+    * logourl - A white logo shown over the brand hero (may be empty).
+    * heading - The site heading shown in the hero.
     * intro - A short welcome under the heading (may be empty).
+    * shortcutsheading - The label above the shortcuts.
     * hasshortcuts - Whether there is at least one shortcut.
-    * shortcuts - A list of { label, url } cards linking out of the home.
+    * shortcuts - A list of { label, url, icon, external }.
+    * opensoutside - Accessible label for the "opens outside the app" marker.
 
     Example context (json):
     {
-        "heading": "Colegio Ejemplo",
+        "logourl": "",
+        "heading": "Centro Ejemplo",
         "intro": "Bienvenido a tu plataforma de formación.",
+        "shortcutsheading": "Accesos",
         "hasshortcuts": true,
         "shortcuts": [
-            { "label": "Matrícula", "url": "https://ejemplo.oksigenia.com/matricula" }
-        ]
+            { "label": "Matrícula", "url": "https://ejemplo.oksigenia.com/matricula", "icon": "fas-calendar", "external": true }
+        ],
+        "opensoutside": "Opens outside the app"
     }
 }}
-<ion-card>
-    <ion-card-header>
-        <ion-card-title>{{heading}}</ion-card-title>
-    </ion-card-header>
-    {{#intro}}
-    <ion-card-content>{{intro}}</ion-card-content>
-    {{/intro}}
-</ion-card>
-{{#hasshortcuts}}
-<ion-list>
-    {{#shortcuts}}
-    <ion-item button="true" core-link href="{{url}}" capture="false">
-        <ion-label>{{label}}</ion-label>
-        <ion-icon name="fas-arrow-up-right-from-square" slot="end" aria-hidden="true"></ion-icon>
-    </ion-item>
-    {{/shortcuts}}
-</ion-list>
-{{/hasshortcuts}}
+<div class="aty-home">
+    <section class="aty-hero">
+        {{#logourl}}<img class="aty-hero-logo" src="{{logourl}}" alt="">{{/logourl}}
+        <h1 class="aty-hero-title">{{heading}}</h1>
+        {{#intro}}<p class="aty-hero-intro">{{intro}}</p>{{/intro}}
+    </section>
+    {{#hasshortcuts}}
+    <h2 class="aty-section">{{shortcutsheading}}</h2>
+    <ion-grid class="aty-tiles"><ion-row>
+        {{#shortcuts}}
+        <ion-col size="6">
+            <a class="aty-tile" core-link href="{{url}}" capture="false">
+                <span class="aty-tile-icon"><ion-icon name="{{icon}}" aria-hidden="true"></ion-icon></span>
+                <span class="aty-tile-label">{{label}}</span>
+                {{#external}}<ion-icon class="aty-tile-out" name="fas-arrow-up-right-from-square" aria-label="{{opensoutside}}"></ion-icon>{{/external}}
+            </a>
+        </ion-col>
+        {{/shortcuts}}
+    </ion-row></ion-grid>
+    {{/hasshortcuts}}
+</div>

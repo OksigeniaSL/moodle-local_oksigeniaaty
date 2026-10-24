@@ -24,15 +24,19 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['home:opensoutside'] = 'Opens outside the app';
+$string['home:shortcuts'] = 'Shortcuts';
 $string['pluginname'] = 'Oksigenia Aty';
 $string['privacy:metadata'] = 'The Oksigenia Aty plugin only stores the design settings of the site. It does not store any personal data.';
-$string['settings:design'] = 'App design';
-$string['settings:design_desc'] = 'How this site looks in the app: the home tab and the brand. Each hosted site keeps its own values; the one app dresses itself with them.';
 $string['settings:brandcolour'] = 'Brand colour';
 $string['settings:brandcolour_desc'] = 'The main colour of the site, used for bars, buttons and accents in the app.';
+$string['settings:design'] = 'App design';
+$string['settings:design_desc'] = 'How this site looks in the app: the home tab and the brand. Each hosted site keeps its own values; the one app dresses itself with them.';
 $string['settings:homeheading'] = 'Home heading';
 $string['settings:homeheading_desc'] = 'The title shown at the top of the home tab. Left empty, the site name is used.';
 $string['settings:homeintro'] = 'Home welcome';
 $string['settings:homeintro_desc'] = 'A short welcome shown under the heading on the home tab.';
+$string['settings:homelogourl'] = 'Home logo';
+$string['settings:homelogourl_desc'] = 'A white logo shown over the brand header on the home tab. Leave empty to show only the heading.';
 $string['settings:homeshortcuts'] = 'Home shortcuts';
-$string['settings:homeshortcuts_desc'] = 'Shortcuts shown on the home tab, one per line as "Label | https://url". Lines without a valid https link are ignored.';
+$string['settings:homeshortcuts_desc'] = 'Shortcuts shown on the home tab, one per line as "Label | https://url | fas-icon". The icon is an optional solid Font Awesome name the app ships (for example fas-calendar); lines without a valid https link are ignored.';
