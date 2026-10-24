@@ -25,11 +25,17 @@
     Context variables required for this template:
     * heading - The site heading shown at the top of the home.
     * intro - A short welcome under the heading (may be empty).
+    * hasshortcuts - Whether there is at least one shortcut.
+    * shortcuts - A list of { label, url } cards linking out of the home.
 
     Example context (json):
     {
         "heading": "Colegio Ejemplo",
-        "intro": "Bienvenido a tu plataforma de formación."
+        "intro": "Bienvenido a tu plataforma de formación.",
+        "hasshortcuts": true,
+        "shortcuts": [
+            { "label": "Matrícula", "url": "https://ejemplo.oksigenia.com/matricula" }
+        ]
     }
 }}
 <ion-card>
@@ -40,3 +46,13 @@
     <ion-card-content>{{intro}}</ion-card-content>
     {{/intro}}
 </ion-card>
+{{#hasshortcuts}}
+<ion-list>
+    {{#shortcuts}}
+    <ion-item button="true" core-link href="{{url}}" capture="false">
+        <ion-label>{{label}}</ion-label>
+        <ion-icon name="fas-arrow-up-right-from-square" slot="end" aria-hidden="true"></ion-icon>
+    </ion-item>
+    {{/shortcuts}}
+</ion-list>
+{{/hasshortcuts}}

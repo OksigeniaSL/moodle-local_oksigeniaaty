@@ -38,15 +38,20 @@ class mobile {
      * @return array The template, javascript and data the app expects.
      */
     public static function mobile_home(array $args): array {
-        global $OUTPUT;
+        global $OUTPUT, $CFG;
+
+        require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
 
         $config = get_config('local_oksigeniaaty');
         $heading = !empty($config->homeheading) ? $config->homeheading : format_string(get_site()->fullname);
         $intro = !empty($config->homeintro) ? $config->homeintro : '';
+        $shortcuts = local_oksigeniaaty_get_shortcuts();
 
         $data = [
             'heading' => $heading,
             'intro' => $intro,
+            'shortcuts' => $shortcuts,
+            'hasshortcuts' => !empty($shortcuts),
         ];
 
         return [

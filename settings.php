@@ -27,6 +27,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
+
 if ($hassiteconfig) {
     $settings = new admin_settingpage(
         'local_oksigeniaaty',
@@ -42,12 +44,15 @@ if ($hassiteconfig) {
         ));
 
         // The brand colour of the site, used for bars, buttons and accents in the app.
-        $settings->add(new admin_setting_configcolourpicker(
+        // When it changes, the app's remote CSS (mobilecssurl) is regenerated with a fresh version.
+        $brandcolour = new admin_setting_configcolourpicker(
             'local_oksigeniaaty/brandcolour',
             new lang_string('settings:brandcolour', 'local_oksigeniaaty'),
             new lang_string('settings:brandcolour_desc', 'local_oksigeniaaty'),
             '#0a66c2'
-        ));
+        );
+        $brandcolour->set_updatedcallback('local_oksigeniaaty_refresh_appcss');
+        $settings->add($brandcolour);
 
         // The heading shown at the top of the home tab.
         $settings->add(new admin_setting_configtext(
@@ -65,6 +70,15 @@ if ($hassiteconfig) {
             new lang_string('settings:homeintro_desc', 'local_oksigeniaaty'),
             '',
             PARAM_TEXT
+        ));
+
+        // The home shortcuts, one "Label | https://url" per line.
+        $settings->add(new admin_setting_configtextarea(
+            'local_oksigeniaaty/homeshortcuts',
+            new lang_string('settings:homeshortcuts', 'local_oksigeniaaty'),
+            new lang_string('settings:homeshortcuts_desc', 'local_oksigeniaaty'),
+            '',
+            PARAM_RAW
         ));
     }
 }

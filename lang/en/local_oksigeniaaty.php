@@ -34,3 +34,5 @@ $string['settings:homeheading'] = 'Home heading';
 $string['settings:homeheading_desc'] = 'The title shown at the top of the home tab. Left empty, the site name is used.';
 $string['settings:homeintro'] = 'Home welcome';
 $string['settings:homeintro_desc'] = 'A short welcome shown under the heading on the home tab.';
+$string['settings:homeshortcuts'] = 'Home shortcuts';
+$string['settings:homeshortcuts_desc'] = 'Shortcuts shown on the home tab, one per line as "Label | https://url". Lines without a valid https link are ignored.';

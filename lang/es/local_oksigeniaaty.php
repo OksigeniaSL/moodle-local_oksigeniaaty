@@ -34,3 +34,5 @@ $string['settings:homeheading'] = 'Título del inicio';
 $string['settings:homeheading_desc'] = 'El título que aparece arriba en la pestaña de inicio. Si se deja vacío, se usa el nombre del sitio.';
 $string['settings:homeintro'] = 'Bienvenida del inicio';
 $string['settings:homeintro_desc'] = 'Una bienvenida breve, debajo del título, en la pestaña de inicio.';
+$string['settings:homeshortcuts'] = 'Accesos del inicio';
+$string['settings:homeshortcuts_desc'] = 'Accesos que se muestran en la pestaña de inicio, uno por línea como «Etiqueta | https://url». Las líneas sin un enlace https válido no se tienen en cuenta.';
