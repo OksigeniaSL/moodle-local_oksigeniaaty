@@ -99,9 +99,10 @@ class appcss {
 .aty-section { margin: 22px 4px 6px; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
     color: var(--ion-color-medium); }
 .aty-tiles { padding: 0; --ion-grid-column-padding: 6px; }
-.aty-tile { position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 104px; padding: 14px;
-    border-radius: 16px; background: var(--ion-item-background, var(--ion-background-color)); color: var(--ion-text-color);
-    text-decoration: none; box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 8px 18px -12px rgba(0, 0, 0, .35); }
+.aty-tile { position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 104px; margin: 0;
+    padding: 14px; border-radius: 16px; background: var(--ion-item-background, var(--ion-background-color));
+    color: var(--ion-text-color); text-decoration: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 8px 18px -12px rgba(0, 0, 0, .35); }
 .aty-tile-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; font-size: 20px;
     background: rgba(var(--ion-color-primary-rgb), .12); color: var(--primary); }
 .aty-tile-label { font-weight: 700; line-height: 1.25; }

@@ -56,11 +56,11 @@
     <ion-grid class="aty-tiles"><ion-row>
         {{#shortcuts}}
         <ion-col size="6">
-            <a class="aty-tile" core-link href="{{url}}" capture="false">
+            <ion-card class="aty-tile" button="true" core-link href="{{url}}" capture="false">
                 <span class="aty-tile-icon"><ion-icon name="{{icon}}" aria-hidden="true"></ion-icon></span>
                 <span class="aty-tile-label">{{label}}</span>
                 {{#external}}<ion-icon class="aty-tile-out" name="fas-arrow-up-right-from-square" aria-label="{{opensoutside}}"></ion-icon>{{/external}}
-            </a>
+            </ion-card>
         </ion-col>
         {{/shortcuts}}
     </ion-row></ion-grid>
