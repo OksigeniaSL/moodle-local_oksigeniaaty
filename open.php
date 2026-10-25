@@ -32,7 +32,8 @@ require(__DIR__ . '/../../config.php');
 $keyvalue = required_param('key', PARAM_ALPHANUMEXT);
 
 $live = \local_oksigeniaaty\local\loginkey::is_live($keyvalue);
-$payload = base64_encode($CFG->wwwroot . ':::' . $keyvalue);
+// base64url (no +, / or padding) so the payload never needs URL-encoding and is not corrupted by the app's trailing-slash trim.
+$payload = rtrim(strtr(base64_encode($CFG->wwwroot . ':::' . $keyvalue), '+/', '-_'), '=');
 $appurl = 'oksigeniaaty://atylogin=' . $payload;
 
 $androidurl = trim((string) get_config('local_oksigeniaaty', 'androidstoreurl'));
