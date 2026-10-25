@@ -41,10 +41,9 @@ use local_oksigeniaaty\local\pin;
  * user's own and live in the user context.
  */
 class provider implements
-        \core_privacy\local\metadata\provider,
-        \core_privacy\local\request\core_userlist_provider,
-        \core_privacy\local\request\plugin\provider {
-
+    \core_privacy\local\metadata\provider,
+    \core_privacy\local\request\core_userlist_provider,
+    \core_privacy\local\request\plugin\provider {
     /**
      * Describe the personal data the plugin stores.
      *
@@ -103,8 +102,9 @@ class provider implements
         }
 
         $userid = $context->instanceid;
-        if ($DB->record_exists('local_oksigeniaaty_pin', ['userid' => $userid])
-                || $DB->record_exists('user_private_key', ['script' => loginkey::SCRIPT, 'userid' => $userid])) {
+        $haspin = $DB->record_exists('local_oksigeniaaty_pin', ['userid' => $userid]);
+        $haskey = $DB->record_exists('user_private_key', ['script' => loginkey::SCRIPT, 'userid' => $userid]);
+        if ($haspin || $haskey) {
             $userlist->add_user($userid);
         }
     }

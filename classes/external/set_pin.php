@@ -32,7 +32,6 @@ use core_external\external_value;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class set_pin extends external_api {
-
     /**
      * The parameters.
      *
@@ -60,8 +59,8 @@ class set_pin extends external_api {
 
         // A PIN is only meaningful for an ordinary user signing in to the app; never for the guest, an impersonated
         // session or an administrator-level account (which cannot use passwordless sign-in anyway).
-        if (isguestuser() || \core\session\manager::is_loggedinas()
-                || is_siteadmin($USER) || has_capability('moodle/site:config', $context)) {
+        $isprivileged = is_siteadmin($USER) || has_capability('moodle/site:config', $context);
+        if (isguestuser() || \core\session\manager::is_loggedinas() || $isprivileged) {
             throw new \moodle_exception('signinfailed', 'local_oksigeniaaty');
         }
 

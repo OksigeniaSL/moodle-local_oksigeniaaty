@@ -31,7 +31,6 @@ namespace local_oksigeniaaty\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class pin {
-
     /** @var string The table holding the per-user PIN. */
     const TABLE = 'local_oksigeniaaty_pin';
 
