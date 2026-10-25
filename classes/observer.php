@@ -24,7 +24,6 @@ namespace local_oksigeniaaty;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class observer {
-
     /**
      * Keep the app's remote CSS pointing at this plugin when the client CSS or mobilecssurl changes.
      *
