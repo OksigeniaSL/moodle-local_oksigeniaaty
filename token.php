@@ -69,10 +69,16 @@ try {
 
     // PIN gate. Once a user has set a PIN it is a required second factor: the key alone no longer signs in. The key is
     // not consumed here, so a wrong PIN leaves it live for another try (throttled server-side against brute force).
+    // The pad's wording travels back localised, so the app ships no PIN strings of its own.
     $haspin = \local_oksigeniaaty\local\pin::has_pin($userid);
     if ($haspin) {
+        $pinui = [
+            'title' => get_string('pintitleenter', 'local_oksigeniaaty'),
+            'ok' => get_string('pinokenter', 'local_oksigeniaaty'),
+            'cancel' => get_string('pincancel', 'local_oksigeniaaty'),
+        ];
         if ($pin === '') {
-            echo json_encode(['needspin' => true, 'pinprompt' => get_string('pinenter', 'local_oksigeniaaty')]);
+            echo json_encode(['needspin' => true, 'pinui' => $pinui]);
             exit;
         }
         if (\local_oksigeniaaty\local\pin::is_locked($userid)) {
@@ -80,6 +86,7 @@ try {
                 'needspin' => true,
                 'locked' => true,
                 'error' => get_string('pinlocked', 'local_oksigeniaaty'),
+                'pinui' => $pinui,
             ]);
             exit;
         }
@@ -89,6 +96,7 @@ try {
                 'needspin' => true,
                 'locked' => $locked,
                 'error' => get_string($locked ? 'pinlocked' : 'pinwrong', 'local_oksigeniaaty'),
+                'pinui' => $pinui,
             ]);
             exit;
         }
@@ -108,15 +116,21 @@ try {
 
     $privatetoken = (!empty($token->privatetoken) && is_https()) ? $token->privatetoken : null;
 
-    // When the user has no PIN yet, tell the app to offer setting one (trust on first use), with the prompt text
+    // When the user has no PIN yet, tell the app to offer setting one (trust on first use), with the pad wording
     // already localised here. The user's own language travels back too, so the app can dress itself in it: open a
     // link, land in your language.
+    $setupui = $haspin ? null : [
+        'title' => get_string('pintitlesetup', 'local_oksigeniaaty'),
+        'message' => get_string('pinsetup', 'local_oksigeniaaty'),
+        'ok' => get_string('pinoksetup', 'local_oksigeniaaty'),
+        'cancel' => get_string('pinskip', 'local_oksigeniaaty'),
+    ];
     echo json_encode([
         'token' => $token->token,
         'privatetoken' => $privatetoken,
         'siteurl' => $CFG->wwwroot,
         'needspinsetup' => !$haspin,
-        'pinsetupprompt' => !$haspin ? get_string('pinsetup', 'local_oksigeniaaty') : null,
+        'pinui' => $setupui,
         'lang' => !empty($user->lang) ? $user->lang : $CFG->lang,
     ]);
 } catch (Throwable $e) {

@@ -26,10 +26,15 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['home:opensoutside'] = 'Se abre fuera de la app';
 $string['home:shortcuts'] = 'Accesos';
-$string['pinenter'] = 'Escribe tu PIN';
+$string['pincancel'] = 'Cancelar';
 $string['pininvalid'] = 'El PIN debe tener de 4 a 8 cifras.';
 $string['pinlocked'] = 'Demasiados PIN incorrectos. Espera unos minutos y vuelve a intentarlo, o pide un enlace de acceso nuevo.';
+$string['pinokenter'] = 'Entrar';
+$string['pinoksetup'] = 'Crear PIN';
 $string['pinsetup'] = 'Pon un PIN de 4 a 8 cifras para entrar más rápido la próxima vez. Puedes omitirlo y ponerlo más tarde.';
+$string['pinskip'] = 'Omitir';
+$string['pintitleenter'] = 'Escribe tu PIN';
+$string['pintitlesetup'] = 'Crea tu PIN';
 $string['pinwrong'] = 'Ese PIN no es correcto.';
 $string['pluginname'] = 'Oksigenia Aty';
 $string['privacy:metadata:loginkey'] = 'Las claves de un solo uso emitidas para entrar en la app sin contraseña.';
