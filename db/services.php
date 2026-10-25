@@ -33,4 +33,12 @@ $functions = [
         'ajax' => true,
         'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
     ],
+    'local_oksigeniaaty_renew' => [
+        'classname' => 'local_oksigeniaaty\external\renew',
+        'methodname' => 'execute',
+        'description' => 'Renew the current Aty app token (extend its expiry) without a password.',
+        'type' => 'write',
+        'ajax' => true,
+        'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
 ];

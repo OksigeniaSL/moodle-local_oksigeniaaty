@@ -132,6 +132,8 @@ try {
         'needspinsetup' => !$haspin,
         'pinui' => $setupui,
         'lang' => !empty($user->lang) ? $user->lang : $CFG->lang,
+        // When the token expires (0 = never), so the app can renew it before it does.
+        'validuntil' => isset($token->validuntil) ? (int) $token->validuntil : 0,
     ]);
 } catch (Throwable $e) {
     // Do not leak internals; a generic message is enough for the app.
