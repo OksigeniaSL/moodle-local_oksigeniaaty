@@ -101,5 +101,28 @@ if ($hassiteconfig) {
         );
         $extracss->set_updatedcallback('local_oksigeniaaty_refresh_appcss');
         $settings->add($extracss);
+
+        // App sign-in: store links shown on the bridge page when the app is not installed.
+        $settings->add(new admin_setting_heading(
+            'local_oksigeniaaty/signin',
+            new lang_string('settings:signin', 'local_oksigeniaaty'),
+            new lang_string('settings:signin_desc', 'local_oksigeniaaty')
+        ));
+
+        $settings->add(new admin_setting_configtext(
+            'local_oksigeniaaty/androidstoreurl',
+            new lang_string('settings:androidstoreurl', 'local_oksigeniaaty'),
+            new lang_string('settings:androidstoreurl_desc', 'local_oksigeniaaty'),
+            'https://play.google.com/store/apps/details?id=com.oksigenia.aty',
+            PARAM_URL
+        ));
+
+        $settings->add(new admin_setting_configtext(
+            'local_oksigeniaaty/iosstoreurl',
+            new lang_string('settings:iosstoreurl', 'local_oksigeniaaty'),
+            new lang_string('settings:iosstoreurl_desc', 'local_oksigeniaaty'),
+            '',
+            PARAM_URL
+        ));
     }
 }

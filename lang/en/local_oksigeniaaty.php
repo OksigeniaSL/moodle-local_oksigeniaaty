@@ -24,10 +24,23 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['expiredkey'] = 'This sign-in link has expired. Ask for a new one.';
 $string['home:opensoutside'] = 'Opens outside the app';
 $string['home:shortcuts'] = 'Shortcuts';
+$string['invalidkey'] = 'This sign-in link is not valid.';
+$string['mobilenotenabled'] = 'Mobile access is not enabled on this site.';
+$string['oksigeniaaty:issuelink'] = 'Issue an Aty sign-in link or QR for another user';
+$string['open:android'] = 'Get it on Google Play';
+$string['open:expired'] = 'This sign-in link has expired or has already been used. Ask your school or organisation for a new one.';
+$string['open:ios'] = 'Download on the App Store';
+$string['open:noapp'] = 'Do not have the app yet?';
+$string['open:openbtn'] = 'Open in Aty';
+$string['open:opening'] = 'Opening the app...';
+$string['open:title'] = 'Sign in to Aty';
 $string['pluginname'] = 'Oksigenia Aty';
 $string['privacy:metadata'] = 'The Oksigenia Aty plugin only stores the design settings of the site. It does not store any personal data.';
+$string['settings:androidstoreurl'] = 'Google Play link';
+$string['settings:androidstoreurl_desc'] = 'The app Google Play page, shown on the sign-in bridge when the app is not installed. Leave empty to hide it.';
 $string['settings:brandcolour'] = 'Brand colour';
 $string['settings:brandcolour_desc'] = 'The main colour of the site, used for bars, buttons and accents in the app.';
 $string['settings:design'] = 'App design';
@@ -42,3 +55,8 @@ $string['settings:homelogourl'] = 'Home logo';
 $string['settings:homelogourl_desc'] = 'A white logo shown over the brand header on the home tab. Leave empty to show only the heading.';
 $string['settings:homeshortcuts'] = 'Home shortcuts';
 $string['settings:homeshortcuts_desc'] = 'Shortcuts shown on the home tab, one per line as "Label | https://url | fas-icon". The icon is an optional solid Font Awesome name the app ships (for example fas-calendar); lines without a valid https link are ignored.';
+$string['settings:iosstoreurl'] = 'App Store link';
+$string['settings:iosstoreurl_desc'] = 'The app App Store page, shown on the sign-in bridge when the app is not installed. Leave empty to hide it.';
+$string['settings:signin'] = 'App sign-in';
+$string['settings:signin_desc'] = 'Links and QR codes that sign a user into the app without a password. The key is single use and expires in 30 minutes; the token is revocable from Moodle.';
+$string['signinfailed'] = 'Could not sign in. The link may have expired or already been used.';
