@@ -52,6 +52,10 @@ $openurl = new moodle_url('/local/oksigeniaaty/open.php', ['key' => $key]);
 
 header('Referrer-Policy: no-referrer');
 
+// A QR of the same one-time link: scan it with the Aty app (or any camera) to sign in on a phone.
+$qrcode = new core_qrcode($openurl->out(false));
+$qrsrc = 'data:image/png;base64,' . base64_encode($qrcode->getBarcodePngData(10, 10));
+
 echo $OUTPUT->header();
 echo html_writer::tag('p', get_string('mylink:intro', 'local_oksigeniaaty'));
 echo html_writer::link(
@@ -59,5 +63,15 @@ echo html_writer::link(
     get_string('open:openbtn', 'local_oksigeniaaty'),
     ['class' => 'btn btn-primary']
 );
+echo html_writer::div(
+    html_writer::empty_tag('img', [
+        'src' => $qrsrc,
+        'alt' => get_string('mylink:qralt', 'local_oksigeniaaty'),
+        'width' => 260,
+        'height' => 260,
+    ]),
+    'oksigeniaaty-qr mt-3'
+);
+echo html_writer::tag('p', get_string('mylink:qrhint', 'local_oksigeniaaty'), ['class' => 'text-muted']);
 echo html_writer::tag('p', get_string('mylink:expires', 'local_oksigeniaaty'), ['class' => 'text-muted mt-3']);
 echo $OUTPUT->footer();

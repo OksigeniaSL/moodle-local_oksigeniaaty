@@ -26,6 +26,8 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['home:opensoutside'] = 'Se abre fuera de la app';
 $string['home:shortcuts'] = 'Accesos';
+$string['mylink:qralt'] = 'Código QR para entrar en la app Aty';
+$string['mylink:qrhint'] = 'O escanea este código con la app Aty en tu móvil.';
 $string['pincancel'] = 'Cancelar';
 $string['pininvalid'] = 'El PIN debe tener de 4 a 8 cifras.';
 $string['pinlocked'] = 'Demasiados PIN incorrectos. Espera unos minutos y vuelve a intentarlo, o pide un enlace de acceso nuevo.';
