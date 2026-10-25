@@ -90,16 +90,15 @@ class renew extends external_api {
         $servicename = defined('MOODLE_OFFICIAL_MOBILE_SERVICE') ? MOODLE_OFFICIAL_MOBILE_SERVICE : 'moodle_mobile_app';
         $service = $DB->get_record('external_services', ['shortname' => $servicename, 'enabled' => 1], '*', MUST_EXIST);
 
-        // generate_token_for_current_user returns the user's existing token (with its old expiry), so push that expiry
-        // forward in place rather than minting a new token (which would log the user's other devices out).
+        // generate_token_for_current_user returns the user's existing token (with its old expiry) and only mints a new
+        // one when none is valid, so push the expiry forward in place rather than minting (which would log the user's
+        // other devices out). Update by the token value, which is always present, not by an id the object may not carry.
         $token = \core_external\util::generate_token_for_current_user($service);
         \core_external\util::log_token_request($token);
 
         $duration = (int) ($CFG->tokenduration ?? 0);
         $validuntil = $duration > 0 ? time() + $duration : 0;
-        if (!empty($token->id)) {
-            $DB->set_field('external_tokens', 'validuntil', $validuntil, ['id' => $token->id]);
-        }
+        $DB->set_field('external_tokens', 'validuntil', $validuntil, ['token' => $token->token]);
 
         return [
             'needspin' => false,
