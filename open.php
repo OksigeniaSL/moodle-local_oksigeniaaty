@@ -38,29 +38,45 @@ $appurl = 'oksigeniaaty://atylogin=' . $payload;
 $androidurl = trim((string) get_config('local_oksigeniaaty', 'androidstoreurl'));
 $iosurl = trim((string) get_config('local_oksigeniaaty', 'iosstoreurl'));
 
-$strs = [
-    'title' => get_string('open:title', 'local_oksigeniaaty'),
-    'opening' => get_string('open:opening', 'local_oksigeniaaty'),
-    'openbtn' => get_string('open:openbtn', 'local_oksigeniaaty'),
-    'noapp' => get_string('open:noapp', 'local_oksigeniaaty'),
-    'android' => get_string('open:android', 'local_oksigeniaaty'),
-    'ios' => get_string('open:ios', 'local_oksigeniaaty'),
-    'expired' => get_string('open:expired', 'local_oksigeniaaty'),
-];
+$title = s(get_string('open:title', 'local_oksigeniaaty'));
+$lang = str_replace('_', '-', current_language());
 
-header('Content-Type: text/html; charset=utf-8');
-header('Cache-Control: no-store');
+if ($live) {
+    $opening = s(get_string('open:opening', 'local_oksigeniaaty'));
+    $openbtn = s(get_string('open:openbtn', 'local_oksigeniaaty'));
+    $noapp = s(get_string('open:noapp', 'local_oksigeniaaty'));
+    $appurlattr = s($appurl);
 
-$appurljs = json_encode($appurl);
-$appurlattr = s($appurl);
-?><!doctype html>
-<html lang="<?php echo str_replace('_', '-', current_language()); ?>">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<title><?php echo s($strs['title']); ?></title>
-<style>
+    $storelinks = '';
+    if ($androidurl !== '') {
+        $storelinks .= '<a href="' . s($androidurl) . '">' . s(get_string('open:android', 'local_oksigeniaaty')) . '</a>';
+    }
+    if ($iosurl !== '') {
+        $storelinks .= '<a href="' . s($iosurl) . '">' . s(get_string('open:ios', 'local_oksigeniaaty')) . '</a>';
+    }
+
+    $appurljs = json_encode($appurl);
+    $body = <<<HTML
+    <h1>$title</h1>
+    <p>$opening</p>
+    <a class="btn" href="$appurlattr">$openbtn</a>
+    <div class="stores">
+        <p class="muted">$noapp</p>
+        $storelinks
+    </div>
+    <script>
+    setTimeout(function () { window.location.href = $appurljs; }, 400);
+    </script>
+HTML;
+} else {
+    $expired = s(get_string('open:expired', 'local_oksigeniaaty'));
+    $body = <<<HTML
+    <h1>$title</h1>
+    <p>$expired</p>
+HTML;
+}
+
+$css = <<<'CSS'
 :root { color-scheme: light dark; }
 * { box-sizing: border-box; }
 body {
@@ -76,7 +92,7 @@ h1 { font-size: 1.4rem; margin: 0 0 8px; color: #0a2e50; }
 p { font-size: 1rem; line-height: 1.5; margin: 8px 0; color: #495057; }
 .btn {
     display: block; width: 100%; margin: 18px 0 6px; padding: 15px 18px; border: 0; border-radius: 14px;
-    background: #0a2e50; color: #fff; font-size: 1.05rem; font-weight: 600; text-decoration: none; cursor: pointer;
+    background: #0a2e50; color: #fff; font-size: 1.05rem; font-weight: 600; text-decoration: none;
 }
 .stores { margin-top: 22px; padding-top: 18px; border-top: 1px solid #e9ecef; }
 .stores a { display: block; margin: 8px 0; color: #0a66c2; font-weight: 600; text-decoration: none; }
@@ -90,27 +106,27 @@ p { font-size: 1rem; line-height: 1.5; margin: 8px 0; color: #495057; }
     .stores { border-color: #333a42; }
     .stores a { color: #8fd3ff; }
 }
+CSS;
+
+header('Content-Type: text/html; charset=utf-8');
+header('Cache-Control: no-store');
+
+echo <<<HTML
+<!doctype html>
+<html lang="$lang">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>$title</title>
+<style>
+$css
 </style>
 </head>
 <body>
 <div class="card">
-<?php if ($live) { ?>
-    <h1><?php echo s($strs['title']); ?></h1>
-    <p><?php echo s($strs['opening']); ?></p>
-    <a class="btn" href="<?php echo $appurlattr; ?>"><?php echo s($strs['openbtn']); ?></a>
-    <div class="stores">
-        <p class="muted"><?php echo s($strs['noapp']); ?></p>
-        <?php if ($androidurl !== '') { ?><a href="<?php echo s($androidurl); ?>"><?php echo s($strs['android']); ?></a><?php } ?>
-        <?php if ($iosurl !== '') { ?><a href="<?php echo s($iosurl); ?>"><?php echo s($strs['ios']); ?></a><?php } ?>
-    </div>
-    <script>
-    // Try to open the app straight away; the button stays for a manual retry (e.g. after installing).
-    setTimeout(function () { window.location.href = <?php echo $appurljs; ?>; }, 400);
-    </script>
-<?php } else { ?>
-    <h1><?php echo s($strs['title']); ?></h1>
-    <p><?php echo s($strs['expired']); ?></p>
-<?php } ?>
+$body
 </div>
 </body>
 </html>
+HTML;

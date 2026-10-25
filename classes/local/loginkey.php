@@ -28,7 +28,6 @@ namespace local_oksigeniaaty\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class loginkey {
-
     /** @var string The user-key script name that scopes these keys. */
     const SCRIPT = 'local_oksigeniaaty/login';
 
