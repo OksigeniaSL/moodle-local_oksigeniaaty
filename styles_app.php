@@ -29,9 +29,18 @@ define('NO_MOODLE_COOKIES', true);
 define('NO_DEBUG_DISPLAY', true);
 
 require(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
 
 $brand = (string) get_config('local_oksigeniaaty', 'brandcolour');
 $css = \local_oksigeniaaty\local\appcss::generate($brand);
+
+// Append the client's own app CSS (Boost Union's mobilescss box or this plugin's extracss) after the brand skin, so a
+// site keeps its course styles and nothing is lost to a single mobilecssurl slot. The brand goes first; the client CSS
+// last, so a site can fine-tune on top.
+$clientcss = local_oksigeniaaty_client_css();
+if (trim($clientcss) !== '') {
+    $css .= "\n\n/* Client app CSS (Boost Union mobilescss or plugin extracss). */\n" . $clientcss;
+}
 
 header('Content-Type: text/css; charset=utf-8');
 header('Cache-Control: public, max-age=31536000, immutable');

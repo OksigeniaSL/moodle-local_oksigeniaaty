@@ -25,21 +25,68 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Point the app's remote CSS (mobilecssurl) at this plugin's generated stylesheet, with a fresh version.
+ * The URL of this plugin's app stylesheet (without the cache-busting version).
  *
- * Runs when a design setting changes and at install. The ?v= changes so the app refetches. It writes mobilecssurl only
- * when it is empty or already one of ours, so a site that set its own app CSS is left alone.
+ * @return string
+ */
+function local_oksigeniaaty_cssurl(): string {
+    global $CFG;
+
+    return $CFG->wwwroot . '/local/oksigeniaaty/styles_app.php';
+}
+
+/**
+ * The client's own extra app CSS, served after the brand skin so the site keeps its course styles.
+ *
+ * It is the Boost Union "Additional CSS for Mobile app" setting (theme_boost_union/mobilescss) when that theme is
+ * installed and the box is filled, otherwise this plugin's own "extracss" setting. Empty when neither is set.
+ *
+ * @return string
+ */
+function local_oksigeniaaty_client_css(): string {
+    global $CFG;
+
+    if (file_exists($CFG->dirroot . '/theme/boost_union/version.php')) {
+        $boostunion = (string) get_config('theme_boost_union', 'mobilescss');
+        if (trim($boostunion) !== '') {
+            return $boostunion;
+        }
+    }
+
+    return (string) get_config('local_oksigeniaaty', 'extracss');
+}
+
+/**
+ * A short content hash for the app CSS, so mobilecssurl's ?v= changes only when the design or the client CSS changes.
+ *
+ * @return string
+ */
+function local_oksigeniaaty_appcss_version(): string {
+    $brand = (string) get_config('local_oksigeniaaty', 'brandcolour');
+
+    return substr(sha1($brand . "\n" . local_oksigeniaaty_client_css()), 0, 12);
+}
+
+/**
+ * Point the app's remote CSS (mobilecssurl) at this plugin, which serves the brand skin plus the client's own app CSS.
+ *
+ * Runs when a design setting changes, at install, and from the observer when Boost Union rewrites mobilecssurl. The
+ * plugin takes over from an empty value, from its own URL (to refresh the version) and from Boost Union's styles.php,
+ * because its stylesheet now carries that CSS too; any other deliberate value is left alone. The ?v= is a content hash,
+ * so the app refetches only when something changed.
  *
  * @return void
  */
 function local_oksigeniaaty_refresh_appcss(): void {
-    global $CFG;
+    $target = local_oksigeniaaty_cssurl() . '?v=' . local_oksigeniaaty_appcss_version();
+    $current = (string) get_config('core', 'mobilecssurl');
 
-    $ours = $CFG->wwwroot . '/local/oksigeniaaty/styles_app.php';
-    $current = isset($CFG->mobilecssurl) ? (string) $CFG->mobilecssurl : '';
+    $manageable = $current === ''
+        || strpos($current, '/local/oksigeniaaty/styles_app.php') !== false
+        || strpos($current, '/theme/boost_union/mobile/styles.php') !== false;
 
-    if ($current === '' || strpos($current, '/local/oksigeniaaty/styles_app.php') !== false) {
-        set_config('mobilecssurl', $ours . '?v=' . time());
+    if ($manageable && $current !== $target) {
+        set_config('mobilecssurl', $target);
     }
 }
 

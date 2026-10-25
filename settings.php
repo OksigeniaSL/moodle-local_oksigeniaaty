@@ -89,5 +89,17 @@ if ($hassiteconfig) {
             '',
             PARAM_RAW
         ));
+
+        // Extra CSS for the app, served after the brand skin. On a Boost Union site its "Additional CSS for Mobile app"
+        // box is used instead and this is ignored; it is here for sites without Boost Union. Regenerates the app CSS.
+        $extracss = new admin_setting_configtextarea(
+            'local_oksigeniaaty/extracss',
+            new lang_string('settings:extracss', 'local_oksigeniaaty'),
+            new lang_string('settings:extracss_desc', 'local_oksigeniaaty'),
+            '',
+            PARAM_RAW
+        );
+        $extracss->set_updatedcallback('local_oksigeniaaty_refresh_appcss');
+        $settings->add($extracss);
     }
 }
