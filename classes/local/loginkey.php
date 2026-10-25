@@ -70,8 +70,10 @@ class loginkey {
             [$nonce, self::SCRIPT, $keyvalue]
         );
 
-        $key = $DB->get_record('user_private_key',
-            ['script' => self::SCRIPT, 'value' => $keyvalue, 'iprestriction' => $nonce]);
+        $key = $DB->get_record(
+            'user_private_key',
+            ['script' => self::SCRIPT, 'value' => $keyvalue, 'iprestriction' => $nonce]
+        );
         if (!$key) {
             // Unknown, or already claimed by a concurrent request.
             throw new \moodle_exception('invalidkey', 'local_oksigeniaaty');
@@ -82,6 +84,26 @@ class loginkey {
 
         if (!empty($key->validuntil) && $key->validuntil < time()) {
             throw new \moodle_exception('expiredkey', 'local_oksigeniaaty');
+        }
+
+        return (int) $key->userid;
+    }
+
+    /**
+     * The user a live key belongs to, without consuming it, or null when the key is unknown or expired.
+     *
+     * token.php peeks before it consumes, so a wrong PIN can be reported without burning the key: the user retries
+     * with the same key. Only consume() claims the key atomically; peek() never changes it.
+     *
+     * @param string $keyvalue The key value.
+     * @return int|null The user id, or null when there is no live key.
+     */
+    public static function peek(string $keyvalue): ?int {
+        global $DB;
+
+        $key = $DB->get_record('user_private_key', ['script' => self::SCRIPT, 'value' => $keyvalue]);
+        if (!$key || (!empty($key->validuntil) && $key->validuntil < time())) {
+            return null;
         }
 
         return (int) $key->userid;

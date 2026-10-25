@@ -31,6 +31,8 @@ define('NO_DEBUG_DISPLAY', true);
 require(__DIR__ . '/../../config.php');
 
 $keyvalue = required_param('key', PARAM_ALPHANUMEXT);
+// Digits only; kept as a string so a leading zero is not lost. Empty means "no PIN supplied yet".
+$pin = optional_param('pin', '', PARAM_ALPHANUMEXT);
 
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
@@ -45,7 +47,12 @@ try {
         throw new moodle_exception('signinfailed', 'local_oksigeniaaty');
     }
 
-    $userid = \local_oksigeniaaty\local\loginkey::consume($keyvalue);
+    // Peek the key before consuming it, so a missing or wrong PIN can be reported without burning the key: only the
+    // final step, once everything checks out, consumes it.
+    $userid = \local_oksigeniaaty\local\loginkey::peek($keyvalue);
+    if (!$userid) {
+        throw new moodle_exception('invalidkey', 'local_oksigeniaaty');
+    }
     $user = core_user::get_user($userid, '*', MUST_EXIST);
     core_user::require_active_user($user, true, true);
 
@@ -60,8 +67,38 @@ try {
         throw new moodle_exception('signinfailed', 'local_oksigeniaaty');
     }
 
+    // PIN gate. Once a user has set a PIN it is a required second factor: the key alone no longer signs in. The key is
+    // not consumed here, so a wrong PIN leaves it live for another try (throttled server-side against brute force).
+    $haspin = \local_oksigeniaaty\local\pin::has_pin($userid);
+    if ($haspin) {
+        if ($pin === '') {
+            echo json_encode(['needspin' => true]);
+            exit;
+        }
+        if (\local_oksigeniaaty\local\pin::is_locked($userid)) {
+            echo json_encode([
+                'needspin' => true,
+                'locked' => true,
+                'error' => get_string('pinlocked', 'local_oksigeniaaty'),
+            ]);
+            exit;
+        }
+        if (!\local_oksigeniaaty\local\pin::verify($userid, $pin)) {
+            $locked = \local_oksigeniaaty\local\pin::is_locked($userid);
+            echo json_encode([
+                'needspin' => true,
+                'locked' => $locked,
+                'error' => get_string($locked ? 'pinlocked' : 'pinwrong', 'local_oksigeniaaty'),
+            ]);
+            exit;
+        }
+    }
+
     $servicename = defined('MOODLE_OFFICIAL_MOBILE_SERVICE') ? MOODLE_OFFICIAL_MOBILE_SERVICE : 'moodle_mobile_app';
     $service = $DB->get_record('external_services', ['shortname' => $servicename, 'enabled' => 1], '*', MUST_EXIST);
+
+    // Everything checks out: consume the key now (atomic single use) and mint the token.
+    \local_oksigeniaaty\local\loginkey::consume($keyvalue);
 
     // Mint the token exactly as login/token.php does: this applies the service capability check, token reuse,
     // $CFG->tokenduration expiry, the creator id and the audit log, instead of a raw permanent token.
@@ -71,7 +108,13 @@ try {
 
     $privatetoken = (!empty($token->privatetoken) && is_https()) ? $token->privatetoken : null;
 
-    echo json_encode(['token' => $token->token, 'privatetoken' => $privatetoken, 'siteurl' => $CFG->wwwroot]);
+    // When the user has no PIN yet, tell the app to offer setting one (trust on first use).
+    echo json_encode([
+        'token' => $token->token,
+        'privatetoken' => $privatetoken,
+        'siteurl' => $CFG->wwwroot,
+        'needspinsetup' => !$haspin,
+    ]);
 } catch (Throwable $e) {
     // Do not leak internals; a generic message is enough for the app.
     echo json_encode(['error' => get_string('signinfailed', 'local_oksigeniaaty')]);

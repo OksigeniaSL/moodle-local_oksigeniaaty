@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
  * @return bool
  */
 function xmldb_local_oksigeniaaty_upgrade($oldversion): bool {
-    global $CFG;
+    global $CFG, $DB;
 
     require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
 
@@ -40,6 +40,24 @@ function xmldb_local_oksigeniaaty_upgrade($oldversion): bool {
         // and move the cache key to a content hash.
         local_oksigeniaaty_refresh_appcss();
         upgrade_plugin_savepoint(true, 2026102500, 'local', 'oksigeniaaty');
+    }
+
+    if ($oldversion < 2026102505) {
+        // The sign-in PIN gets its own table (so the hash is never reachable through the user-preferences web service).
+        $dbman = $DB->get_manager();
+        $table = new xmldb_table('local_oksigeniaaty_pin');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('pinhash', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('fails', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('lockuntil', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('userid', XMLDB_KEY_FOREIGN_UNIQUE, ['userid'], 'user', ['id']);
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+        upgrade_plugin_savepoint(true, 2026102505, 'local', 'oksigeniaaty');
     }
 
     return true;
