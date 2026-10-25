@@ -108,12 +108,14 @@ try {
 
     $privatetoken = (!empty($token->privatetoken) && is_https()) ? $token->privatetoken : null;
 
-    // When the user has no PIN yet, tell the app to offer setting one (trust on first use).
+    // When the user has no PIN yet, tell the app to offer setting one (trust on first use). The user's own language
+    // travels back too, so the app can dress itself in it: open a link, land in your language.
     echo json_encode([
         'token' => $token->token,
         'privatetoken' => $privatetoken,
         'siteurl' => $CFG->wwwroot,
         'needspinsetup' => !$haspin,
+        'lang' => !empty($user->lang) ? $user->lang : $CFG->lang,
     ]);
 } catch (Throwable $e) {
     // Do not leak internals; a generic message is enough for the app.

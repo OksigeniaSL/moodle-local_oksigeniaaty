@@ -130,6 +130,34 @@ function local_oksigeniaaty_get_shortcuts(): array {
 }
 
 /**
+ * Whether a user may use passwordless self-service sign-in (get their own link or QR).
+ *
+ * Gated by the selfservicecohorts setting: empty means everyone, otherwise only members of the listed cohorts. This
+ * lets a site open self-service to, say, staff and older students only. Staff-issued links are not affected.
+ *
+ * @param int $userid The user id.
+ * @return bool
+ */
+function local_oksigeniaaty_user_can_selfservice(int $userid): bool {
+    global $DB;
+
+    $setting = trim((string) get_config('local_oksigeniaaty', 'selfservicecohorts'));
+    if ($setting === '') {
+        return true;
+    }
+
+    $cohortids = array_values(array_filter(array_map('intval', explode(',', $setting))));
+    if (empty($cohortids)) {
+        return true;
+    }
+
+    [$insql, $params] = $DB->get_in_or_equal($cohortids, SQL_PARAMS_NAMED);
+    $params['userid'] = $userid;
+
+    return $DB->record_exists_select('cohort_members', "cohortid $insql AND userid = :userid", $params);
+}
+
+/**
  * Add a link to a user's own Aty sign-in page on their profile (self-service).
  *
  * @param \core_user\output\myprofile\tree $tree The profile tree.
@@ -144,7 +172,7 @@ function local_oksigeniaaty_myprofile_navigation(
     $iscurrentuser,
     $course
 ): void {
-    if (!$iscurrentuser) {
+    if (!$iscurrentuser || !local_oksigeniaaty_user_can_selfservice((int) $user->id)) {
         return;
     }
 

@@ -124,5 +124,15 @@ if ($hassiteconfig) {
             '',
             PARAM_URL
         ));
+
+        // Which cohorts may use passwordless self-service sign-in. Nothing selected means everyone.
+        $cohorts = $DB->get_records_menu('cohort', null, 'name ASC', 'id, name');
+        $settings->add(new admin_setting_configmultiselect(
+            'local_oksigeniaaty/selfservicecohorts',
+            new lang_string('settings:selfservicecohorts', 'local_oksigeniaaty'),
+            new lang_string('settings:selfservicecohorts_desc', 'local_oksigeniaaty'),
+            [],
+            $cohorts
+        ));
     }
 }

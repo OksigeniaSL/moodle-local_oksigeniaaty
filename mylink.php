@@ -23,6 +23,7 @@
  */
 
 require(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
 
 require_login();
 
@@ -30,6 +31,11 @@ require_login();
 // impersonated user's token). Administrators get a key too, but token.php refuses to mint one for them.
 if (isguestuser() || \core\session\manager::is_loggedinas()) {
     throw new moodle_exception('signinfailed', 'local_oksigeniaaty');
+}
+
+// Self-service may be limited to certain cohorts (e.g. staff and older students).
+if (!local_oksigeniaaty_user_can_selfservice($USER->id)) {
+    throw new moodle_exception('selfservicenotallowed', 'local_oksigeniaaty');
 }
 
 $context = context_system::instance();
