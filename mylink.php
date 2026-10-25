@@ -26,6 +26,12 @@ require(__DIR__ . '/../../config.php');
 
 require_login();
 
+// Do not hand out a sign-in key to the guest, nor to someone who is logged in as another user (that would mint the
+// impersonated user's token). Administrators get a key too, but token.php refuses to mint one for them.
+if (isguestuser() || \core\session\manager::is_loggedinas()) {
+    throw new moodle_exception('signinfailed', 'local_oksigeniaaty');
+}
+
 $context = context_system::instance();
 
 $PAGE->set_context($context);
@@ -37,6 +43,8 @@ $PAGE->set_heading(get_string('mylink:heading', 'local_oksigeniaaty'));
 // A fresh one-time key for this user on every visit.
 $key = \local_oksigeniaaty\local\loginkey::create($USER->id);
 $openurl = new moodle_url('/local/oksigeniaaty/open.php', ['key' => $key]);
+
+header('Referrer-Policy: no-referrer');
 
 echo $OUTPUT->header();
 echo html_writer::tag('p', get_string('mylink:intro', 'local_oksigeniaaty'));

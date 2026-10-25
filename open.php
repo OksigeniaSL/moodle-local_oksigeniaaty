@@ -110,6 +110,8 @@ CSS;
 
 header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: no-store');
+header('Referrer-Policy: no-referrer');
+header('X-Frame-Options: DENY');
 
 echo <<<HTML
 <!doctype html>

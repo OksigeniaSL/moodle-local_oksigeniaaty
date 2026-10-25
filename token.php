@@ -40,24 +40,39 @@ try {
         throw new moodle_exception('mobilenotenabled', 'local_oksigeniaaty');
     }
 
+    // The key must be POSTed over HTTPS, so it never lands in access logs or travels in the clear.
+    if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST' || !is_https()) {
+        throw new moodle_exception('signinfailed', 'local_oksigeniaaty');
+    }
+
     $userid = \local_oksigeniaaty\local\loginkey::consume($keyvalue);
     $user = core_user::get_user($userid, '*', MUST_EXIST);
     core_user::require_active_user($user, true, true);
 
+    // Never mint a passwordless app token for an administrator-level account.
+    $systemcontext = context_system::instance();
+    if (is_siteadmin($user) || has_capability('moodle/site:config', $systemcontext, $user)) {
+        throw new moodle_exception('signinfailed', 'local_oksigeniaaty');
+    }
+
+    // Respect the site's app login type: when it forces browser login (e.g. to enforce MFA), do not bypass it.
+    if ((int) get_config('tool_mobile', 'typeoflogin') > 1) {
+        throw new moodle_exception('signinfailed', 'local_oksigeniaaty');
+    }
+
     $servicename = defined('MOODLE_OFFICIAL_MOBILE_SERVICE') ? MOODLE_OFFICIAL_MOBILE_SERVICE : 'moodle_mobile_app';
     $service = $DB->get_record('external_services', ['shortname' => $servicename, 'enabled' => 1], '*', MUST_EXIST);
 
-    $token = \core_external\util::generate_token(
-        EXTERNAL_TOKEN_PERMANENT,
-        $service,
-        $user->id,
-        context_system::instance(),
-        0,
-        ''
-    );
+    // Mint the token exactly as login/token.php does: this applies the service capability check, token reuse,
+    // $CFG->tokenduration expiry, the creator id and the audit log, instead of a raw permanent token.
+    \core\session\manager::set_user($user);
+    $token = \core_external\util::generate_token_for_current_user($service);
+    \core_external\util::log_token_request($token);
 
-    echo json_encode(['token' => $token, 'siteurl' => $CFG->wwwroot]);
+    $privatetoken = (!empty($token->privatetoken) && is_https()) ? $token->privatetoken : null;
+
+    echo json_encode(['token' => $token->token, 'privatetoken' => $privatetoken, 'siteurl' => $CFG->wwwroot]);
 } catch (Throwable $e) {
-    // Do not leak internals; a generic message with the error code is enough for the app.
+    // Do not leak internals; a generic message is enough for the app.
     echo json_encode(['error' => get_string('signinfailed', 'local_oksigeniaaty')]);
 }
