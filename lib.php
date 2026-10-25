@@ -128,3 +128,32 @@ function local_oksigeniaaty_get_shortcuts(): array {
     }
     return $shortcuts;
 }
+
+/**
+ * Add a link to a user's own Aty sign-in page on their profile (self-service).
+ *
+ * @param \core_user\output\myprofile\tree $tree The profile tree.
+ * @param stdClass $user The user whose profile is shown.
+ * @param bool $iscurrentuser Whether it is the current user's own profile.
+ * @param stdClass $course The course, if any.
+ * @return void
+ */
+function local_oksigeniaaty_myprofile_navigation(
+    \core_user\output\myprofile\tree $tree,
+    $user,
+    $iscurrentuser,
+    $course
+): void {
+    if (!$iscurrentuser) {
+        return;
+    }
+
+    $node = new \core_user\output\myprofile\node(
+        'miscellaneous',
+        'oksigeniaatylink',
+        get_string('mylink:nav', 'local_oksigeniaaty'),
+        null,
+        new moodle_url('/local/oksigeniaaty/mylink.php')
+    );
+    $tree->add_node($node);
+}
