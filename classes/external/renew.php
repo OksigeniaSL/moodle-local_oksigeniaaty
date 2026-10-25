@@ -24,9 +24,11 @@ use core_external\external_value;
 /**
  * Web service: renew the current app token without a password, so the session "never falls".
  *
- * While the token is still valid, the app calls this (with the PIN, if the user set one) to push the token's expiry
- * forward. No new magic link, no password. If the user has no PIN, holding a valid token is enough; if they do, it is
- * required, so a leaked token cannot extend its own life.
+ * It mirrors the sign-in flow. The app calls it with an empty PIN first: if the user has a PIN, it hands back the
+ * localised pad wording so the app can ask (without doing anything); if not, it renews there and then (silent). The
+ * app then calls it again with the PIN. While the token is still valid this pushes its expiry forward — no new magic
+ * link, no password. A set PIN is required (so a leaked token cannot extend its own life); a wrong one is reported in
+ * the response (so the pad can shake), not thrown.
  *
  * @package    local_oksigeniaaty
  * @copyright  2026 Oksigenia SL <dev@oksigenia.cc>
@@ -47,8 +49,8 @@ class renew extends external_api {
     /**
      * Renew the current user's app token.
      *
-     * @param string $pin The PIN (empty when the user has none).
-     * @return array The token and its new expiry.
+     * @param string $pin The PIN (empty to just ask for the pad wording, or when the user has none).
+     * @return array The outcome: either the pad wording to ask for a PIN, or the renewed token and its new expiry.
      */
     public static function execute(string $pin): array {
         global $USER, $CFG, $DB;
@@ -63,13 +65,25 @@ class renew extends external_api {
             throw new \moodle_exception('signinfailed', 'local_oksigeniaaty');
         }
 
+        $userid = (int) $USER->id;
+
         // A set PIN is required to renew; without one, a valid token is enough (the token is the only factor anyway).
-        if (\local_oksigeniaaty\local\pin::has_pin((int) $USER->id)) {
-            if (\local_oksigeniaaty\local\pin::is_locked((int) $USER->id)) {
-                throw new \moodle_exception('pinlocked', 'local_oksigeniaaty');
+        if (\local_oksigeniaaty\local\pin::has_pin($userid)) {
+            $pinui = [
+                'title' => get_string('pintitleenter', 'local_oksigeniaaty'),
+                'ok' => get_string('pinokenter', 'local_oksigeniaaty'),
+                'cancel' => get_string('pincancel', 'local_oksigeniaaty'),
+            ];
+
+            if ($params['pin'] === '') {
+                return self::ask($pinui, '');
             }
-            if ($params['pin'] === '' || !\local_oksigeniaaty\local\pin::verify((int) $USER->id, $params['pin'])) {
-                throw new \moodle_exception('pinwrong', 'local_oksigeniaaty');
+            if (\local_oksigeniaaty\local\pin::is_locked($userid)) {
+                return self::ask($pinui, get_string('pinlocked', 'local_oksigeniaaty'));
+            }
+            if (!\local_oksigeniaaty\local\pin::verify($userid, $params['pin'])) {
+                $locked = \local_oksigeniaaty\local\pin::is_locked($userid);
+                return self::ask($pinui, get_string($locked ? 'pinlocked' : 'pinwrong', 'local_oksigeniaaty'));
             }
         }
 
@@ -88,8 +102,32 @@ class renew extends external_api {
         }
 
         return [
+            'needspin' => false,
             'token' => $token->token,
             'validuntil' => $validuntil,
+            'error' => '',
+            'title' => '',
+            'ok' => '',
+            'cancel' => '',
+        ];
+    }
+
+    /**
+     * Build an "ask the user for the PIN" response (optionally with an error to show).
+     *
+     * @param array $pinui The localised pad wording (title, ok, cancel).
+     * @param string $error A localised error to show, or empty.
+     * @return array
+     */
+    protected static function ask(array $pinui, string $error): array {
+        return [
+            'needspin' => true,
+            'token' => '',
+            'validuntil' => 0,
+            'error' => $error,
+            'title' => $pinui['title'],
+            'ok' => $pinui['ok'],
+            'cancel' => $pinui['cancel'],
         ];
     }
 
@@ -100,8 +138,13 @@ class renew extends external_api {
      */
     public static function execute_returns(): external_single_structure {
         return new external_single_structure([
-            'token' => new external_value(PARAM_ALPHANUMEXT, 'The app token (unchanged; its expiry was extended)'),
-            'validuntil' => new external_value(PARAM_INT, 'The new expiry as a unix time, or 0 if the token never expires'),
+            'needspin' => new external_value(PARAM_BOOL, 'Whether the app must ask the user for the PIN'),
+            'token' => new external_value(PARAM_ALPHANUMEXT, 'The app token (unchanged; its expiry was extended), or empty'),
+            'validuntil' => new external_value(PARAM_INT, 'The new expiry as a unix time, 0 if it never expires or none yet'),
+            'error' => new external_value(PARAM_TEXT, 'A localised error to show (wrong or locked PIN), or empty'),
+            'title' => new external_value(PARAM_TEXT, 'Localised pad title, when asking for the PIN'),
+            'ok' => new external_value(PARAM_TEXT, 'Localised confirm label, when asking for the PIN'),
+            'cancel' => new external_value(PARAM_TEXT, 'Localised cancel label, when asking for the PIN'),
         ]);
     }
 }
