@@ -72,7 +72,7 @@ try {
     $haspin = \local_oksigeniaaty\local\pin::has_pin($userid);
     if ($haspin) {
         if ($pin === '') {
-            echo json_encode(['needspin' => true]);
+            echo json_encode(['needspin' => true, 'pinprompt' => get_string('pinenter', 'local_oksigeniaaty')]);
             exit;
         }
         if (\local_oksigeniaaty\local\pin::is_locked($userid)) {
@@ -108,13 +108,15 @@ try {
 
     $privatetoken = (!empty($token->privatetoken) && is_https()) ? $token->privatetoken : null;
 
-    // When the user has no PIN yet, tell the app to offer setting one (trust on first use). The user's own language
-    // travels back too, so the app can dress itself in it: open a link, land in your language.
+    // When the user has no PIN yet, tell the app to offer setting one (trust on first use), with the prompt text
+    // already localised here. The user's own language travels back too, so the app can dress itself in it: open a
+    // link, land in your language.
     echo json_encode([
         'token' => $token->token,
         'privatetoken' => $privatetoken,
         'siteurl' => $CFG->wwwroot,
         'needspinsetup' => !$haspin,
+        'pinsetupprompt' => !$haspin ? get_string('pinsetup', 'local_oksigeniaaty') : null,
         'lang' => !empty($user->lang) ? $user->lang : $CFG->lang,
     ]);
 } catch (Throwable $e) {
