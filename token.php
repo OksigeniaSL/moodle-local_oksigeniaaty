@@ -79,6 +79,7 @@ try {
             'title' => get_string('pintitleenter', 'local_oksigeniaaty'),
             'ok' => get_string('pinokenter', 'local_oksigeniaaty'),
             'cancel' => get_string('pincancel', 'local_oksigeniaaty'),
+            'forgot' => get_string('forgotpin:link', 'local_oksigeniaaty'),
         ];
         if ($pin === '') {
             echo json_encode(['needspin' => true, 'pinui' => $pinui]);

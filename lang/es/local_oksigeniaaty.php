@@ -34,6 +34,7 @@ Si no lo has pedido tú, puedes ignorar este mensaje.';
 $string['forgotpin:emailsubject'] = 'Reinicia tu PIN de Aty';
 $string['forgotpin:heading'] = '¿Olvidaste tu PIN de Aty?';
 $string['forgotpin:intro'] = 'Escribe tu nombre de usuario o tu correo y te enviaremos un enlace para reiniciar el PIN.';
+$string['forgotpin:link'] = '¿Olvidaste el PIN?';
 $string['forgotpin:search'] = 'Nombre de usuario o correo';
 $string['forgotpin:sent'] = 'Si esa cuenta existe y usa Aty, te hemos enviado por correo un enlace para reiniciar el PIN. Funciona una sola vez y caduca en 30 minutos.';
 $string['forgotpin:submit'] = 'Enviar enlace de reinicio';
