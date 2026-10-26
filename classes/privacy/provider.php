@@ -79,7 +79,9 @@ class provider implements
 
         $contextlist = new contextlist();
         $haspin = $DB->record_exists('local_oksigeniaaty_pin', ['userid' => $userid]);
-        $haskey = $DB->record_exists('user_private_key', ['script' => loginkey::SCRIPT, 'userid' => $userid]);
+        [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::RESET_SCRIPT]);
+        $params[] = $userid;
+        $haskey = $DB->record_exists_select('user_private_key', "script $insql AND userid = ?", $params);
         if ($haspin || $haskey) {
             $contextlist->add_user_context($userid);
         }
@@ -103,7 +105,9 @@ class provider implements
 
         $userid = $context->instanceid;
         $haspin = $DB->record_exists('local_oksigeniaaty_pin', ['userid' => $userid]);
-        $haskey = $DB->record_exists('user_private_key', ['script' => loginkey::SCRIPT, 'userid' => $userid]);
+        [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::RESET_SCRIPT]);
+        $params[] = $userid;
+        $haskey = $DB->record_exists_select('user_private_key', "script $insql AND userid = ?", $params);
         if ($haspin || $haskey) {
             $userlist->add_user($userid);
         }
@@ -136,7 +140,9 @@ class provider implements
                 );
             }
 
-            $keys = $DB->get_records('user_private_key', ['script' => loginkey::SCRIPT, 'userid' => $user->id]);
+            [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::RESET_SCRIPT]);
+            $params[] = $user->id;
+            $keys = $DB->get_records_select('user_private_key', "script $insql AND userid = ?", $params);
             if ($keys) {
                 $rows = [];
                 foreach ($keys as $key) {
@@ -209,6 +215,8 @@ class provider implements
         global $DB;
 
         pin::delete($userid);
-        $DB->delete_records('user_private_key', ['script' => loginkey::SCRIPT, 'userid' => $userid]);
+        [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::RESET_SCRIPT]);
+        $params[] = $userid;
+        $DB->delete_records_select('user_private_key', "script $insql AND userid = ?", $params);
     }
 }

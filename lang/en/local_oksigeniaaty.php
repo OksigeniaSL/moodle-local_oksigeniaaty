@@ -25,6 +25,19 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['expiredkey'] = 'This sign-in link has expired. Ask for a new one.';
+$string['forgotpin:emailbody'] = 'Hello {$a->name},
+
+Use this link to reset your Aty PIN and set a new one. It works once and expires in 30 minutes:
+
+{$a->link}
+
+If you did not ask for this, you can ignore this message.';
+$string['forgotpin:emailsubject'] = 'Reset your Aty PIN';
+$string['forgotpin:heading'] = 'Forgot your Aty PIN?';
+$string['forgotpin:intro'] = 'Enter your username or email and we will email you a link to reset your PIN.';
+$string['forgotpin:search'] = 'Username or email';
+$string['forgotpin:sent'] = 'If that account exists and uses Aty, we have emailed a link to reset the PIN. It works once and expires in 30 minutes.';
+$string['forgotpin:submit'] = 'Send reset link';
 $string['home:opensoutside'] = 'Opens outside the app';
 $string['home:shortcuts'] = 'Shortcuts';
 $string['invalidkey'] = 'This sign-in link is not valid.';

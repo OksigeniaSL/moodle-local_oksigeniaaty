@@ -24,6 +24,19 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['forgotpin:emailbody'] = 'Hola {$a->name}:
+
+Usa este enlace para reiniciar tu PIN de Aty y poner uno nuevo. Funciona una sola vez y caduca en 30 minutos:
+
+{$a->link}
+
+Si no lo has pedido tú, puedes ignorar este mensaje.';
+$string['forgotpin:emailsubject'] = 'Reinicia tu PIN de Aty';
+$string['forgotpin:heading'] = '¿Olvidaste tu PIN de Aty?';
+$string['forgotpin:intro'] = 'Escribe tu nombre de usuario o tu correo y te enviaremos un enlace para reiniciar el PIN.';
+$string['forgotpin:search'] = 'Nombre de usuario o correo';
+$string['forgotpin:sent'] = 'Si esa cuenta existe y usa Aty, te hemos enviado por correo un enlace para reiniciar el PIN. Funciona una sola vez y caduca en 30 minutos.';
+$string['forgotpin:submit'] = 'Enviar enlace de reinicio';
 $string['home:opensoutside'] = 'Se abre fuera de la app';
 $string['home:shortcuts'] = 'Accesos';
 $string['mylink:qralt'] = 'Código QR para entrar en la app Aty';

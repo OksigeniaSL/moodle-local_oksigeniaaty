@@ -49,10 +49,13 @@ try {
 
     // Peek the key before consuming it, so a missing or wrong PIN can be reported without burning the key: only the
     // final step, once everything checks out, consumes it.
-    $userid = \local_oksigeniaaty\local\loginkey::peek($keyvalue);
-    if (!$userid) {
+    $peeked = \local_oksigeniaaty\local\loginkey::peek($keyvalue);
+    if (!$peeked) {
         throw new moodle_exception('invalidkey', 'local_oksigeniaaty');
     }
+    $userid = $peeked['userid'];
+    // A reset key (emailed by forgotpin.php) clears the PIN and sets a new one, so it does not pass the PIN gate.
+    $isreset = $peeked['reset'];
     $user = core_user::get_user($userid, '*', MUST_EXIST);
     core_user::require_active_user($user, true, true);
 
@@ -70,7 +73,7 @@ try {
     // PIN gate. Once a user has set a PIN it is a required second factor: the key alone no longer signs in. The key is
     // not consumed here, so a wrong PIN leaves it live for another try (throttled server-side against brute force).
     // The pad's wording travels back localised, so the app ships no PIN strings of its own.
-    $haspin = \local_oksigeniaaty\local\pin::has_pin($userid);
+    $haspin = !$isreset && \local_oksigeniaaty\local\pin::has_pin($userid);
     if ($haspin) {
         $pinui = [
             'title' => get_string('pintitleenter', 'local_oksigeniaaty'),
@@ -107,6 +110,11 @@ try {
 
     // Everything checks out: consume the key now (atomic single use) and mint the token.
     \local_oksigeniaaty\local\loginkey::consume($keyvalue);
+
+    // A reset key clears the PIN, so the app then offers to set a new one (needspinsetup, since $haspin is false).
+    if ($isreset) {
+        \local_oksigeniaaty\local\pin::delete($userid);
+    }
 
     // Mint the token exactly as login/token.php does: this applies the service capability check, token reuse,
     // $CFG->tokenduration expiry, the creator id and the audit log, instead of a raw permanent token.
