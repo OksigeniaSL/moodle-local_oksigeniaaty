@@ -73,6 +73,7 @@ class renew extends external_api {
                 'title' => get_string('pintitleenter', 'local_oksigeniaaty'),
                 'ok' => get_string('pinokenter', 'local_oksigeniaaty'),
                 'cancel' => get_string('pincancel', 'local_oksigeniaaty'),
+                'biometric' => get_string('pinbiometric', 'local_oksigeniaaty'),
             ];
 
             if ($params['pin'] === '') {
@@ -108,6 +109,7 @@ class renew extends external_api {
             'title' => '',
             'ok' => '',
             'cancel' => '',
+            'biometric' => '',
         ];
     }
 
@@ -127,6 +129,7 @@ class renew extends external_api {
             'title' => $pinui['title'],
             'ok' => $pinui['ok'],
             'cancel' => $pinui['cancel'],
+            'biometric' => $pinui['biometric'],
         ];
     }
 
@@ -144,6 +147,7 @@ class renew extends external_api {
             'title' => new external_value(PARAM_TEXT, 'Localised pad title, when asking for the PIN'),
             'ok' => new external_value(PARAM_TEXT, 'Localised confirm label, when asking for the PIN'),
             'cancel' => new external_value(PARAM_TEXT, 'Localised cancel label, when asking for the PIN'),
+            'biometric' => new external_value(PARAM_TEXT, 'Localised biometric prompt, when asking for the PIN'),
         ]);
     }
 }

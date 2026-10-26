@@ -80,6 +80,7 @@ try {
             'ok' => get_string('pinokenter', 'local_oksigeniaaty'),
             'cancel' => get_string('pincancel', 'local_oksigeniaaty'),
             'forgot' => get_string('forgotpin:link', 'local_oksigeniaaty'),
+            'biometric' => get_string('pinbiometric', 'local_oksigeniaaty'),
         ];
         if ($pin === '') {
             echo json_encode(['needspin' => true, 'pinui' => $pinui]);
@@ -133,6 +134,8 @@ try {
         'message' => get_string('pinsetup', 'local_oksigeniaaty'),
         'ok' => get_string('pinoksetup', 'local_oksigeniaaty'),
         'cancel' => get_string('pinskip', 'local_oksigeniaaty'),
+        'biometric' => get_string('pinbiometric', 'local_oksigeniaaty'),
+        'biometricask' => get_string('pinbiometricask', 'local_oksigeniaaty'),
     ];
     echo json_encode([
         'token' => $token->token,
