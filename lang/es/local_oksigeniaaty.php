@@ -24,6 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['expiredkey'] = 'Este enlace de acceso ha caducado. Pide uno nuevo.';
 $string['forgotpin:emailbody'] = 'Hola {$a->name}:
 
 Usa este enlace para reiniciar tu PIN de Aty y poner uno nuevo. Funciona una sola vez y caduca en 30 minutos:
@@ -42,8 +43,22 @@ $string['home:greeting'] = 'Hola, {$a}';
 $string['home:mycourses'] = 'Mis cursos';
 $string['home:opensoutside'] = 'Se abre fuera de la app';
 $string['home:shortcuts'] = 'Accesos';
+$string['invalidkey'] = 'Este enlace de acceso no es válido.';
+$string['mobilenotenabled'] = 'El acceso desde el móvil no está activado en este sitio.';
+$string['mylink:expires'] = 'Este enlace funciona una sola vez y caduca en 30 minutos. Recarga esta página para obtener uno nuevo.';
+$string['mylink:heading'] = 'Abrir en la app Aty';
+$string['mylink:intro'] = 'Pulsa el botón en tu móvil para abrir la app Aty con la sesión ya iniciada. No hace falta contraseña.';
+$string['mylink:nav'] = 'Abrir en la app Aty';
 $string['mylink:qralt'] = 'Código QR para entrar en la app Aty';
 $string['mylink:qrhint'] = 'O escanea este código con la app Aty en tu móvil.';
+$string['oksigeniaaty:issuelink'] = 'Emitir un enlace o QR de acceso a Aty para otro usuario';
+$string['open:android'] = 'Disponible en Google Play';
+$string['open:expired'] = 'Este enlace de acceso ha caducado o ya se ha usado. Pide uno nuevo a tu centro u organización.';
+$string['open:ios'] = 'Descárgala en el App Store';
+$string['open:noapp'] = '¿Todavía no tienes la app?';
+$string['open:openbtn'] = 'Abrir en Aty';
+$string['open:opening'] = 'Abriendo la app...';
+$string['open:title'] = 'Entrar en Aty';
 $string['pinbiometric'] = 'Confirma tu identidad';
 $string['pinbiometricask'] = '¿Usar tu huella o cara para entrar la próxima vez?';
 $string['pincancel'] = 'Cancelar';
@@ -73,10 +88,14 @@ $string['resetpin:heading'] = 'Reiniciar tu PIN de Aty';
 $string['resetpin:nav'] = 'Reiniciar mi PIN de Aty';
 $string['resetpin:nopin'] = 'No tienes un PIN de Aty puesto.';
 $string['selfservicenotallowed'] = 'El acceso sin contraseña no está disponible para tu cuenta. Entra con tus datos de siempre.';
+$string['settings:androidstoreurl'] = 'Enlace de Google Play';
+$string['settings:androidstoreurl_desc'] = 'La página de la app en Google Play, que se muestra en el puente de acceso cuando la app no está instalada. Déjalo vacío para ocultarla.';
 $string['settings:brandcolour'] = 'Color de marca';
 $string['settings:brandcolour_desc'] = 'El color principal del sitio, usado en barras, botones y acentos de la app.';
 $string['settings:design'] = 'Diseño de la app';
 $string['settings:design_desc'] = 'Cómo se ve este sitio en la app: la pestaña de inicio y la marca. Cada sitio alojado guarda sus propios valores; la app, única, se viste con ellos.';
+$string['settings:extracss'] = 'CSS extra de la app';
+$string['settings:extracss_desc'] = 'CSS que se sirve a la app después de la capa de marca, para sitios sin Boost Union. En un sitio con Boost Union se usa en su lugar su casilla «CSS adicional para la app móvil» y este se ignora. El modo oscuro actúa sobre la clase <code>.dark</code> de la raíz; carga fuentes con una url() https absoluta.';
 $string['settings:homeheading'] = 'Título del inicio';
 $string['settings:homeheading_desc'] = 'El título que aparece arriba en la pestaña de inicio. Si se deja vacío, se usa el nombre del sitio.';
 $string['settings:homeintro'] = 'Bienvenida del inicio';
@@ -85,5 +104,10 @@ $string['settings:homelogourl'] = 'Logo del inicio';
 $string['settings:homelogourl_desc'] = 'Un logo en blanco que se muestra sobre la cabecera de marca de la pestaña de inicio. Déjalo vacío para mostrar solo el título.';
 $string['settings:homeshortcuts'] = 'Accesos del inicio';
 $string['settings:homeshortcuts_desc'] = 'Accesos que se muestran en la pestaña de inicio, uno por línea como «Etiqueta | https://url | fas-icono». El icono es opcional, un nombre sólido de Font Awesome que trae la app (por ejemplo fas-calendar); las líneas sin un enlace https válido no se tienen en cuenta.';
+$string['settings:iosstoreurl'] = 'Enlace del App Store';
+$string['settings:iosstoreurl_desc'] = 'La página de la app en el App Store, que se muestra en el puente de acceso cuando la app no está instalada. Déjalo vacío para ocultarla.';
 $string['settings:selfservicecohorts'] = 'Cohortes con acceso de autoservicio';
 $string['settings:selfservicecohorts_desc'] = 'Solo los miembros de las cohortes elegidas pueden obtener su propio enlace o QR de acceso («Abrir en la app Aty»). Déjalo todo sin seleccionar para permitir a todos. No afecta a los enlaces emitidos por el personal.';
+$string['settings:signin'] = 'Acceso a la app';
+$string['settings:signin_desc'] = 'Enlaces y códigos QR que inician la sesión de un usuario en la app sin contraseña. La clave es de un solo uso y caduca en 30 minutos; el token se puede revocar desde Moodle.';
+$string['signinfailed'] = 'No se pudo iniciar sesión. El enlace puede haber caducado o haberse usado ya.';
