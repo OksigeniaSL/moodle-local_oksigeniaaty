@@ -33,6 +33,10 @@ $addons = [
             'home' => [
                 'delegate' => 'CoreMainMenuHomeDelegate',
                 'method' => 'mobile_home',
+                // Above the app's own home tabs (Dashboard 1200, Site home up to 1300) so the app opens on the Aty home,
+                // not the stock Moodle dashboard. The Moodle tabs are also hidden per site via disabled features
+                // (CoreCoursesDashboard, CoreSiteHomeDashboard); this keeps ours first even where they are not.
+                'priority' => 1400,
                 'displaydata' => [
                     'title' => 'pluginname',
                     'icon' => 'home',
