@@ -116,6 +116,20 @@ class appcss {
     background: linear-gradient(135deg, var(--primary), var(--primary-shade)); filter: hue-rotate(var(--aty-hue, 0deg)); }
 .aty-course-initial { position: relative; z-index: 1; font-size: 2rem; font-weight: 800; line-height: 1; opacity: .85; }
 .aty-course-name { position: relative; z-index: 1; margin-top: 8px; font-size: .95rem; font-weight: 700; line-height: 1.25; }
+.aty-agenda { display: flex; flex-direction: column; gap: 8px; }
+.aty-event { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px;
+    background: var(--ion-item-background, var(--ion-background-color)); color: var(--ion-text-color);
+    text-decoration: none; box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 8px 18px -12px rgba(0, 0, 0, .35); }
+:root.dark .aty-event, :root .dark .aty-event { box-shadow: none; outline: 1px solid rgba(255, 255, 255, .08); }
+.aty-event-date { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    width: 46px; height: 46px; border-radius: 12px; background: rgba(var(--ion-color-primary-rgb), .12);
+    color: var(--primary); line-height: 1; }
+.aty-event-day { font-size: 1.25rem; font-weight: 800; }
+.aty-event-month { margin-top: 2px; font-size: .62rem; font-weight: 700; letter-spacing: .06em; opacity: .9; }
+.aty-event-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.aty-event-name { font-weight: 700; line-height: 1.25; }
+.aty-event-context { font-size: .8rem; color: var(--ion-color-medium); }
+.aty-event-time { flex: 0 0 auto; font-size: .82rem; font-weight: 700; color: var(--ion-color-medium); }
 CSS;
     }
 

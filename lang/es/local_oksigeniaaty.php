@@ -43,6 +43,7 @@ $string['home:greeting'] = 'Hola, {$a}';
 $string['home:mycourses'] = 'Mis cursos';
 $string['home:opensoutside'] = 'Se abre fuera de la app';
 $string['home:shortcuts'] = 'Accesos';
+$string['home:upcoming'] = 'Próximos';
 $string['invalidkey'] = 'Este enlace de acceso no es válido.';
 $string['mobilenotenabled'] = 'El acceso desde el móvil no está activado en este sitio.';
 $string['mylink:expires'] = 'Este enlace funciona una sola vez y caduca en 30 minutos. Recarga esta página para obtener uno nuevo.';

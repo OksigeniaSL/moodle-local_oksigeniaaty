@@ -43,6 +43,7 @@ $string['home:greeting'] = 'Hi, {$a}';
 $string['home:mycourses'] = 'My courses';
 $string['home:opensoutside'] = 'Opens outside the app';
 $string['home:shortcuts'] = 'Shortcuts';
+$string['home:upcoming'] = 'Upcoming';
 $string['invalidkey'] = 'This sign-in link is not valid.';
 $string['mobilenotenabled'] = 'Mobile access is not enabled on this site.';
 $string['mylink:expires'] = 'This link works once and expires in 30 minutes. Reload this page to get a new one.';

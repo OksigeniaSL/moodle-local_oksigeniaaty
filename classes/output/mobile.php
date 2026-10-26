@@ -47,6 +47,7 @@ class mobile {
         $intro = !empty($config->homeintro) ? $config->homeintro : '';
         $shortcuts = local_oksigeniaaty_get_shortcuts();
         $courses = self::courses();
+        $events = self::events();
 
         $data = [
             'logourl' => !empty($config->homelogourl) ? $config->homelogourl : '',
@@ -55,6 +56,9 @@ class mobile {
                 : '',
             'heading' => $heading,
             'intro' => $intro,
+            'eventsheading' => get_string('home:upcoming', 'local_oksigeniaaty'),
+            'events' => $events,
+            'hasevents' => !empty($events),
             'shortcutsheading' => get_string('home:shortcuts', 'local_oksigeniaaty'),
             'shortcuts' => $shortcuts,
             'hasshortcuts' => !empty($shortcuts),
@@ -106,5 +110,62 @@ class mobile {
         }
 
         return $courses;
+    }
+
+    /**
+     * The user's upcoming events for the home panel: a short agenda of what is scheduled or due over the next week.
+     *
+     * Built from the same filters as the site calendar (the user's courses, their groups and their own events), so the
+     * app agenda matches what the user sees on the web.
+     *
+     * @return array A list of { name, day, month, time, context, viewurl }, soonest first, at most five.
+     */
+    private static function events(): array {
+        global $CFG;
+
+        require_once($CFG->dirroot . '/calendar/lib.php');
+
+        $courses = calendar_get_default_courses();
+        // The calendar's own filters: course ids, group ids and the user id (or false for each when not applicable).
+        [$courseids, $groupids, $userids] = calendar_set_filters($courses);
+
+        $now = time();
+        $events = calendar_get_legacy_events($now, $now + 7 * DAYSECS, $userids, $groupids, $courseids, true, true);
+        if (empty($events)) {
+            return [];
+        }
+
+        // Soonest first, so the agenda reads top to bottom in time.
+        \core_collator::asort_objects_by_property($events, 'timestart', \core_collator::SORT_NUMERIC);
+
+        // A course id to short name map, to label each event with its course.
+        $shortnames = [];
+        foreach ($courses as $course) {
+            $shortnames[$course->id] = format_string($course->shortname);
+        }
+
+        $agenda = [];
+        foreach ($events as $event) {
+            // All-day events (a day or longer) show just the date; timed ones also show the start time.
+            $isallday = (int) $event->timeduration >= DAYSECS;
+            $context = '';
+            if (!empty($event->courseid) && $event->courseid != SITEID && isset($shortnames[$event->courseid])) {
+                $context = $shortnames[$event->courseid];
+            }
+            $agenda[] = [
+                'name' => format_string($event->name),
+                'day' => ltrim(userdate($event->timestart, '%e')),
+                'month' => \core_text::strtoupper(trim(userdate($event->timestart, '%b'))),
+                'time' => $isallday ? '' : userdate($event->timestart, get_string('strftimetime', 'langconfig')),
+                'context' => $context,
+                'viewurl' => (new \moodle_url('/calendar/view.php',
+                    ['view' => 'day', 'time' => $event->timestart]))->out(false),
+            ];
+            if (count($agenda) >= 5) {
+                break;
+            }
+        }
+
+        return $agenda;
     }
 }

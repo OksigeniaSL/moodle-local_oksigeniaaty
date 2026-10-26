@@ -28,6 +28,9 @@
     * greeting - A personal greeting with the user's first name (may be empty).
     * heading - The site heading shown in the hero.
     * intro - A short welcome under the heading (may be empty).
+    * eventsheading - The label above the upcoming events.
+    * hasevents - Whether there is at least one upcoming event.
+    * events - A list of { name, day, month, time, context, viewurl }.
     * shortcutsheading - The label above the shortcuts.
     * hasshortcuts - Whether there is at least one shortcut.
     * shortcuts - A list of { label, url, icon, external }.
@@ -56,6 +59,24 @@
         <h1 class="aty-hero-title">{{heading}}</h1>
         {{#intro}}<p class="aty-hero-intro">{{intro}}</p>{{/intro}}
     </section>
+    {{#hasevents}}
+    <h2 class="aty-section">{{eventsheading}}</h2>
+    <div class="aty-agenda">
+        {{#events}}
+        <a class="aty-event" core-link href="{{viewurl}}" capture="true">
+            <span class="aty-event-date">
+                <span class="aty-event-day">{{day}}</span>
+                <span class="aty-event-month">{{month}}</span>
+            </span>
+            <span class="aty-event-body">
+                <span class="aty-event-name">{{name}}</span>
+                {{#context}}<span class="aty-event-context">{{context}}</span>{{/context}}
+            </span>
+            {{#time}}<span class="aty-event-time">{{time}}</span>{{/time}}
+        </a>
+        {{/events}}
+    </div>
+    {{/hasevents}}
     {{#hasshortcuts}}
     <h2 class="aty-section">{{shortcutsheading}}</h2>
     <ion-grid class="aty-tiles"><ion-row>

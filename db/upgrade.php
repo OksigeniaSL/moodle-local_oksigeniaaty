@@ -67,5 +67,12 @@ function xmldb_local_oksigeniaaty_upgrade($oldversion): bool {
         local_oksigeniaaty_refresh_appcss();
     }
 
+    if ($oldversion < 2026102601) {
+        // The home gained an upcoming-events agenda with its own CSS; refresh mobilecssurl after the savepoint so the
+        // app refetches the stylesheet with the new version in its cache key.
+        upgrade_plugin_savepoint(true, 2026102601, 'local', 'oksigeniaaty');
+        local_oksigeniaaty_refresh_appcss();
+    }
+
     return true;
 }
