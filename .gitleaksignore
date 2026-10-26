@@ -1,0 +1,3 @@
+# A made-up sign-in key in the QR test data on 2026-10-26 (it never signed anyone in), replaced the same day by a
+# low-entropy placeholder that does not look like a secret. It stays in the history.
+bfa344ad41beb84b89ba80d45ddb84efa140f723:tests/local/qrdesign_test.php:generic-api-key:41

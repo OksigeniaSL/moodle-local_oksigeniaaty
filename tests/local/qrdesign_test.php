@@ -38,7 +38,7 @@ final class qrdesign_test extends \advanced_testcase {
     const SHORT = 'https://aula.ofilingua.com';
 
     /** @var string A long link, like a personal sign-in link: a code with an alignment pattern in the middle. */
-    const LONG = 'https://aula.ofilingua.com/local/oksigeniaaty/open.php?key=0123456789abcdef0123456789abcdef';
+    const LONG = 'https://aula.ofilingua.com/local/oksigeniaaty/open.php?key=qrsampleqrsampleqrsampleqrsample';
 
     /**
      * Every dot of the drawing is a dark module, and every dark module outside the eyes and the logo pad has its dot.
