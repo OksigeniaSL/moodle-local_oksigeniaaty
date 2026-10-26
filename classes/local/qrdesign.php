@@ -32,10 +32,9 @@ namespace local_oksigeniaaty\local;
  * patterns ("eyes") and the alignment patterns drawn solid as rounded squares (radius 30 % of their side), because
  * readers miss alignment patterns drawn as loose dots; the logo in the middle, at most 20 % of the width, on a white
  * rounded pad with one module of margin, and only where it covers no alignment pattern (long codes have one in the
- * middle, so they go without logo); a quiet zone of four modules.
+ * middle, so they go without logo), nested as SVG when it is one so it prints sharp; a quiet zone of four modules.
  */
 class qrdesign {
-
     /** @var int Modules of white around the code. */
     const QUIET = 4;
 
@@ -135,9 +134,7 @@ class qrdesign {
         if ($pad !== null) {
             $side = $n - 2 * $pad;
             $svg .= '<path fill="#ffffff" d="' . self::rounded($pad + $q, $pad + $q, $side, 1) . '"/>';
-            $href = s($logo);
-            $svg .= '<image x="' . ($pad + $q + 1) . '" y="' . ($pad + $q + 1) . '" width="' . ($side - 2) . '" height="'
-                . ($side - 2) . '" preserveAspectRatio="xMidYMid meet" href="' . $href . '" xlink:href="' . $href . '"/>';
+            $svg .= self::nestedsvg($logo, $pad + $q + 1, $side - 2) ?? self::image($logo, $pad + $q + 1, $side - 2);
         }
 
         return $svg . '</svg>';
@@ -256,6 +253,69 @@ class qrdesign {
         }
 
         return null;
+    }
+
+    /**
+     * A raster logo (or an SVG one that could not be nested) as an image element.
+     *
+     * @param string $logo The logo as a data: URI.
+     * @param int $at Left and top edge.
+     * @param int $side Size.
+     * @return string The image element.
+     */
+    private static function image(string $logo, int $at, int $side): string {
+        $href = s($logo);
+
+        return '<image x="' . $at . '" y="' . $at . '" width="' . $side . '" height="' . $side . '" '
+            . 'preserveAspectRatio="xMidYMid meet" href="' . $href . '" xlink:href="' . $href . '"/>';
+    }
+
+    /**
+     * An SVG logo nested as an svg element, so it stays sharp at any size: as an image element, some renderers
+     * (librsvg, used by many viewers and print tools) rasterise it at its tiny size in modules and it comes out blurred.
+     *
+     * @param string $logo The logo as a data: URI.
+     * @param int $at Left and top edge.
+     * @param int $side Size.
+     * @return string|null The svg element, or null when the logo is not SVG, cannot be read or carries styles or scripts.
+     */
+    private static function nestedsvg(string $logo, int $at, int $side): ?string {
+        $prefix = 'data:image/svg+xml;base64,';
+        if (strpos($logo, $prefix) !== 0) {
+            return null;
+        }
+
+        $doc = new \DOMDocument();
+        $previous = libxml_use_internal_errors(true);
+        // No network access and no entity substitution.
+        $loaded = $doc->loadXML((string) base64_decode(substr($logo, strlen($prefix))), LIBXML_NONET);
+        libxml_clear_errors();
+        libxml_use_internal_errors($previous);
+        $root = $loaded ? $doc->documentElement : null;
+        if (!$root || $root->localName !== 'svg') {
+            return null;
+        }
+        // A style sheet in the logo would style the whole code (rules on circle or path would hide the modules), and a
+        // script has no business there: those logos go as an image element, which keeps them apart.
+        if ($doc->getElementsByTagName('style')->length || $doc->getElementsByTagName('script')->length) {
+            return null;
+        }
+
+        // Scaling needs a viewBox: take it from the logo's own size when it has none.
+        if (!$root->hasAttribute('viewBox')) {
+            $width = (float) $root->getAttribute('width');
+            $height = (float) $root->getAttribute('height');
+            if ($width <= 0 || $height <= 0) {
+                return null;
+            }
+            $root->setAttribute('viewBox', '0 0 ' . $width . ' ' . $height);
+        }
+        foreach (['x' => $at, 'y' => $at, 'width' => $side, 'height' => $side] as $name => $value) {
+            $root->setAttribute($name, (string) $value);
+        }
+        $root->setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+        return $doc->saveXML($root);
     }
 
     /**

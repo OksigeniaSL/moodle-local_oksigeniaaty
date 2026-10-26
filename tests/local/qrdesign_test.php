@@ -37,6 +37,9 @@ final class qrdesign_test extends \advanced_testcase {
     /** @var string A short link, like a site address: a small code with room for the logo. */
     const SHORT = 'https://aula.ofilingua.com';
 
+    /** @var string A 1x1 transparent PNG, base64. */
+    const PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
+
     /** @var string A long link, like a personal sign-in link: a code with an alignment pattern in the middle. */
     const LONG = 'https://aula.ofilingua.com/local/oksigeniaaty/open.php?key=qrsampleqrsampleqrsampleqrsample';
 
@@ -105,14 +108,9 @@ final class qrdesign_test extends \advanced_testcase {
      * The logo goes in short codes and never covers an alignment pattern: long codes go without it.
      */
     public function test_logo_only_where_it_fits(): void {
-        $short = qrdesign::svg(self::SHORT, '#0a66c2', self::logo());
-        $this->assertStringContainsString('<image ', $short);
-
-        $long = qrdesign::svg(self::LONG, '#0a66c2', self::logo());
-        $this->assertStringNotContainsString('<image ', $long);
-
-        $none = qrdesign::svg(self::SHORT, '#0a66c2');
-        $this->assertStringNotContainsString('<image ', $none);
+        $this->assertNotNull(self::pad(qrdesign::svg(self::SHORT, '#0a66c2', self::logo())));
+        $this->assertNull(self::pad(qrdesign::svg(self::LONG, '#0a66c2', self::logo())));
+        $this->assertNull(self::pad(qrdesign::svg(self::SHORT, '#0a66c2')));
 
         // The pad of the short code: centred, odd, at most a fifth of the code plus its margin, clear of alignments.
         $matrix = qrdesign::matrix(self::SHORT);
@@ -126,6 +124,34 @@ final class qrdesign_test extends \advanced_testcase {
             $apart = $ax >= $x + $side + 1 || $ax + 5 <= $x - 1 || $ay >= $y + $side + 1 || $ay + 5 <= $y - 1;
             $this->assertTrue($apart, "The logo pad touches the alignment pattern at $ax,$ay");
         }
+    }
+
+    /**
+     * An SVG logo is nested as svg, so it stays sharp; a raster logo, or an SVG one with styles or scripts, goes as an
+     * image element, which keeps it apart from the code.
+     */
+    public function test_logo_forms(): void {
+        $nested = qrdesign::svg(self::SHORT, '', self::logo());
+        $this->assertSame(2, substr_count($nested, '<svg'));
+        $this->assertStringContainsString('<path d="M3 5h4M5 3v4"', $nested);
+        $this->assertStringNotContainsString('<image ', $nested);
+        $this->assertNotFalse(simplexml_load_string($nested));
+
+        $png = qrdesign::svg(self::SHORT, '', self::pnglogo());
+        $this->assertSame(1, substr_count($png, '<svg'));
+        $this->assertStringContainsString('<image ', $png);
+
+        $styled = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><style>circle { fill: #fff; }</style>'
+            . '<circle cx="5" cy="5" r="4"/></svg>';
+        $apart = qrdesign::svg(self::SHORT, '', 'data:image/svg+xml;base64,' . base64_encode($styled));
+        $this->assertSame(1, substr_count($apart, '<svg'));
+        $this->assertStringNotContainsString('<style>', $apart);
+        $this->assertStringContainsString('<image ', $apart);
+
+        // A logo with a size but no viewBox gets one from its size, so it scales into the pad.
+        $sized = '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="20"><rect width="40" height="20"/></svg>';
+        $scaled = qrdesign::svg(self::SHORT, '', 'data:image/svg+xml;base64,' . base64_encode($sized));
+        $this->assertStringContainsString('viewBox="0 0 40 20"', $scaled);
     }
 
     /**
@@ -155,8 +181,7 @@ final class qrdesign_test extends \advanced_testcase {
         $this->resetAfterTest();
         $this->assertNull(qrdesign::sitelogo());
 
-        // A 1x1 transparent PNG.
-        $png = base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=');
+        $png = base64_decode(self::PNG);
         $fs = get_file_storage();
         $record = [
             'contextid' => \context_system::instance()->id,
@@ -184,6 +209,7 @@ final class qrdesign_test extends \advanced_testcase {
             'site-lightbrand' => ['https://campus.oksigenia.com', '#ffcc00', self::logo()],
             'site-tiny' => ['https://ofi.es', '#2d6a4f', self::logo()],
             'site-nologo' => ['https://formacion.example.org', '#b5179e', null],
+            'site-pnglogo' => ['https://escuela.example.net', '#c1121f', self::pnglogo()],
             'personal-long' => [self::LONG, '#7b2d8e', self::logo()],
         ];
         $folder = getenv('LOCAL_OKSIGENIAATY_QR_SAMPLES');
@@ -213,6 +239,15 @@ final class qrdesign_test extends \advanced_testcase {
     }
 
     /**
+     * A raster logo as a data: URI.
+     *
+     * @return string
+     */
+    private static function pnglogo(): string {
+        return 'data:image/png;base64,' . self::PNG;
+    }
+
+    /**
      * The modules drawn as dots, as "y,x" keys (without the quiet zone).
      *
      * @param string $svg The drawing.
@@ -229,17 +264,17 @@ final class qrdesign_test extends \advanced_testcase {
     }
 
     /**
-     * The logo pad of a drawing, from the logo image inside it (one module of margin on each side).
+     * The logo pad of a drawing, from its white rounded square (corner radius of one module).
      *
      * @param string $svg The drawing.
      * @return array|null [x, y, side] in modules, or null without logo.
      */
     private static function pad(string $svg): ?array {
-        if (!preg_match('/<image x="([\d.]+)" y="([\d.]+)" width="([\d.]+)"/', $svg, $m)) {
+        if (!preg_match('/<path fill="#ffffff" d="M([\d.]+) ([\d.]+)H([\d.]+)/', $svg, $m)) {
             return null;
         }
 
-        return [(int) $m[1] - qrdesign::QUIET - 1, (int) $m[2] - qrdesign::QUIET - 1, (int) $m[3] + 2];
+        return [(int) $m[1] - 1 - qrdesign::QUIET, (int) $m[2] - qrdesign::QUIET, (int) $m[3] - (int) $m[1] + 2];
     }
 
     /**

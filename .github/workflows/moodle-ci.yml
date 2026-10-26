@@ -153,21 +153,31 @@ jobs:
           dir="$RUNNER_TEMP/qrsamples"
           ls "$dir"/*.svg >/dev/null 2>&1 || { echo "::error::No QR samples were written"; exit 1; }
           fail=0
+          read=0
+          total=0
           for svg in "$dir"/*.svg; do
             want=$(cat "${svg%.svg}.txt")
-            modules=$(grep -o 'viewBox="0 0 [0-9]*' "$svg" | grep -o '[0-9]*$')
+            # The first viewBox is the code's (a nested SVG logo has its own).
+            modules=$(grep -o 'viewBox="0 0 [0-9]*' "$svg" | awk 'NR == 1 { sub(/.* /, ""); print }')
             # From about the smallest size the plugin shows (3 px a module) to a print-like one.
             for ppm in 3 6 12; do
-              rsvg-convert -w $((modules * ppm)) -b white "$svg" -o "$RUNNER_TEMP/qr.png"
+              total=$((total + 1))
+              rsvg-convert -w $((modules * ppm)) -b white "$svg" -o "$RUNNER_TEMP/qr.png" || { fail=1; continue; }
               got=$(zbarimg --raw -q "$RUNNER_TEMP/qr.png" 2>/dev/null || true)
               if [ "$got" = "$want" ]; then
                 echo "ok $(basename "$svg") at $ppm px a module"
+                read=$((read + 1))
               else
                 echo "::error::$(basename "$svg") at $ppm px a module reads as '$got'"
                 fail=1
               fi
             done
           done
+          # Every sample at every size must have been read: a loop cut short must not pass.
+          if [ "$read" -ne "$total" ] || [ "$total" -eq 0 ]; then
+            echo "::error::Read $read of $total QR renders"
+            fail=1
+          fi
           exit $fail
 
       - name: behat
