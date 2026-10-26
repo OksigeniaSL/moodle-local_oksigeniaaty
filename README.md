@@ -16,11 +16,13 @@ Copy the plugin into `local/oksigeniaaty` of your Moodle and finish the upgrade 
 
 ## Settings
 
-*Site administration ▸ Plugins ▸ Local plugins ▸ Oksigenia Aty*: the brand colour, the home heading and the home welcome.
+*Site administration ▸ Plugins ▸ Local plugins ▸ Oksigenia Aty*: the brand colour, the home tab (heading, welcome, logo and shortcuts), extra app CSS, the store links and which cohorts may sign in to the app without a password.
+
+*Site administration ▸ Plugins ▸ Local plugins ▸ Oksigenia Aty: site QR code*: the site's QR code in its brand colour and with its logo, to download as SVG for posters and letters. Each user also finds their own one-time sign-in link and QR under *Open in the Aty app*.
 
 ## Privacy
 
-The plugin stores only the design settings of the site. It stores no personal data.
+The plugin stores a hash of each user's app PIN (never the PIN itself), with its failed attempts, and uses Moodle's one-time user keys for the sign-in links. Both are declared to Moodle's privacy API, which exports and deletes them with the rest of the user's data.
 
 ## Licence
 

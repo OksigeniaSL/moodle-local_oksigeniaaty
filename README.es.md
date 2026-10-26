@@ -16,11 +16,13 @@ Copia el plugin en `local/oksigeniaaty` de tu Moodle y termina la actualización
 
 ## Ajustes
 
-*Administración del sitio ▸ Extensiones ▸ Plugins locales ▸ Oksigenia Aty*: el color de marca, el título del inicio y la bienvenida.
+*Administración del sitio ▸ Extensiones ▸ Plugins locales ▸ Oksigenia Aty*: el color de marca, la pestaña de inicio (título, bienvenida, logo y accesos), el CSS adicional de la app, los enlaces a las tiendas y qué cohortes pueden entrar en la app sin contraseña.
+
+*Administración del sitio ▸ Extensiones ▸ Plugins locales ▸ Oksigenia Aty: QR del centro*: el código QR del sitio con su color de marca y su logo, para descargarlo en SVG y usarlo en carteles y circulares. Además, cada usuario tiene su propio enlace y QR de un solo uso en *Abrir en la app Aty*.
 
 ## Privacidad
 
-El plugin solo guarda los ajustes de diseño del sitio. No guarda ningún dato personal.
+El plugin guarda un hash del PIN de la app de cada usuario (nunca el PIN), con sus intentos fallidos, y usa las claves de un solo uso de Moodle para los enlaces de entrada. Los dos están declarados en la API de privacidad de Moodle, que los exporta y los borra con el resto de los datos del usuario.
 
 ## Licencia
 
