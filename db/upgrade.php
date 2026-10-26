@@ -60,5 +60,12 @@ function xmldb_local_oksigeniaaty_upgrade($oldversion): bool {
         upgrade_plugin_savepoint(true, 2026102505, 'local', 'oksigeniaaty');
     }
 
+    if ($oldversion < 2026102517) {
+        // The home layout and its CSS changed; the version is now in the cache key, so refresh mobilecssurl (after the
+        // savepoint, so it picks up the new version) and the app refetches the stylesheet.
+        upgrade_plugin_savepoint(true, 2026102517, 'local', 'oksigeniaaty');
+        local_oksigeniaaty_refresh_appcss();
+    }
+
     return true;
 }

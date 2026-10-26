@@ -25,11 +25,15 @@
 
     Context variables required for this template:
     * logourl - A white logo shown over the brand hero (may be empty).
+    * greeting - A personal greeting with the user's first name (may be empty).
     * heading - The site heading shown in the hero.
     * intro - A short welcome under the heading (may be empty).
     * shortcutsheading - The label above the shortcuts.
     * hasshortcuts - Whether there is at least one shortcut.
     * shortcuts - A list of { label, url, icon, external }.
+    * coursesheading - The label above the course cards.
+    * hascourses - Whether there is at least one course to show.
+    * courses - A list of { name, initial, hue, viewurl }.
     * opensoutside - Accessible label for the "opens outside the app" marker.
 
     Example context (json):
@@ -46,6 +50,7 @@
     }
 }}
 <div class="aty-home">
+    {{#greeting}}<p class="aty-greeting">{{greeting}}</p>{{/greeting}}
     <section class="aty-hero">
         {{#logourl}}<img class="aty-hero-logo" src="{{logourl}}" alt="">{{/logourl}}
         <h1 class="aty-hero-title">{{heading}}</h1>
@@ -65,4 +70,17 @@
         {{/shortcuts}}
     </ion-row></ion-grid>
     {{/hasshortcuts}}
+    {{#hascourses}}
+    <h2 class="aty-section">{{coursesheading}}</h2>
+    <ion-grid class="aty-tiles"><ion-row>
+        {{#courses}}
+        <ion-col size="6">
+            <a class="aty-course-card" core-link href="{{viewurl}}" capture="true" style="--aty-hue: {{hue}}deg">
+                <span class="aty-course-initial" aria-hidden="true">{{initial}}</span>
+                <span class="aty-course-name">{{name}}</span>
+            </a>
+        </ion-col>
+        {{/courses}}
+    </ion-row></ion-grid>
+    {{/hascourses}}
 </div>

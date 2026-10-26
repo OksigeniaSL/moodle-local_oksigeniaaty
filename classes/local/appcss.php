@@ -108,6 +108,14 @@ class appcss {
 .aty-tile-label { font-weight: 700; line-height: 1.25; }
 .aty-tile-out { position: absolute; top: 12px; right: 12px; font-size: 12px; color: var(--ion-color-medium); }
 :root.dark .aty-tile, :root .dark .aty-tile { box-shadow: none; outline: 1px solid rgba(255, 255, 255, .08); }
+.aty-greeting { margin: 2px 4px 12px; font-size: 1.05rem; font-weight: 700; color: var(--ion-text-color); }
+.aty-course-card { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end;
+    min-height: 104px; margin: 0; padding: 14px; border-radius: 16px; text-decoration: none; color: var(--primary-contrast);
+    box-shadow: 0 8px 18px -12px rgba(0, 0, 0, .4); }
+.aty-course-card::before { content: ''; position: absolute; inset: 0; z-index: 0;
+    background: linear-gradient(135deg, var(--primary), var(--primary-shade)); filter: hue-rotate(var(--aty-hue, 0deg)); }
+.aty-course-initial { position: relative; z-index: 1; font-size: 2rem; font-weight: 800; line-height: 1; opacity: .85; }
+.aty-course-name { position: relative; z-index: 1; margin-top: 8px; font-size: .95rem; font-weight: 700; line-height: 1.25; }
 CSS;
     }
 

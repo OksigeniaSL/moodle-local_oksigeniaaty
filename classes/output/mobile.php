@@ -38,7 +38,7 @@ class mobile {
      * @return array The template, javascript and data the app expects.
      */
     public static function mobile_home(array $args): array {
-        global $OUTPUT, $CFG;
+        global $OUTPUT, $CFG, $USER;
 
         require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
 
@@ -46,14 +46,21 @@ class mobile {
         $heading = !empty($config->homeheading) ? $config->homeheading : format_string(get_site()->fullname);
         $intro = !empty($config->homeintro) ? $config->homeintro : '';
         $shortcuts = local_oksigeniaaty_get_shortcuts();
+        $courses = self::courses();
 
         $data = [
             'logourl' => !empty($config->homelogourl) ? $config->homelogourl : '',
+            'greeting' => trim($USER->firstname) !== ''
+                ? get_string('home:greeting', 'local_oksigeniaaty', format_string($USER->firstname))
+                : '',
             'heading' => $heading,
             'intro' => $intro,
             'shortcutsheading' => get_string('home:shortcuts', 'local_oksigeniaaty'),
             'shortcuts' => $shortcuts,
             'hasshortcuts' => !empty($shortcuts),
+            'coursesheading' => get_string('home:mycourses', 'local_oksigeniaaty'),
+            'courses' => $courses,
+            'hascourses' => !empty($courses),
             'opensoutside' => get_string('home:opensoutside', 'local_oksigeniaaty'),
         ];
 
@@ -67,5 +74,37 @@ class mobile {
             'javascript' => '',
             'otherdata' => [],
         ];
+    }
+
+    /**
+     * The user's courses for the home panel: branded cards (gradient + initial) that open in the app.
+     *
+     * @return array A list of { name, initial, hue, viewurl }, at most eight.
+     */
+    private static function courses(): array {
+        $mycourses = enrol_get_my_courses(['id', 'fullname'], 'visible DESC, sortorder ASC');
+
+        $courses = [];
+        foreach ($mycourses as $course) {
+            if ($course->id == SITEID) {
+                continue;
+            }
+
+            $name = format_string($course->fullname);
+            $initial = \core_text::strtoupper(\core_text::substr(trim($name), 0, 1));
+            $courses[] = [
+                'name' => $name,
+                'initial' => $initial !== '' ? $initial : '#',
+                // A small per-course hue shift (-30 to +30 degrees) so the brand cards are not all identical.
+                'hue' => ($course->id * 37) % 61 - 30,
+                'viewurl' => (new \moodle_url('/course/view.php', ['id' => $course->id]))->out(false),
+            ];
+
+            if (count($courses) >= 8) {
+                break;
+            }
+        }
+
+        return $courses;
     }
 }

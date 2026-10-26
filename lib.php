@@ -63,8 +63,11 @@ function local_oksigeniaaty_client_css(): string {
  */
 function local_oksigeniaaty_appcss_version(): string {
     $brand = (string) get_config('local_oksigeniaaty', 'brandcolour');
+    // The plugin version is in the hash too, so a release that only changes the generated CSS still busts the cache
+    // (the app and Cloudflare refetch) without needing a brand or client-CSS change.
+    $version = (string) get_config('local_oksigeniaaty', 'version');
 
-    return substr(sha1($brand . "\n" . local_oksigeniaaty_client_css()), 0, 12);
+    return substr(sha1($version . "\n" . $brand . "\n" . local_oksigeniaaty_client_css()), 0, 12);
 }
 
 /**
