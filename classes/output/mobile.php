@@ -158,8 +158,7 @@ class mobile {
                 'month' => \core_text::strtoupper(trim(userdate($event->timestart, '%b'))),
                 'time' => $isallday ? '' : userdate($event->timestart, get_string('strftimetime', 'langconfig')),
                 'context' => $context,
-                'viewurl' => (new \moodle_url('/calendar/view.php',
-                    ['view' => 'day', 'time' => $event->timestart]))->out(false),
+                'viewurl' => (new \moodle_url('/calendar/view.php', ['view' => 'day', 'time' => $event->timestart]))->out(false),
             ];
             if (count($agenda) >= 5) {
                 break;
