@@ -24,6 +24,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['centreqr:alt'] = 'QR code of this site for the Aty app';
+$string['centreqr:download'] = 'Download (SVG)';
+$string['centreqr:heading'] = 'Site QR code';
+$string['centreqr:hint'] = 'The SVG prints sharp at any size; printed, make it at least 3 cm wide. The logo is the site\'s compact logo, or else its full logo (Appearance > Logos); with neither, the code has no logo.';
+$string['centreqr:intro'] = 'The code of {$a}, in the site\'s colour and with its logo, for posters, letters and welcome packs. Scanned with the Aty app it opens this site\'s sign-in; with a phone camera, the site in the browser.';
+$string['centreqr:menu'] = 'Oksigenia Aty: site QR code';
 $string['expiredkey'] = 'This sign-in link has expired. Ask for a new one.';
 $string['forgotpin:emailbody'] = 'Hello {$a->name},
 

@@ -1,5 +1,5 @@
 # Moodle Plugin CI — the suite that Moodle Marketplace reviewers expect (validate, lint, codechecker, phpdoc,
-# savepoints, mustache, grunt) plus the plugin's PHPUnit and Behat tests.
+# savepoints, mustache, grunt) plus the plugin's PHPUnit and Behat tests, and a real QR reader on the designer QR codes.
 #
 # Pushes and pull requests run a short matrix (the lowest and the highest supported branch); tags or a manual run
 # go through every branch that still gets security fixes, plus main. main tracks the next Moodle release and is
@@ -141,6 +141,34 @@ jobs:
       - name: phpunit
         if: always()
         run: moodle-plugin-ci phpunit --fail-on-warning
+        env:
+          # The designer QR test writes its samples here, for the next step to read.
+          LOCAL_OKSIGENIAATY_QR_SAMPLES: ${{ runner.temp }}/qrsamples
+
+      - name: designer QR codes read with a real reader
+        if: always()
+        run: |
+          sudo apt-get update -qq >/dev/null
+          sudo apt-get install -y -qq zbar-tools librsvg2-bin >/dev/null
+          dir="$RUNNER_TEMP/qrsamples"
+          ls "$dir"/*.svg >/dev/null 2>&1 || { echo "::error::No QR samples were written"; exit 1; }
+          fail=0
+          for svg in "$dir"/*.svg; do
+            want=$(cat "${svg%.svg}.txt")
+            modules=$(grep -o 'viewBox="0 0 [0-9]*' "$svg" | grep -o '[0-9]*$')
+            # From about the smallest size the plugin shows (3 px a module) to a print-like one.
+            for ppm in 3 6 12; do
+              rsvg-convert -w $((modules * ppm)) -b white "$svg" -o "$RUNNER_TEMP/qr.png"
+              got=$(zbarimg --raw -q "$RUNNER_TEMP/qr.png" 2>/dev/null || true)
+              if [ "$got" = "$want" ]; then
+                echo "ok $(basename "$svg") at $ppm px a module"
+              else
+                echo "::error::$(basename "$svg") at $ppm px a module reads as '$got'"
+                fail=1
+              fi
+            done
+          done
+          exit $fail
 
       - name: behat
         if: always()

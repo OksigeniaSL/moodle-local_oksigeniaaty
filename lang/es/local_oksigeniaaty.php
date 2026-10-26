@@ -24,6 +24,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['centreqr:alt'] = 'Código QR de este sitio para la app Aty';
+$string['centreqr:download'] = 'Descargar (SVG)';
+$string['centreqr:heading'] = 'QR del centro';
+$string['centreqr:hint'] = 'El SVG se imprime nítido a cualquier tamaño; impreso, que mida al menos 3 cm de lado. El logo es el logo compacto del sitio o, si no lo hay, el completo (Apariencia > Logos); sin ninguno, el código va sin logo.';
+$string['centreqr:intro'] = 'El código de {$a}, con el color y el logo del sitio, para carteles, circulares y la bienvenida. Al escanearlo con la app Aty, se abre la entrada de este sitio; con la cámara del móvil, la web.';
+$string['centreqr:menu'] = 'Oksigenia Aty: QR del centro';
 $string['expiredkey'] = 'Este enlace de acceso ha caducado. Pide uno nuevo.';
 $string['forgotpin:emailbody'] = 'Hola {$a->name}:
 

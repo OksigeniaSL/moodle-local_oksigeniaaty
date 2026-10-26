@@ -5,6 +5,14 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Designer QR codes in the site's brand: round modules in the brand colour (darkened when too light to read on
+  white), rounded eyes, solid alignment patterns, and the site's logo in the middle when it covers no alignment
+  pattern. Used on the personal "Open in the Aty app" page (Moodle's plain QR stays as the fallback) and on a new
+  admin page, "Oksigenia Aty: site QR code", with the site's code to download as SVG for posters and letters.
+- PHPUnit tests for the QR drawing, and a CI step that reads the sample codes with a real reader (zbar).
+
 ## [0.3.0] - 2026-10-24
 
 The home design from the art director's common template.

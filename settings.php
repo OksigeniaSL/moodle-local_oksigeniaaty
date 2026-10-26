@@ -36,6 +36,14 @@ if ($hassiteconfig) {
     );
     $ADMIN->add('localplugins', $settings);
 
+    // The site's QR code in its brand, to print or download for posters and letters.
+    $ADMIN->add('localplugins', new admin_externalpage(
+        'local_oksigeniaaty_centreqr',
+        new lang_string('centreqr:menu', 'local_oksigeniaaty'),
+        new moodle_url('/local/oksigeniaaty/centreqr.php'),
+        'moodle/site:config'
+    ));
+
     if ($ADMIN->fulltree) {
         $settings->add(new admin_setting_heading(
             'local_oksigeniaaty/designintro',
