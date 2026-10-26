@@ -172,16 +172,30 @@ function local_oksigeniaaty_myprofile_navigation(
     $iscurrentuser,
     $course
 ): void {
-    if (!$iscurrentuser || !local_oksigeniaaty_user_can_selfservice((int) $user->id)) {
+    if (!$iscurrentuser) {
         return;
     }
 
-    $node = new \core_user\output\myprofile\node(
-        'miscellaneous',
-        'oksigeniaatylink',
-        get_string('mylink:nav', 'local_oksigeniaaty'),
-        null,
-        new moodle_url('/local/oksigeniaaty/mylink.php')
-    );
-    $tree->add_node($node);
+    $userid = (int) $user->id;
+
+    if (local_oksigeniaaty_user_can_selfservice($userid)) {
+        $tree->add_node(new \core_user\output\myprofile\node(
+            'miscellaneous',
+            'oksigeniaatylink',
+            get_string('mylink:nav', 'local_oksigeniaaty'),
+            null,
+            new moodle_url('/local/oksigeniaaty/mylink.php')
+        ));
+    }
+
+    // Let a user who set a PIN clear it (the secure "forgot my PIN" path, since this needs their web password).
+    if (\local_oksigeniaaty\local\pin::has_pin($userid)) {
+        $tree->add_node(new \core_user\output\myprofile\node(
+            'miscellaneous',
+            'oksigeniaatyresetpin',
+            get_string('resetpin:nav', 'local_oksigeniaaty'),
+            null,
+            new moodle_url('/local/oksigeniaaty/resetpin.php')
+        ));
+    }
 }
