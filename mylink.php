@@ -28,9 +28,14 @@ require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
 require_login();
 
 // Do not hand out a sign-in key to the guest, nor to someone who is logged in as another user (that would mint the
-// impersonated user's token). Administrators get a key too, but token.php refuses to mint one for them.
+// impersonated user's token).
 if (isguestuser() || \core\session\manager::is_loggedinas()) {
     throw new moodle_exception('signinfailed', 'local_oksigeniaaty');
+}
+
+// Administrators sign in to the app with their password; token.php would refuse a key for them anyway.
+if (local_oksigeniaaty_is_admin_account((int) $USER->id)) {
+    throw new moodle_exception('selfservicenotforadmins', 'local_oksigeniaaty');
 }
 
 // Self-service may be limited to certain cohorts (e.g. staff and older students).

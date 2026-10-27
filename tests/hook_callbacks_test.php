@@ -27,7 +27,8 @@ namespace local_oksigeniaaty;
 #[\PHPUnit\Framework\Attributes\CoversClass(hook_callbacks::class)]
 final class hook_callbacks_test extends \advanced_testcase {
     /**
-     * A signed-in user gets "Open in the Aty app" in the user menu; a guest does not.
+     * A signed-in user gets "Open in the Aty app" in the user menu; a guest and an administrator do not (administrators
+     * never sign in to the app without a password).
      */
     public function test_user_menu(): void {
         $this->resetAfterTest();
@@ -36,6 +37,9 @@ final class hook_callbacks_test extends \advanced_testcase {
         $this->assertCount(1, self::items());
 
         $this->setGuestUser();
+        $this->assertCount(0, self::items());
+
+        $this->setAdminUser();
         $this->assertCount(0, self::items());
     }
 

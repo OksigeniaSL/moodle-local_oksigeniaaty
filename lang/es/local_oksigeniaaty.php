@@ -100,6 +100,7 @@ $string['resetpin:heading'] = 'Reiniciar tu PIN de Aty';
 $string['resetpin:nav'] = 'Reiniciar mi PIN de Aty';
 $string['resetpin:nopin'] = 'No tienes un PIN de Aty puesto.';
 $string['selfservicenotallowed'] = 'El acceso sin contraseña no está disponible para tu cuenta. Entra con tus datos de siempre.';
+$string['selfservicenotforadmins'] = 'Por seguridad, las cuentas de administración no pueden entrar en la app sin contraseña. En la app, entra con tu usuario y tu contraseña.';
 $string['settings:androidstoreurl'] = 'Enlace de Google Play';
 $string['settings:androidstoreurl_desc'] = 'La página de la app en Google Play, que se muestra en el puente de acceso cuando la app no está instalada. Déjalo vacío para ocultarla.';
 $string['settings:brandcolour'] = 'Color de marca';

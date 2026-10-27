@@ -134,6 +134,17 @@ function local_oksigeniaaty_get_shortcuts(): array {
 }
 
 /**
+ * Whether an account is administrator-level: a site admin or anyone who can change the site's configuration. Such
+ * accounts never get a passwordless app token.
+ *
+ * @param int $userid The user id.
+ * @return bool
+ */
+function local_oksigeniaaty_is_admin_account(int $userid): bool {
+    return is_siteadmin($userid) || has_capability('moodle/site:config', context_system::instance(), $userid);
+}
+
+/**
  * Whether a user may use passwordless self-service sign-in (get their own link or QR).
  *
  * Gated by the selfservicecohorts setting: empty means everyone, otherwise only members of the listed cohorts. This
@@ -144,6 +155,11 @@ function local_oksigeniaaty_get_shortcuts(): array {
  */
 function local_oksigeniaaty_user_can_selfservice(int $userid): bool {
     global $DB;
+
+    // Administrators never sign in without a password (token.php refuses them), so they are not offered it.
+    if (local_oksigeniaaty_is_admin_account($userid)) {
+        return false;
+    }
 
     $setting = trim((string) get_config('local_oksigeniaaty', 'selfservicecohorts'));
     if ($setting === '') {

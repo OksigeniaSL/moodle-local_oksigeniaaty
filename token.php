@@ -59,10 +59,9 @@ try {
     $user = core_user::get_user($userid, '*', MUST_EXIST);
     core_user::require_active_user($user, true, true);
 
-    // Never mint a passwordless app token for an administrator-level account.
-    $systemcontext = context_system::instance();
-    if (is_siteadmin($user) || has_capability('moodle/site:config', $systemcontext, $user)) {
-        throw new moodle_exception('signinfailed', 'local_oksigeniaaty');
+    // Never mint a passwordless app token for an administrator-level account, and say why.
+    if (local_oksigeniaaty_is_admin_account((int) $user->id)) {
+        throw new moodle_exception('selfservicenotforadmins', 'local_oksigeniaaty');
     }
 
     // Respect the site's app login type: when it forces browser login (e.g. to enforce MFA), do not bypass it.
@@ -148,6 +147,7 @@ try {
         'validuntil' => isset($token->validuntil) ? (int) $token->validuntil : 0,
     ]);
 } catch (Throwable $e) {
-    // Do not leak internals; a generic message is enough for the app.
-    echo json_encode(['error' => get_string('signinfailed', 'local_oksigeniaaty')]);
+    // Do not leak internals: a generic message, except for an administrator, who is told to use their password.
+    $foradmins = $e instanceof moodle_exception && $e->errorcode === 'selfservicenotforadmins';
+    echo json_encode(['error' => get_string($foradmins ? 'selfservicenotforadmins' : 'signinfailed', 'local_oksigeniaaty')]);
 }

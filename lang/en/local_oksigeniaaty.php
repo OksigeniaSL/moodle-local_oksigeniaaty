@@ -100,6 +100,7 @@ $string['resetpin:heading'] = 'Reset your Aty PIN';
 $string['resetpin:nav'] = 'Reset my Aty PIN';
 $string['resetpin:nopin'] = 'You do not have an Aty PIN set.';
 $string['selfservicenotallowed'] = 'Passwordless sign-in is not available for your account. Please sign in with your usual details.';
+$string['selfservicenotforadmins'] = 'For security, administrator accounts cannot sign in to the app without a password. In the app, sign in with your username and password.';
 $string['settings:androidstoreurl'] = 'Google Play link';
 $string['settings:androidstoreurl_desc'] = 'The app Google Play page, shown on the sign-in bridge when the app is not installed. Leave empty to hide it.';
 $string['settings:brandcolour'] = 'Brand colour';
