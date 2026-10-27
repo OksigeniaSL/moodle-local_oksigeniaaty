@@ -65,14 +65,14 @@
         {{#events}}
         <a class="aty-event" core-link href="{{viewurl}}" capture="true">
             <span class="aty-event-date">
-                <span class="aty-event-day">{{day}}</span>
-                <span class="aty-event-month">{{month}}</span>
+                <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
+                <span class="aty-event-month" [textContent]="({{timestamp}} | coreFormatDate:'%b').replace('.', '')">{{month}}</span>
             </span>
             <span class="aty-event-body">
                 <span class="aty-event-name">{{name}}</span>
                 {{#context}}<span class="aty-event-context">{{context}}</span>{{/context}}
             </span>
-            {{#time}}<span class="aty-event-time">{{time}}</span>{{/time}}
+            {{#time}}<span class="aty-event-time" [textContent]="{{timestamp}} | coreFormatDate:'strftimetime'">{{time}}</span>{{/time}}
         </a>
         {{/events}}
     </div>
@@ -82,7 +82,7 @@
     <ion-grid class="aty-tiles"><ion-row>
         {{#shortcuts}}
         <ion-col size="6">
-            <ion-card class="aty-tile" button="true" core-link href="{{url}}" capture="false">
+            <ion-card class="aty-tile" button="true" core-link href="{{url}}" capture="{{^external}}true{{/external}}{{#external}}false{{/external}}">
                 <span class="aty-tile-icon"><ion-icon name="{{icon}}" aria-hidden="true"></ion-icon></span>
                 <span class="aty-tile-label">{{label}}</span>
                 {{#external}}<ion-icon class="aty-tile-out" name="fas-arrow-up-right-from-square" aria-label="{{opensoutside}}"></ion-icon>{{/external}}

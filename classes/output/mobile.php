@@ -163,6 +163,9 @@ class mobile {
             }
             $agenda[] = [
                 'name' => $name,
+                // The app redraws the date and time from this in the phone's own time zone, as its calendar does; the
+                // server's text (in the user's Moodle time zone) is only what shows before that.
+                'timestamp' => (int) $event->timestart * 1000,
                 'day' => ltrim(userdate($event->timestart, '%e')),
                 'month' => \core_text::strtoupper(trim(userdate($event->timestart, '%b'))),
                 'time' => $isallday ? '' : userdate($event->timestart, get_string('strftimetime', 'langconfig')),

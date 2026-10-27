@@ -14,6 +14,17 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 - The home agenda names an activity's dates by the activity ("Case study") and says what the date is next to the
   course ("Customer care · Due"), instead of Moodle's "Case study is due".
 - PHPUnit tests for the QR drawing, and a CI step that reads the sample codes with a real reader (zbar).
+- The app stylesheet dresses the app's own screens in the brand too, in light and dark: a page canvas with a hint of
+  the brand behind white cards, notices as cards (unread ones with a brand stripe), the month calendar as one card
+  with today in the brand, course cards with the progress bar and category in the brand, a pill behind the selected
+  tab, and links in a shade of the brand that reads on white.
+
+### Changed
+
+- The home agenda's dates and times are drawn by the app in the phone's time zone, as its calendar does (the server's
+  text, in the user's Moodle time zone, only shows until then).
+- Home shortcuts to pages of the site itself open the app's own screen (My courses, Notifications, Calendar,
+  Messages) instead of the browser; shortcuts that leave the site still open outside.
 
 ## [0.3.0] - 2026-10-24
 

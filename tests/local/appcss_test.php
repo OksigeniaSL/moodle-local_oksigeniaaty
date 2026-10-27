@@ -70,6 +70,36 @@ final class appcss_test extends \basic_testcase {
     }
 
     /**
+     * The sheet dresses the app's own screens, and its links read on white even with a light brand.
+     */
+    public function test_screens_and_readable_links(): void {
+        $css = appcss::generate('#07316b');
+        $this->assertMatchesRegularExpression('/--aty-canvas: #[0-9a-f]{6};/', $css);
+        $this->assertStringContainsString('ion-item.addon-notification-item', $css);
+        $this->assertStringContainsString('addon-calendar-calendar', $css);
+
+        $css = appcss::generate('#ffd400');
+        $this->assertSame(1, preg_match('/--core-link-color: #([0-9a-f]{6});/', $css, $match));
+        $this->assertGreaterThanOrEqual(4.5, self::contrast_on_white($match[1]));
+    }
+
+    /**
+     * The WCAG contrast ratio of a colour on white.
+     *
+     * @param string $hex Six hex digits.
+     * @return float
+     */
+    private static function contrast_on_white(string $hex): float {
+        $luminance = 0.0;
+        foreach ([0.2126, 0.7152, 0.0722] as $i => $weight) {
+            $channel = hexdec(substr($hex, $i * 2, 2)) / 255;
+            $channel = $channel <= 0.03928 ? $channel / 12.92 : (($channel + 0.055) / 1.055) ** 2.4;
+            $luminance += $weight * $channel;
+        }
+        return 1.05 / ($luminance + 0.05);
+    }
+
+    /**
      * A malformed colour yields a comment, not broken CSS.
      */
     public function test_invalid_colour(): void {

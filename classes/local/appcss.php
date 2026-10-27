@@ -74,9 +74,21 @@ class appcss {
             'toolbarcolor' => self::tohex(self::fromhsl($h, 0.3, 0.92)),
         ];
 
+        // Light only: a page canvas with a hint of the brand behind white cards, and links in a shade of the brand that
+        // reads on white (the app's own dark theme keeps its canvas, and its selector wins over :root).
+        $canvas = self::fromhsl($h, min($s, 0.2), 0.955);
+        $surface = ":root {\n"
+            . '    --aty-canvas: ' . self::tohex($canvas) . ";\n"
+            . "    --ion-background-color: var(--aty-canvas);\n"
+            . '    --ion-background-color-rgb: ' . self::rgbcsv($canvas) . ";\n"
+            . '    --core-link-color: ' . qrdesign::ink(self::tohex($brand)) . ";\n"
+            . "}\n";
+
         return self::block(':root', $light)
             . self::block(":root.dark,\n:root .dark", $dark)
-            . self::homecss();
+            . $surface
+            . self::homecss()
+            . self::screenscss();
     }
 
     /**
@@ -125,11 +137,72 @@ class appcss {
     width: 46px; height: 46px; border-radius: 12px; background: rgba(var(--ion-color-primary-rgb), .12);
     color: var(--primary); line-height: 1; }
 .aty-event-day { font-size: 1.25rem; font-weight: 800; }
-.aty-event-month { margin-top: 2px; font-size: .62rem; font-weight: 700; letter-spacing: .06em; opacity: .9; }
+.aty-event-month { margin-top: 2px; font-size: .62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    opacity: .9; }
 .aty-event-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .aty-event-name { font-weight: 700; line-height: 1.25; }
 .aty-event-context { font-size: .8rem; color: var(--ion-color-medium); }
 .aty-event-time { flex: 0 0 auto; font-size: .82rem; font-weight: 700; color: var(--ion-color-medium); }
+CSS;
+    }
+
+    /**
+     * The app's own screens dressed in the brand: notices, the calendar, the course list, the tab bar and dialogs.
+     *
+     * Same for every client, it only reads the brand variables, so it follows light and dark on its own. It targets the
+     * app's stable classes; where a screen's own styles win on specificity, the rule says so with !important.
+     *
+     * @return string
+     */
+    private static function screenscss(): string {
+        return <<<CSS
+
+:root { --aty-card-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 8px 18px -12px rgba(0, 0, 0, .35);
+    --core-bottom-tabs-color-selected: var(--primary); --core-tab-color-active: var(--primary);
+    --addon-calendar-today-border-color: var(--primary); --info: var(--primary);
+    --ion-color-info-rgb: var(--ion-color-primary-rgb); --ion-color-info-contrast: var(--primary-contrast);
+    --ion-color-info-shade: var(--primary-shade); --ion-color-info-tint: var(--primary-tint); }
+:root.dark, :root .dark { --aty-card-shadow: 0 0 0 1px rgba(255, 255, 255, .08); }
+ion-tab-button.tab-selected ion-icon.core-tab-icon { padding: 4px 20px; border-radius: 16px;
+    background: rgba(var(--ion-color-primary-rgb), .14); }
+ion-item.addon-notification-item { --background: var(--ion-item-background); --inner-border-width: 0; --border-width: 0;
+    margin: 10px 14px; border-radius: 16px; box-shadow: var(--aty-card-shadow); }
+ion-item.addon-notification-item:has(ion-note) { --border-width: 0 0 0 4px; --border-color: var(--primary); }
+ion-item.addon-notification-item:has(ion-note) .item-heading { font-weight: 700 !important; }
+ion-item.addon-notification-item .core-avatar-extra-img { border-radius: 50%; background: var(--ion-item-background);
+    box-shadow: 0 0 0 2px var(--ion-item-background); }
+addon-calendar-calendar .addon-calendar-months { width: calc(100% - 24px) !important; margin: 4px 12px 12px;
+    padding: 4px 6px 12px !important; border-radius: 20px; background: var(--ion-item-background) !important;
+    box-shadow: var(--aty-card-shadow); }
+addon-calendar-calendar .addon-calendar-day { min-height: 58px !important; padding: 0 !important; border: 0 !important; }
+addon-calendar-calendar .addon-calendar-day.dayblank { background: transparent !important; }
+addon-calendar-calendar .addon-calendar-weekday { padding: 12px 0 6px; font-size: .72rem; font-weight: 700;
+    letter-spacing: .06em; text-transform: uppercase; color: var(--ion-color-medium); }
+addon-calendar-calendar .addon-calendar-day-number span[aria-hidden] { width: 36px !important; height: 36px !important;
+    margin: 6px auto 0 !important; border: 0 !important; border-radius: 50% !important; line-height: 36px !important; }
+addon-calendar-calendar .addon-calendar-day.hasevents .addon-calendar-day-number span[aria-hidden] {
+    background: rgba(var(--ion-color-primary-rgb), .12); color: var(--primary); font-weight: 800 !important; }
+addon-calendar-calendar .addon-calendar-day.today .addon-calendar-day-number span[aria-hidden] {
+    background: var(--primary); color: var(--primary-contrast); font-weight: 800 !important; }
+addon-calendar-calendar .calendar_event_type { background-color: var(--primary) !important; }
+addon-calendar-calendar .calendar_event_site { background-color: var(--primary-shade) !important; }
+addon-calendar-calendar .calendar_event_user { background-color: var(--ion-color-medium) !important; }
+addon-calendar-calendar .addon-calendar-period { font-weight: 800; text-transform: capitalize; }
+addon-calendar-calendar .addon-calendar-navigation ion-button { --color: var(--primary); }
+addon-calendar-event-card ion-card, ion-card.core-course-list-item, ion-card.core-course-list-card {
+    border: 0 !important; border-radius: 18px !important; box-shadow: var(--aty-card-shadow) !important; }
+addon-calendar-event-card ion-card ion-item { --background: var(--ion-item-background); }
+ion-card.core-course-list-card .item-heading, ion-card.core-course-list-item .item-heading { font-weight: 700 !important; }
+:root { --core-progressbar-background: rgba(var(--ion-color-primary-rgb), .16);
+    --core-search-box-background: var(--ion-item-background); --ion-searchbar-background: var(--ion-item-background);
+    --core-combobox-background: var(--ion-item-background); --core-input-background: var(--ion-item-background); }
+page-core-courses-my ion-item.divider { --background: transparent !important; }
+page-core-courses-my ion-item.divider h2 { font-weight: 800; }
+page-core-courses-my ion-list, ion-card.addon-block-myoverview { --background: transparent; background: transparent !important;
+    box-shadow: none !important; }
+ion-chip.core-course-category { --background: rgba(var(--ion-color-primary-rgb), .12); --color: var(--primary);
+    background: rgba(var(--ion-color-primary-rgb), .12) !important; color: var(--primary) !important; font-weight: 600; }
+ion-alert { --background: var(--ion-item-background); }
 CSS;
     }
 
