@@ -28,6 +28,8 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Fixed
 
+- Passwordless sign-in failed for everyone after the administrator check moved to a library function that
+  token.php did not load (it answered the generic "link expired or used" error).
 - Administrators are no longer offered a passwordless QR they cannot use (the app refuses them by design): it is not in
   their menus, the page tells them to sign in with their password, and so does the app if a link reaches it.
 - Every upgrade now points `mobilecssurl` at the new version of the app stylesheet, so the app and the CDN refetch it;

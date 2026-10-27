@@ -29,6 +29,7 @@ define('NO_MOODLE_COOKIES', true);
 define('NO_DEBUG_DISPLAY', true);
 
 require(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/lib.php');
 
 $keyvalue = required_param('key', PARAM_ALPHANUMEXT);
 // Digits only; kept as a string so a leading zero is not lost. Empty means "no PIN supplied yet".
