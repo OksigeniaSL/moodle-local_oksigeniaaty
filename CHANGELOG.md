@@ -20,6 +20,11 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
   tab, course sections as white cards, the brand bar also on pages with a folding header (a course, an activity),
   white dialogs and action sheets, and links in a shade of the brand that reads on white.
 
+### Fixed
+
+- Every upgrade now points `mobilecssurl` at the new version of the app stylesheet, so the app and the CDN refetch it;
+  a release that only changed the generated CSS used to leave the previous URL in place.
+
 ### Changed
 
 - The home agenda's dates and times are drawn by the app in the phone's time zone, as its calendar does (the server's

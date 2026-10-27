@@ -74,5 +74,9 @@ function xmldb_local_oksigeniaaty_upgrade($oldversion): bool {
         local_oksigeniaaty_refresh_appcss();
     }
 
+    // Any release may change the generated CSS: always point mobilecssurl at the new version, so the app and the CDN
+    // refetch the stylesheet. (Campus found 0.5.21 left the 0.5.20 URL in place.)
+    local_oksigeniaaty_refresh_appcss();
+
     return true;
 }
