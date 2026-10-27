@@ -157,12 +157,17 @@ CSS;
     private static function screenscss(): string {
         return <<<CSS
 
-:root { --aty-card-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 8px 18px -12px rgba(0, 0, 0, .35);
+:root, :root.dark, :root .dark { --aty-card-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 8px 18px -12px rgba(0, 0, 0, .35);
     --core-bottom-tabs-color-selected: var(--primary); --core-tab-color-active: var(--primary);
     --addon-calendar-today-border-color: var(--primary); --info: var(--primary);
     --ion-color-info-rgb: var(--ion-color-primary-rgb); --ion-color-info-contrast: var(--primary-contrast);
     --ion-color-info-shade: var(--primary-shade); --ion-color-info-tint: var(--primary-tint); }
 :root.dark, :root .dark { --aty-card-shadow: 0 0 0 1px rgba(255, 255, 255, .08); }
+ion-header.collapsible-header-collapsed { --core-header-toolbar-background: var(--aty-toolbar) !important;
+    --core-header-toolbar-color: var(--aty-toolbar-color) !important; --core-header-buttons-color: var(--aty-toolbar-color) !important; }
+:root ion-action-sheet { --background: var(--ion-item-background); }
+ion-accordion.core-course-module-list-wrapper { border: 0 !important; background: var(--ion-item-background) !important;
+    box-shadow: var(--aty-card-shadow); }
 ion-tab-button.tab-selected ion-icon.core-tab-icon { padding: 4px 20px; border-radius: 16px;
     background: rgba(var(--ion-color-primary-rgb), .14); }
 ion-item.addon-notification-item { --background: var(--ion-item-background); --inner-border-width: 0; --border-width: 0;
@@ -202,7 +207,7 @@ page-core-courses-my ion-list, ion-card.addon-block-myoverview { --background: t
     box-shadow: none !important; }
 ion-chip.core-course-category { --background: rgba(var(--ion-color-primary-rgb), .12); --color: var(--primary);
     background: rgba(var(--ion-color-primary-rgb), .12) !important; color: var(--primary) !important; font-weight: 600; }
-ion-alert { --background: var(--ion-item-background); }
+:root ion-alert.md, :root ion-alert.ios { --background: var(--ion-item-background); }
 CSS;
     }
 
@@ -223,6 +228,8 @@ CSS;
             . "    --primary-tint: {$v['tint']};\n"
             . "    --core-header-toolbar-background: {$v['toolbarbg']};\n"
             . "    --core-header-toolbar-color: {$v['toolbarcolor']};\n"
+            . "    --aty-toolbar: {$v['toolbarbg']};\n"
+            . "    --aty-toolbar-color: {$v['toolbarcolor']};\n"
             . "}\n";
     }
 

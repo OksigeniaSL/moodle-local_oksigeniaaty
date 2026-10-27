@@ -17,7 +17,8 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 - The app stylesheet dresses the app's own screens in the brand too, in light and dark: a page canvas with a hint of
   the brand behind white cards, notices as cards (unread ones with a brand stripe), the month calendar as one card
   with today in the brand, course cards with the progress bar and category in the brand, a pill behind the selected
-  tab, and links in a shade of the brand that reads on white.
+  tab, course sections as white cards, the brand bar also on pages with a folding header (a course, an activity),
+  white dialogs and action sheets, and links in a shade of the brand that reads on white.
 
 ### Changed
 
