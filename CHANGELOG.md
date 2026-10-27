@@ -23,6 +23,9 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 - "Open in the Aty app" (the user's own sign-in QR and button) is also in the user menu, so it shows whatever the
   theme or profile page; it used to be only in the profile's Miscellaneous section.
 
+- Setting a PIN asks for it twice: the app's second pad confirms it, with its wording sent by token.php like the
+  rest of the pad.
+
 ### Fixed
 
 - Administrators are no longer offered a passwordless QR they cannot use (the app refuses them by design): it is not in

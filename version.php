@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_oksigeniaaty';
-$plugin->version   = 2026102706;
+$plugin->version   = 2026102707;
 $plugin->release   = '0.5.21-dev';
 $plugin->maturity  = MATURITY_ALPHA;
 $plugin->requires  = 2024100700; // Moodle 4.5, the oldest branch that still gets security fixes.
