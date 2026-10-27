@@ -20,6 +20,9 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
   tab, course sections as white cards, the brand bar also on pages with a folding header (a course, an activity),
   white dialogs and action sheets, and links in a shade of the brand that reads on white.
 
+- "Open in the Aty app" (the user's own sign-in QR and button) is also in the user menu, so it shows whatever the
+  theme or profile page; it used to be only in the profile's Miscellaneous section.
+
 ### Fixed
 
 - Every upgrade now points `mobilecssurl` at the new version of the app stylesheet, so the app and the CDN refetch it;
