@@ -11,6 +11,8 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
   white), rounded eyes, solid alignment patterns, and the site's logo in the middle when it covers no alignment
   pattern (an SVG logo is nested, so it prints sharp; one with its own styles or scripts goes as an image). Used on the personal "Open in the Aty app" page (Moodle's plain QR stays as the fallback) and on a new
   admin page, "Oksigenia Aty: site QR code", with the site's code to download as SVG for posters and letters.
+- The home agenda names an activity's dates by the activity ("Case study") and says what the date is next to the
+  course ("Customer care · Due"), instead of Moodle's "Case study is due".
 - PHPUnit tests for the QR drawing, and a CI step that reads the sample codes with a real reader (zbar).
 
 ## [0.3.0] - 2026-10-24

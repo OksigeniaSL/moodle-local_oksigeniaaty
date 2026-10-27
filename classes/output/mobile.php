@@ -148,16 +148,25 @@ class mobile {
         foreach ($events as $event) {
             // All-day events (a day or longer) show just the date; timed ones also show the start time.
             $isallday = (int) $event->timeduration >= DAYSECS;
-            $context = '';
+            $labels = [];
             if (!empty($event->courseid) && $event->courseid != SITEID && isset($shortnames[$event->courseid])) {
-                $context = $shortnames[$event->courseid];
+                $labels[] = $shortnames[$event->courseid];
+            }
+            // An activity's dates are named by Moodle like "Assignment is due": show the activity's own name and say
+            // what the date is next to the course ("Customer care · Due").
+            $name = format_string($event->name);
+            $activity = self::activityname($event);
+            $kind = 'home:event:' . $event->eventtype;
+            if ($activity !== null && get_string_manager()->string_exists($kind, 'local_oksigeniaaty')) {
+                $name = $activity;
+                $labels[] = get_string($kind, 'local_oksigeniaaty');
             }
             $agenda[] = [
-                'name' => format_string($event->name),
+                'name' => $name,
                 'day' => ltrim(userdate($event->timestart, '%e')),
                 'month' => \core_text::strtoupper(trim(userdate($event->timestart, '%b'))),
                 'time' => $isallday ? '' : userdate($event->timestart, get_string('strftimetime', 'langconfig')),
-                'context' => $context,
+                'context' => implode(' · ', $labels),
                 'viewurl' => (new \moodle_url('/calendar/view.php', ['view' => 'day', 'time' => $event->timestart]))->out(false),
             ];
             if (count($agenda) >= 5) {
@@ -166,5 +175,26 @@ class mobile {
         }
 
         return $agenda;
+    }
+
+    /**
+     * The name of the activity an event belongs to, or null when it is not an activity's event or the activity is not
+     * visible to the user.
+     *
+     * @param \stdClass $event A legacy calendar event.
+     * @return string|null
+     */
+    private static function activityname(\stdClass $event): ?string {
+        if (empty($event->modulename) || empty($event->instance) || empty($event->courseid)) {
+            return null;
+        }
+        try {
+            $instances = get_fast_modinfo($event->courseid)->get_instances_of($event->modulename);
+        } catch (\moodle_exception $e) {
+            return null;
+        }
+        $cm = $instances[$event->instance] ?? null;
+
+        return $cm && $cm->uservisible ? $cm->get_formatted_name() : null;
     }
 }
