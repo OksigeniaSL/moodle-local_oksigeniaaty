@@ -67,6 +67,15 @@ class renew extends external_api {
 
         $userid = (int) $USER->id;
 
+        $servicename = defined('MOODLE_OFFICIAL_MOBILE_SERVICE') ? MOODLE_OFFICIAL_MOBILE_SERVICE : 'moodle_mobile_app';
+        $service = $DB->get_record('external_services', ['shortname' => $servicename, 'enabled' => 1], '*', MUST_EXIST);
+
+        // generate_token_for_current_user returns the user's existing token (with its old expiry) and only mints a new
+        // one when none is valid. Its current expiry goes back with a PIN request too, so an app that signed in with a
+        // password, and so never learned it, can renew in time without asking for the PIN now.
+        $token = \core_external\util::generate_token_for_current_user($service);
+        $current = (int) ($token->validuntil ?? 0);
+
         // A set PIN is required to renew; without one, a valid token is enough (the token is the only factor anyway).
         if (\local_oksigeniaaty\local\pin::has_pin($userid)) {
             $pinui = [
@@ -77,24 +86,19 @@ class renew extends external_api {
             ];
 
             if ($params['pin'] === '') {
-                return self::ask($pinui, '');
+                return self::ask($pinui, '', $current);
             }
             if (\local_oksigeniaaty\local\pin::is_locked($userid)) {
-                return self::ask($pinui, get_string('pinlocked', 'local_oksigeniaaty'));
+                return self::ask($pinui, get_string('pinlocked', 'local_oksigeniaaty'), $current);
             }
             if (!\local_oksigeniaaty\local\pin::verify($userid, $params['pin'])) {
                 $locked = \local_oksigeniaaty\local\pin::is_locked($userid);
-                return self::ask($pinui, get_string($locked ? 'pinlocked' : 'pinwrong', 'local_oksigeniaaty'));
+                return self::ask($pinui, get_string($locked ? 'pinlocked' : 'pinwrong', 'local_oksigeniaaty'), $current);
             }
         }
 
-        $servicename = defined('MOODLE_OFFICIAL_MOBILE_SERVICE') ? MOODLE_OFFICIAL_MOBILE_SERVICE : 'moodle_mobile_app';
-        $service = $DB->get_record('external_services', ['shortname' => $servicename, 'enabled' => 1], '*', MUST_EXIST);
-
-        // generate_token_for_current_user returns the user's existing token (with its old expiry) and only mints a new
-        // one when none is valid, so push the expiry forward in place rather than minting (which would log the user's
-        // other devices out). Update by the token value, which is always present, not by an id the object may not carry.
-        $token = \core_external\util::generate_token_for_current_user($service);
+        // Push the expiry forward in place rather than minting (which would log the user's other devices out). Update by
+        // the token value, which is always present, not by an id the object may not carry.
         \core_external\util::log_token_request($token);
 
         $duration = (int) ($CFG->tokenduration ?? 0);
@@ -118,13 +122,14 @@ class renew extends external_api {
      *
      * @param array $pinui The localised pad wording (title, ok, cancel).
      * @param string $error A localised error to show, or empty.
+     * @param int $validuntil The current token's expiry, unchanged (0 if it never expires).
      * @return array
      */
-    protected static function ask(array $pinui, string $error): array {
+    protected static function ask(array $pinui, string $error, int $validuntil): array {
         return [
             'needspin' => true,
             'token' => '',
-            'validuntil' => 0,
+            'validuntil' => $validuntil,
             'error' => $error,
             'title' => $pinui['title'],
             'ok' => $pinui['ok'],
@@ -142,7 +147,8 @@ class renew extends external_api {
         return new external_single_structure([
             'needspin' => new external_value(PARAM_BOOL, 'Whether the app must ask the user for the PIN'),
             'token' => new external_value(PARAM_ALPHANUMEXT, 'The app token (unchanged; its expiry was extended), or empty'),
-            'validuntil' => new external_value(PARAM_INT, 'The new expiry as a unix time, 0 if it never expires or none yet'),
+            'validuntil' => new external_value(PARAM_INT,
+                'The expiry as a unix time (the new one when renewed, the current one when asking for the PIN), 0 if it never expires'),
             'error' => new external_value(PARAM_TEXT, 'A localised error to show (wrong or locked PIN), or empty'),
             'title' => new external_value(PARAM_TEXT, 'Localised pad title, when asking for the PIN'),
             'ok' => new external_value(PARAM_TEXT, 'Localised confirm label, when asking for the PIN'),
