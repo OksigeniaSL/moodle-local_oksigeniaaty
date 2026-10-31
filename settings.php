@@ -125,6 +125,14 @@ if ($hassiteconfig) {
             PARAM_URL
         ));
 
+        // On Android phones, a bar on every page offers to open that page in the app. Off until the app is announced.
+        $settings->add(new admin_setting_configcheckbox(
+            'local_oksigeniaaty/openinappbar',
+            new lang_string('settings:openinappbar', 'local_oksigeniaaty'),
+            new lang_string('settings:openinappbar_desc', 'local_oksigeniaaty'),
+            0
+        ));
+
         $settings->add(new admin_setting_configtext(
             'local_oksigeniaaty/iosstoreurl',
             new lang_string('settings:iosstoreurl', 'local_oksigeniaaty'),

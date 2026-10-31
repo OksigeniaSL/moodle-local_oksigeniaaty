@@ -30,4 +30,8 @@ $callbacks = [
         'hook' => 'core_user\hook\extend_user_menu',
         'callback' => [\local_oksigeniaaty\hook_callbacks::class, 'extend_user_menu'],
     ],
+    [
+        'hook' => 'core\hook\output\before_standard_top_of_body_html_generation',
+        'callback' => [\local_oksigeniaaty\hook_callbacks::class, 'before_standard_top_of_body_html'],
+    ],
 ];

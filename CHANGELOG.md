@@ -7,6 +7,11 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Added
 
+- "Open this page in the app": on Android phones, a slim bar at the foot of every page opens that same page in the
+  app the site uses, Aty or Moodle's own (its URL scheme and package from the mobile app settings), or that app's
+  store page when it is not installed. Any link that lands in the phone's browser (an e-mail, a WhatsApp notice) goes
+  on in the app. Off by default (setting `openinappbar`); each person can hide it for 30 days. Never inside the app
+  itself, nor on iPhone yet.
 - Designer QR codes in the site's brand: round modules in the brand colour (darkened when too light to read on
   white), rounded eyes, solid alignment patterns, and the site's logo in the middle when it covers no alignment
   pattern (an SVG logo is nested, so it prints sharp; one with its own styles or scripts goes as an image). Used on the personal "Open in the Aty app" page (Moodle's plain QR stays as the fallback) and on a new
