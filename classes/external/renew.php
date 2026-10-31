@@ -70,9 +70,9 @@ class renew extends external_api {
         $servicename = defined('MOODLE_OFFICIAL_MOBILE_SERVICE') ? MOODLE_OFFICIAL_MOBILE_SERVICE : 'moodle_mobile_app';
         $service = $DB->get_record('external_services', ['shortname' => $servicename, 'enabled' => 1], '*', MUST_EXIST);
 
-        // generate_token_for_current_user returns the user's existing token (with its old expiry) and only mints a new
-        // one when none is valid. Its current expiry goes back with a PIN request too, so an app that signed in with a
-        // password, and so never learned it, can renew in time without asking for the PIN now.
+        // The user's existing token, with its old expiry (generate_token_for_current_user only mints a new one when none
+        // is valid). Its current expiry goes back with a PIN request too, so an app that signed in with a password, and
+        // so never learned it, can renew in time without asking for the PIN now.
         $token = \core_external\util::generate_token_for_current_user($service);
         $current = (int) ($token->validuntil ?? 0);
 
@@ -147,8 +147,10 @@ class renew extends external_api {
         return new external_single_structure([
             'needspin' => new external_value(PARAM_BOOL, 'Whether the app must ask the user for the PIN'),
             'token' => new external_value(PARAM_ALPHANUMEXT, 'The app token (unchanged; its expiry was extended), or empty'),
-            'validuntil' => new external_value(PARAM_INT,
-                'The expiry as a unix time (the new one when renewed, the current one when asking for the PIN), 0 if it never expires'),
+            'validuntil' => new external_value(
+                PARAM_INT,
+                'The expiry as a unix time (the new one when renewed, the current one when asking for the PIN), 0 for never'
+            ),
             'error' => new external_value(PARAM_TEXT, 'A localised error to show (wrong or locked PIN), or empty'),
             'title' => new external_value(PARAM_TEXT, 'Localised pad title, when asking for the PIN'),
             'ok' => new external_value(PARAM_TEXT, 'Localised confirm label, when asking for the PIN'),
