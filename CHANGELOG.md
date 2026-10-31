@@ -31,6 +31,7 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 - The token renewal service also says when the current token expires when it asks for the PIN, so an app that
   signed in with a password (and so never learned the expiry) renews in time instead of logging the user out after
   the token's lifetime. PHPUnit tests for the renewal service.
+- In dark mode the home hero is light with dark text, and the white logo on it hardly showed: it now takes a dark ink.
 - Passwordless sign-in failed for everyone after the administrator check moved to a library function that
   token.php did not load (it answered the generic "link expired or used" error).
 - Administrators are no longer offered a passwordless QR they cannot use (the app refuses them by design): it is not in

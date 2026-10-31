@@ -50,6 +50,8 @@ final class appcss_test extends \basic_testcase {
 
         // The home layout CSS ships with the sheet.
         $this->assertStringContainsString('.aty-hero', $css);
+        // The white hero logo turns dark on the light dark-mode hero.
+        $this->assertStringContainsString(':root.dark .aty-hero-logo', $css);
         $this->assertStringContainsString('.aty-tile', $css);
     }
 
