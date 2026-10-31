@@ -45,13 +45,21 @@ class mobile {
         $config = get_config('local_oksigeniaaty');
         $heading = !empty($config->homeheading) ? $config->homeheading : format_string(get_site()->fullname);
         $intro = !empty($config->homeintro) ? $config->homeintro : '';
+        $logourl = !empty($config->homelogourl) ? $config->homelogourl : '';
+        // In a site shared by several schools or libraries, the home is the user's own one's.
+        $brand = \local_oksigeniaaty\local\brand::for_user((int) $USER->id);
+        if ($brand !== null) {
+            $heading = format_string($brand['name']);
+            $intro = format_string($brand['tagline']);
+            $logourl = \local_oksigeniaaty\local\brand::logo_for_app($brand['logo'], (int) $USER->id);
+        }
         $shortcuts = local_oksigeniaaty_get_shortcuts();
         $courses = self::courses();
         $events = self::events();
         $grading = self::grading();
 
         $data = [
-            'logourl' => !empty($config->homelogourl) ? $config->homelogourl : '',
+            'logourl' => $logourl,
             'greeting' => trim($USER->firstname) !== ''
                 ? get_string('home:greeting', 'local_oksigeniaaty', format_string($USER->firstname))
                 : '',

@@ -37,6 +37,7 @@ $string['centreqr:heading'] = 'Site QR code';
 $string['centreqr:hint'] = 'The SVG prints sharp at any size; printed, make it at least 3 cm wide. The logo is the site\'s compact logo, or else its full logo (Appearance > Logos); with neither, the code has no logo.';
 $string['centreqr:intro'] = 'The code of {$a}, in the site\'s colour and with its logo, for posters, letters and welcome packs. Scanned with the Aty app it opens this site\'s sign-in; with a phone camera, the site in the browser.';
 $string['centreqr:menu'] = 'Oksigenia Aty: site QR code';
+$string['event:linkissued'] = 'Sign-in link to the app issued';
 $string['expiredkey'] = 'This sign-in link has expired. Ask for a new one.';
 $string['forgotpin:emailbody'] = 'Hello {$a->name},
 
@@ -66,6 +67,15 @@ $string['home:submissions'] = 'submissions';
 $string['home:tograde'] = 'To grade';
 $string['home:upcoming'] = 'Upcoming';
 $string['invalidkey'] = 'This sign-in link is not valid.';
+$string['issued:body'] = 'Hello, {$a->firstname}:
+
+To enter the {$a->site} app without a password, open this link on your phone. It works once, until {$a->expires}:
+
+{$a->url}
+
+If you do not have the app yet, the link takes you to it. After that, you enter with your PIN.';
+$string['issued:subject'] = 'Your way into the {$a->site} app';
+$string['issuenotallowed'] = 'A sign-in link cannot be issued for this account: administrator, suspended or deleted accounts always sign in with their password.';
 $string['mobilenotenabled'] = 'Mobile access is not enabled on this site.';
 $string['mylink:expires'] = 'This link works once and expires in 30 minutes. Reload this page to get a new one.';
 $string['mylink:heading'] = 'Open in the Aty app';

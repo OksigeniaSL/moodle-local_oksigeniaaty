@@ -33,6 +33,14 @@ $functions = [
         'ajax' => true,
         'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
     ],
+    'local_oksigeniaaty_get_user_style' => [
+        'classname' => 'local_oksigeniaaty\external\get_user_style',
+        'methodname' => 'execute',
+        'description' => 'The current user\'s own brand CSS (a library in a shared site), for the Aty app.',
+        'type' => 'read',
+        'ajax' => true,
+        'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
     'local_oksigeniaaty_renew' => [
         'classname' => 'local_oksigeniaaty\external\renew',
         'methodname' => 'execute',

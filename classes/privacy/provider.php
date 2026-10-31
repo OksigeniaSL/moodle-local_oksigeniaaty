@@ -79,7 +79,7 @@ class provider implements
 
         $contextlist = new contextlist();
         $haspin = $DB->record_exists('local_oksigeniaaty_pin', ['userid' => $userid]);
-        [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::RESET_SCRIPT]);
+        [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::ISSUED_SCRIPT, loginkey::RESET_SCRIPT]);
         $params[] = $userid;
         $haskey = $DB->record_exists_select('user_private_key', "script $insql AND userid = ?", $params);
         if ($haspin || $haskey) {
@@ -105,7 +105,7 @@ class provider implements
 
         $userid = $context->instanceid;
         $haspin = $DB->record_exists('local_oksigeniaaty_pin', ['userid' => $userid]);
-        [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::RESET_SCRIPT]);
+        [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::ISSUED_SCRIPT, loginkey::RESET_SCRIPT]);
         $params[] = $userid;
         $haskey = $DB->record_exists_select('user_private_key', "script $insql AND userid = ?", $params);
         if ($haspin || $haskey) {
@@ -140,7 +140,7 @@ class provider implements
                 );
             }
 
-            [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::RESET_SCRIPT]);
+            [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::ISSUED_SCRIPT, loginkey::RESET_SCRIPT]);
             $params[] = $user->id;
             $keys = $DB->get_records_select('user_private_key', "script $insql AND userid = ?", $params);
             if ($keys) {
@@ -215,7 +215,7 @@ class provider implements
         global $DB;
 
         pin::delete($userid);
-        [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::RESET_SCRIPT]);
+        [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::ISSUED_SCRIPT, loginkey::RESET_SCRIPT]);
         $params[] = $userid;
         $DB->delete_records_select('user_private_key', "script $insql AND userid = ?", $params);
     }

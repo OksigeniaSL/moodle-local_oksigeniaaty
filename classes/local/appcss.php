@@ -92,6 +92,22 @@ class appcss {
     }
 
     /**
+     * Only the brand variables of a colour (light, dark and the light canvas), with no layout: a user's own brand put on
+     * top of the site's sheet, such as a library's in a shared site.
+     *
+     * @param string $brandhex The brand colour, e.g. "#07316b".
+     * @return string The CSS, or '' for a malformed colour.
+     */
+    public static function brandvars(string $brandhex): string {
+        if (self::parse($brandhex) === null) {
+            return '';
+        }
+        $sheet = self::generate($brandhex);
+
+        return substr($sheet, 0, strpos($sheet, self::homecss()));
+    }
+
+    /**
      * The static layout of the home tab (the hero header and the shortcut mosaic).
      *
      * It is the same for every client and reads the brand variables above, so it follows light and dark on its own.

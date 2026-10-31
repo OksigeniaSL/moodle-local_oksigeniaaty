@@ -37,6 +37,7 @@ $string['centreqr:heading'] = 'QR del centro';
 $string['centreqr:hint'] = 'El SVG se imprime nítido a cualquier tamaño; impreso, que mida al menos 3 cm de lado. El logo es el logo compacto del sitio o, si no lo hay, el completo (Apariencia > Logos); sin ninguno, el código va sin logo.';
 $string['centreqr:intro'] = 'El código de {$a}, con el color y el logo del sitio, para carteles, circulares y la bienvenida. Al escanearlo con la app Aty, se abre la entrada de este sitio; con la cámara del móvil, la web.';
 $string['centreqr:menu'] = 'Oksigenia Aty: QR del centro';
+$string['event:linkissued'] = 'Enlace de entrada a la app enviado';
 $string['expiredkey'] = 'Este enlace de acceso ha caducado. Pide uno nuevo.';
 $string['forgotpin:emailbody'] = 'Hola {$a->name}:
 
@@ -66,6 +67,15 @@ $string['home:submissions'] = 'entregas';
 $string['home:tograde'] = 'Por corregir';
 $string['home:upcoming'] = 'Próximos';
 $string['invalidkey'] = 'Este enlace de acceso no es válido.';
+$string['issued:body'] = 'Hola, {$a->firstname}:
+
+Para entrar en la app de {$a->site} sin contraseña, abre este enlace en tu móvil. Sirve una vez, hasta el {$a->expires}:
+
+{$a->url}
+
+Si aún no tienes la app, el enlace te lleva a ella. Después, entras con tu PIN.';
+$string['issued:subject'] = 'Tu entrada a la app de {$a->site}';
+$string['issuenotallowed'] = 'No se puede sacar un enlace de entrada para esta cuenta: las de administración, suspendidas o borradas entran siempre con su contraseña.';
 $string['mobilenotenabled'] = 'El acceso desde el móvil no está activado en este sitio.';
 $string['mylink:expires'] = 'Este enlace funciona una sola vez y caduca en 30 minutos. Recarga esta página para obtener uno nuevo.';
 $string['mylink:heading'] = 'Abrir en la app Aty';

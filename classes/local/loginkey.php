@@ -35,8 +35,14 @@ class loginkey {
     /** @var string The user-key script for PIN-reset keys (emailed, and they clear the PIN when used). */
     const RESET_SCRIPT = 'local_oksigeniaaty/resetpin';
 
+    /** @var string The user-key script for links the school sends (by e-mail, at registration): they last longer. */
+    const ISSUED_SCRIPT = 'local_oksigeniaaty/issued';
+
     /** @var int How long a key is valid, in seconds (30 minutes). */
     const TTL = 1800;
+
+    /** @var int How many days a link the school sends lasts by default. */
+    const ISSUED_DAYS = 7;
 
     /**
      * Create a one-time sign-in key for a user, replacing any previous one.
@@ -51,6 +57,20 @@ class loginkey {
         delete_user_key(self::SCRIPT, $userid);
 
         return create_user_key(self::SCRIPT, $userid, 0, null, time() + self::TTL);
+    }
+
+    /**
+     * Create a one-time sign-in key for a link the school sends (by e-mail, at registration), replacing the previous
+     * one of this kind. It lasts days, not minutes, and leaves the user's own self-service key alone.
+     *
+     * @param int $userid The user the key signs in.
+     * @param int $days How many days it lasts.
+     * @return string The key value to put in the link.
+     */
+    public static function create_issued(int $userid, int $days = self::ISSUED_DAYS): string {
+        delete_user_key(self::ISSUED_SCRIPT, $userid);
+
+        return create_user_key(self::ISSUED_SCRIPT, $userid, 0, null, time() + max(1, $days) * DAYSECS);
     }
 
     /**
@@ -93,7 +113,7 @@ class loginkey {
     public static function consume(string $keyvalue): int {
         global $DB;
 
-        foreach ([self::SCRIPT, self::RESET_SCRIPT] as $script) {
+        foreach ([self::SCRIPT, self::ISSUED_SCRIPT, self::RESET_SCRIPT] as $script) {
             $nonce = random_string(20);
             $DB->execute(
                 'UPDATE {user_private_key} SET iprestriction = ? WHERE script = ? AND value = ? AND iprestriction IS NULL',
@@ -133,7 +153,7 @@ class loginkey {
     public static function peek(string $keyvalue): ?array {
         global $DB;
 
-        foreach ([self::SCRIPT => false, self::RESET_SCRIPT => true] as $script => $reset) {
+        foreach ([self::SCRIPT => false, self::ISSUED_SCRIPT => false, self::RESET_SCRIPT => true] as $script => $reset) {
             $key = $DB->get_record('user_private_key', ['script' => $script, 'value' => $keyvalue]);
             if ($key && (empty($key->validuntil) || $key->validuntil >= time())) {
                 return ['userid' => (int) $key->userid, 'reset' => $reset];

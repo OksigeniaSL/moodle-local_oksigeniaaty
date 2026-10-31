@@ -7,6 +7,14 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Added
 
+- A sign-in link a school sends: `\local_oksigeniaaty\api::issue_link($userid, $days)` returns a one-time link to
+  the app that lasts days (7 by default) and `api::send_link()` e-mails it, for other plugins such as a library that
+  registers its readers. Its own kind of key, so it leaves the user's self-service key alone; never for
+  administrator, suspended or deleted accounts; each link logged with who issued it (`link_issued`).
+- A user's own brand in a site shared by several schools or libraries: plugins say which with
+  `<component>_oksigeniaaty_user_brand($userid)`. The home shows its name, tagline and logo, and the web service
+  `local_oksigeniaaty_get_user_style` gives the Aty app its brand colours (light and dark) to put on top of the
+  site's sheet.
 - "Your agenda on your phone", in the app's user menu: subscribe the phone's calendar to the user's Moodle calendar
   (Moodle's own export feed), with Google Calendar's subscription link, the standard webcal link for other calendar
   apps and the plain address. It keeps up to date on its own and needs no new permission in the app.
