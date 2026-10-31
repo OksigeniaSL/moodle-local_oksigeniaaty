@@ -90,8 +90,10 @@ class hook_callbacks {
     public static function openinapp_bar(): string {
         global $CFG, $OUTPUT, $PAGE;
 
-        if (during_initial_install() || empty($CFG->enablemobilewebservice)
-                || !get_config('local_oksigeniaaty', 'openinappbar')) {
+        if (
+            during_initial_install() || empty($CFG->enablemobilewebservice)
+            || !get_config('local_oksigeniaaty', 'openinappbar')
+        ) {
             return '';
         }
         $useragent = (string) \core_useragent::get_user_agent_string();

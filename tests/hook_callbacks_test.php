@@ -63,8 +63,10 @@ final class hook_callbacks_test extends \advanced_testcase {
         // On, it opens the site's app: Moodle's own by default, Aty where the site points its mobile settings to it.
         set_config('openinappbar', 1, 'local_oksigeniaaty');
         $page = 'intent://link=' . $CFG->wwwroot . '/course/view.php?id=2#Intent;';
-        $this->assertStringContainsString($page . 'scheme=moodlemobile;package=com.moodle.moodlemobile;end',
-            hook_callbacks::openinapp_bar());
+        $this->assertStringContainsString(
+            $page . 'scheme=moodlemobile;package=com.moodle.moodlemobile;end',
+            hook_callbacks::openinapp_bar()
+        );
         set_config('forcedurlscheme', 'oksigeniaaty', 'tool_mobile');
         set_config('androidappid', 'com.oksigenia.aty', 'tool_mobile');
         $html = hook_callbacks::openinapp_bar();
