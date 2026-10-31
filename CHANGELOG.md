@@ -7,6 +7,8 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Added
 
+- "To grade" on the app's home, for teachers: the assignments with submissions waiting for a grade, the one waiting
+  longest first, with Moodle's own count (enrolled students, the teacher's group) and a link to the assignment.
 - "Open this page in the app": on Android phones, a slim bar at the foot of every page opens that same page in the
   app the site uses, Aty or Moodle's own (its URL scheme and package from the mobile app settings), or that app's
   store page when it is not installed. Any link that lands in the phone's browser (an e-mail, a WhatsApp notice) goes

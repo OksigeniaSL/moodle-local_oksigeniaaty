@@ -38,6 +38,8 @@
     * hascourses - Whether there is at least one course to show.
     * courses - A list of { name, initial, hue, viewurl }.
     * opensoutside - Accessible label for the "opens outside the app" marker.
+    * gradingheading, grading, hasgrading - For teachers: the assignments waiting for a grade (name, context, count,
+      countlabel, viewurl).
 
     Example context (json):
     {
@@ -59,6 +61,23 @@
         <h1 class="aty-hero-title">{{heading}}</h1>
         {{#intro}}<p class="aty-hero-intro">{{intro}}</p>{{/intro}}
     </section>
+    {{#hasgrading}}
+    <h2 class="aty-section">{{gradingheading}}</h2>
+    <div class="aty-agenda">
+        {{#grading}}
+        <a class="aty-event aty-grading" core-link href="{{viewurl}}" capture="true">
+            <span class="aty-event-date">
+                <span class="aty-event-day">{{count}}</span>
+                <span class="aty-event-month">{{countlabel}}</span>
+            </span>
+            <span class="aty-event-body">
+                <span class="aty-event-name">{{name}}</span>
+                <span class="aty-event-context">{{context}}</span>
+            </span>
+        </a>
+        {{/grading}}
+    </div>
+    {{/hasgrading}}
     {{#hasevents}}
     <h2 class="aty-section">{{eventsheading}}</h2>
     <div class="aty-agenda">
