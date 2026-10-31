@@ -141,6 +141,8 @@ class appcss {
 .aty-event-day { font-size: 1.25rem; font-weight: 800; }
 .aty-event-month { margin-top: 2px; font-size: .62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
     opacity: .9; }
+.aty-grading .aty-event-date { width: auto; min-width: 46px; padding: 0 8px; }
+.aty-grading .aty-event-month { letter-spacing: .02em; }
 .aty-event-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .aty-event-name { font-weight: 700; line-height: 1.25; }
 .aty-event-context { font-size: .8rem; color: var(--ion-color-medium); }
