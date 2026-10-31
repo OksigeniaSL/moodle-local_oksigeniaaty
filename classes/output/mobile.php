@@ -85,6 +85,54 @@ class mobile {
     }
 
     /**
+     * "Your agenda on your phone": subscribe the phone's calendar app to the user's Moodle calendar, so due dates,
+     * classes and events show there and keep up to date on their own.
+     *
+     * It uses Moodle's own calendar export (the user's private feed), offered as Google Calendar's subscription link,
+     * as the standard webcal link that other calendar apps open, and as the plain address for apps that ask for it.
+     * Google's link (calendar/r?cid=) is not documented by Google; the plain address is the fallback.
+     *
+     * @param array $args The arguments the app sends.
+     * @return array The template, javascript and data the app expects.
+     */
+    public static function mobile_calendar(array $args): array {
+        global $CFG, $OUTPUT, $USER;
+
+        require_once($CFG->dirroot . '/calendar/lib.php');
+
+        $data = [
+            'enabled' => !empty($CFG->enablecalendarexport),
+            'intro' => get_string('calendarapp:intro', 'local_oksigeniaaty', format_string(get_site()->shortname)),
+        ];
+        if ($data['enabled']) {
+            $feed = new \moodle_url('/calendar/export_execute.php', [
+                'userid' => $USER->id,
+                'authtoken' => calendar_get_export_token($USER),
+                'preset_what' => 'all',
+                'preset_time' => 'recentupcoming',
+            ]);
+            $address = $feed->out(false);
+            $webcal = preg_replace('#^https?://#', 'webcal://', $address);
+            $data += [
+                'address' => $address,
+                'webcalurl' => $webcal,
+                'googleurl' => 'https://calendar.google.com/calendar/r?cid=' . rawurlencode($webcal),
+            ];
+        }
+
+        return [
+            'templates' => [
+                [
+                    'id' => 'main',
+                    'html' => $OUTPUT->render_from_template('local_oksigeniaaty/mobile_calendar', $data),
+                ],
+            ],
+            'javascript' => '',
+            'otherdata' => [],
+        ];
+    }
+
+    /**
      * The user's courses for the home panel: branded cards (gradient + initial) that open in the app.
      *
      * @return array A list of { name, initial, hue, viewurl }, at most eight.

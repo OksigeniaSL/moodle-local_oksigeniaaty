@@ -7,6 +7,9 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Added
 
+- "Your agenda on your phone", in the app's user menu: subscribe the phone's calendar to the user's Moodle calendar
+  (Moodle's own export feed), with Google Calendar's subscription link, the standard webcal link for other calendar
+  apps and the plain address. It keeps up to date on its own and needs no new permission in the app.
 - "To grade" on the app's home, for teachers: the assignments with submissions waiting for a grade, the one waiting
   longest first, with Moodle's own count (enrolled students, the teacher's group) and a link to the assignment.
 - "Open this page in the app": on Android phones, a slim bar at the foot of every page opens that same page in the

@@ -42,9 +42,21 @@ $addons = [
                     'icon' => 'home',
                 ],
             ],
+            // "Your agenda on your phone": subscribe a calendar app to the user's Moodle calendar. In the user menu only.
+            'calendar' => [
+                'delegate' => 'CoreUserDelegate',
+                'method' => 'mobile_calendar',
+                'displayinusermenu' => 'only',
+                'restricttocurrentuser' => true,
+                'displaydata' => [
+                    'title' => 'calendarapp:title',
+                    'icon' => 'fas-calendar-plus',
+                ],
+            ],
         ],
         'lang' => [
             ['pluginname', 'local_oksigeniaaty'],
+            ['calendarapp:title', 'local_oksigeniaaty'],
         ],
     ],
 ];

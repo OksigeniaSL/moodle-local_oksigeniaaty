@@ -24,6 +24,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['calendarapp:address'] = 'Si tu app de calendario te pide la dirección, copia esta:';
+$string['calendarapp:disabled'] = 'Tu centro no tiene activada la exportación del calendario.';
+$string['calendarapp:google'] = 'Añadir a Google Calendar';
+$string['calendarapp:intro'] = 'Añade tu agenda de {$a} al calendario de tu móvil: entregas, clases y eventos, y se mantiene al día sola.';
+$string['calendarapp:other'] = 'Añadir a otra app de calendario';
+$string['calendarapp:private'] = 'Esta dirección es solo tuya: no la compartas.';
+$string['calendarapp:title'] = 'Tu agenda en el móvil';
 $string['centreqr:alt'] = 'Código QR de este sitio para la app Aty';
 $string['centreqr:download'] = 'Descargar (SVG)';
 $string['centreqr:heading'] = 'QR del centro';

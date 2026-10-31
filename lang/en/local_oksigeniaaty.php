@@ -24,6 +24,13 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['calendarapp:address'] = 'If your calendar app asks for the address, copy this one:';
+$string['calendarapp:disabled'] = 'Your site does not have calendar export turned on.';
+$string['calendarapp:google'] = 'Add to Google Calendar';
+$string['calendarapp:intro'] = 'Add your {$a} agenda to your phone\'s calendar: due dates, classes and events, kept up to date on their own.';
+$string['calendarapp:other'] = 'Add to another calendar app';
+$string['calendarapp:private'] = 'This address is yours alone: do not share it.';
+$string['calendarapp:title'] = 'Your agenda on your phone';
 $string['centreqr:alt'] = 'QR code of this site for the Aty app';
 $string['centreqr:download'] = 'Download (SVG)';
 $string['centreqr:heading'] = 'Site QR code';

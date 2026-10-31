@@ -141,6 +141,10 @@ class appcss {
 .aty-event-day { font-size: 1.25rem; font-weight: 800; }
 .aty-event-month { margin-top: 2px; font-size: .62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
     opacity: .9; }
+.aty-calendarapp-intro { margin: 0 0 8px; line-height: 1.45; }
+.aty-calendarapp-note { margin: 18px 0 6px; font-size: .85rem; color: var(--ion-color-medium); }
+.aty-calendarapp-address { margin: 0; padding: 10px 12px; border-radius: 10px; font-size: .78rem; word-break: break-all;
+    user-select: text; -webkit-user-select: text; background: rgba(var(--ion-color-primary-rgb), .08); }
 .aty-grading .aty-event-date { width: auto; min-width: 46px; padding: 0 8px; }
 .aty-grading .aty-event-month { letter-spacing: .02em; }
 .aty-event-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }

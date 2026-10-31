@@ -1,0 +1,56 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_oksigeniaaty/mobile_calendar
+
+    "Your agenda on your phone", in the app's user menu: subscribe the phone's calendar app to the user's Moodle calendar.
+
+    Context variables required for this template:
+    * enabled - Whether the site has calendar export turned on.
+    * intro - What this does, with the site's name.
+    * googleurl - Google Calendar's subscription link to the user's feed.
+    * webcalurl - The feed as a webcal link, which other calendar apps open.
+    * address - The feed's plain address, for apps that ask for it.
+
+    Example context (json):
+    {
+        "enabled": true,
+        "intro": "Add your Campus agenda to your phone's calendar.",
+        "googleurl": "https://calendar.google.com/calendar/r?cid=webcal%3A%2F%2Fexample.com%2Fcalendar%2Fexport_execute.php",
+        "webcalurl": "webcal://example.com/calendar/export_execute.php?userid=2&authtoken=abc",
+        "address": "https://example.com/calendar/export_execute.php?userid=2&authtoken=abc"
+    }
+}}
+<div class="aty-calendarapp ion-padding">
+    {{#enabled}}
+    <p class="aty-calendarapp-intro">{{intro}}</p>
+    <ion-button expand="block" class="ion-margin-top" core-link href="{{googleurl}}" capture="false">
+        <ion-icon name="fab-google" slot="start" aria-hidden="true"></ion-icon>
+        {{#str}} calendarapp:google, local_oksigeniaaty {{/str}}
+    </ion-button>
+    <ion-button expand="block" fill="outline" core-link href="{{webcalurl}}" capture="false">
+        <ion-icon name="fas-calendar-plus" slot="start" aria-hidden="true"></ion-icon>
+        {{#str}} calendarapp:other, local_oksigeniaaty {{/str}}
+    </ion-button>
+    <p class="aty-calendarapp-note">{{#str}} calendarapp:address, local_oksigeniaaty {{/str}}</p>
+    <p class="aty-calendarapp-address">{{address}}</p>
+    <p class="aty-calendarapp-note">{{#str}} calendarapp:private, local_oksigeniaaty {{/str}}</p>
+    {{/enabled}}
+    {{^enabled}}
+    <p class="aty-calendarapp-intro">{{#str}} calendarapp:disabled, local_oksigeniaaty {{/str}}</p>
+    {{/enabled}}
+</div>

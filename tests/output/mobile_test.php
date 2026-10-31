@@ -64,6 +64,27 @@ final class mobile_test extends \advanced_testcase {
     }
 
     /**
+     * "Your agenda on your phone": the user's own export feed, as Google Calendar's link, as webcal and as the plain
+     * address; and a plain notice when the site has calendar export turned off.
+     */
+    public function test_calendar(): void {
+        global $CFG;
+        $this->resetAfterTest();
+
+        $user = $this->getDataGenerator()->create_user();
+        $this->setUser($user);
+        $html = mobile::mobile_calendar([])['templates'][0]['html'];
+        $this->assertStringContainsString('https://calendar.google.com/calendar/r?cid=webcal%3A%2F%2F', $html);
+        $this->assertStringContainsString('webcal://', $html);
+        $this->assertStringContainsString('/calendar/export_execute.php?userid=' . $user->id . '&amp;authtoken=', $html);
+
+        $CFG->enablecalendarexport = 0;
+        $html = mobile::mobile_calendar([])['templates'][0]['html'];
+        $this->assertStringNotContainsString('export_execute.php', $html);
+        $this->assertStringContainsString(get_string('calendarapp:disabled', 'local_oksigeniaaty'), $html);
+    }
+
+    /**
      * The home's HTML for the current user.
      *
      * @return string
