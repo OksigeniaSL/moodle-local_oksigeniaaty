@@ -70,18 +70,20 @@ final class mobile_test extends \advanced_testcase {
         $this->resetAfterTest();
 
         $generator = $this->getDataGenerator();
-        $course = $generator->create_course(['fullname' => '{{ course }}', 'shortname' => '{{ short }}']);
-        $student = $generator->create_and_enrol($course, 'student', ['firstname' => '{{ first }}']);
+        $course = $generator->create_course(['fullname' => '{{ course }} @let c = 1;', 'shortname' => '{{ short }}']);
+        $student = $generator->create_and_enrol($course, 'student', ['firstname' => '@let f = 1;']);
         $this->setAdminUser();
         $generator->create_event([
-            'name' => '{{ event }}', 'courseid' => $course->id, 'eventtype' => 'course', 'timestart' => time() + DAYSECS,
+            'name' => '{{ event }} @if (a)', 'courseid' => $course->id, 'eventtype' => 'course', 'timestart' => time() + DAYSECS,
         ]);
 
         $this->setUser($student);
         $html = self::home();
-        $this->assertStringContainsString('｛｛ course ｝｝', $html);
-        $this->assertStringContainsString('｛｛ event ｝｝', $html);
+        $this->assertStringContainsString('｛｛ course ｝｝ ＠let c = 1;', $html);
+        $this->assertStringContainsString('｛｛ event ｝｝ ＠if (a)', $html);
+        $this->assertStringContainsString('＠let f = 1;', $html);
         $this->assertStringNotContainsString('{{', $html);
+        $this->assertDoesNotMatchRegularExpression('/@[a-z]/i', $html);
     }
 
     /**

@@ -8,8 +8,9 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 ### Security
 
 - The texts of the app's home and of "Your agenda on your phone" cannot run as templates any more. The app compiles
-  them as Angular templates and Mustache does not escape braces, so a course or an activity named with double braces
-  ran in the app of whoever saw it, with their session. Each brace now becomes its full-width look-alike.
+  them as Angular templates and Mustache escapes neither braces nor at signs, so a course or an activity named with
+  double braces or `@let` ran in the app of whoever saw it, with their session, and an unfinished `@if` stopped the
+  page from compiling. Each brace and at sign in a text now becomes its full-width look-alike; addresses keep theirs.
 
 ### Added
 

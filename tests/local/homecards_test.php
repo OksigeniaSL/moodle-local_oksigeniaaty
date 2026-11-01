@@ -114,6 +114,44 @@ final class homecards_test extends \advanced_testcase {
     }
 
     /**
+     * An at sign cannot start a block in a text, and stays where it is in an address and in a page's arguments.
+     */
+    public function test_at_signs(): void {
+        $this->assertSame('＠let a = 1;', template::inert('@let a = 1;'));
+        $data = template::inert([
+            'name' => '@if (a)',
+            'viewurl' => 'https://example.org/@user',
+            'deep' => ['logourl' => 'https://example.org/@a{'],
+        ]);
+        $this->assertSame('＠if (a)', $data['name']);
+        $this->assertSame('https://example.org/@user', $data['viewurl']);
+        $this->assertSame('https://example.org/@a｛', $data['deep']['logourl']);
+
+        $card = homecards::clean([
+            'heading' => '@let h = 1;',
+            'items' => [
+                [
+                    'title' => '@let t = 1;',
+                    'detail' => '@if (d)',
+                    'method' => 'mobile_record_view',
+                    'args' => ['mail' => 'a@example.org'],
+                ],
+                ['title' => 'Address', 'url' => 'https://example.org/@user'],
+            ],
+            'tile' => ['label' => '@let l = 1;', 'url' => 'https://example.org/@tile'],
+        ], 'local_x');
+
+        $this->assertSame('＠let h = 1;', $card['heading']);
+        $this->assertSame('＠let t = 1;', $card['items'][0]['title']);
+        $this->assertSame('＠if (d)', $card['items'][0]['detail']);
+        $this->assertSame('＠let t = 1;', $card['items'][0]['pagetitle']);
+        $this->assertSame(['mail' => 'a@example.org'], json_decode($card['items'][0]['argsjson'], true));
+        $this->assertSame('https://example.org/@user', $card['items'][1]['url']);
+        $this->assertSame('＠let l = 1;', $card['tile']['label']);
+        $this->assertSame('https://example.org/@tile', $card['tile']['url']);
+    }
+
+    /**
      * What the app receives: the card's page, with its arguments as an attribute that survives the quotes.
      */
     public function test_template(): void {

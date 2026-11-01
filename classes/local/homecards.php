@@ -168,7 +168,7 @@ class homecards {
     private static function target(array $given, string $component, string $title): ?array {
         $method = (string) ($given['method'] ?? '');
         if (preg_match('/^[a-z][a-z0-9_]*$/', $method)) {
-            $args = is_array($given['args'] ?? null) ? template::inert($given['args']) : [];
+            $args = is_array($given['args'] ?? null) ? template::inert($given['args'], true) : [];
             return [
                 'ispage' => true,
                 'component' => $component,
@@ -181,7 +181,7 @@ class homecards {
 
         $url = (string) ($given['url'] ?? '');
         if (preg_match('#^https?://#i', $url)) {
-            return ['ispage' => false, 'url' => template::inert($url)];
+            return ['ispage' => false, 'url' => template::inert($url, true)];
         }
 
         return null;
