@@ -72,6 +72,7 @@ final class mobile_test extends \advanced_testcase {
         $generator = $this->getDataGenerator();
         $course = $generator->create_course(['fullname' => '{{ course }}', 'shortname' => '{{ short }}']);
         $student = $generator->create_and_enrol($course, 'student', ['firstname' => '{{ first }}']);
+        $this->setAdminUser();
         $generator->create_event([
             'name' => '{{ event }}', 'courseid' => $course->id, 'eventtype' => 'course', 'timestart' => time() + DAYSECS,
         ]);
