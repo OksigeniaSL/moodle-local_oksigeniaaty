@@ -24,6 +24,10 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Added
 
+- A button in an e-mail can open its page in the app, for whoever has used the app on a phone:
+  `\local_oksigeniaaty\api::app_link($userid, $url)`. Mail programs open links in the browser, which asked to sign in
+  again. It goes through a small page, `go.php`, that opens the app on Android and goes on to the page anywhere else or
+  where the app is not installed, and it only leads to pages of the site.
 - Other plugins can add to the app's home for a user, with `<component>_oksigeniaaty_home_cards($userid)`: a section
   of rows (a book's return date, an assignment's count) and a tile next to the shortcuts, opening a page of their own
   in the app or an address. A library's reader, with no courses, finds their books and the way in on the home.

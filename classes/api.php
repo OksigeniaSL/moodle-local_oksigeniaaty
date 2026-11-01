@@ -64,6 +64,56 @@ class api {
     }
 
     /**
+     * The address of a page of this site for a message to someone: it opens in the app if they have used it on a phone, so
+     * a button in an e-mail does not leave them in the browser, asked to sign in again. Otherwise, the page itself. Any
+     * other address stays as it is. It works with whichever app the site has set.
+     *
+     * @param int $userid Who the message is for.
+     * @param string $url The page.
+     * @return string The address to use.
+     */
+    public static function app_link(int $userid, string $url): string {
+        global $DB;
+
+        $package = get_config('tool_mobile', 'androidappid') ?: 'com.moodle.moodlemobile';
+        if (self::local_target($url) === null || !$DB->record_exists('user_devices', ['userid' => $userid, 'appid' => $package])) {
+            return $url;
+        }
+
+        return (new \moodle_url('/local/oksigeniaaty/go.php', ['to' => $url]))->out(false);
+    }
+
+    /**
+     * An address of this site, in full; or null for anything else, so the page in between cannot lead outside it.
+     *
+     * @param string $url The address, full or from the site's root.
+     * @return string|null
+     */
+    public static function local_target(string $url): ?string {
+        global $CFG;
+
+        if (str_starts_with($url, '/') && !str_starts_with($url, '//')) {
+            $url = $CFG->wwwroot . $url;
+        }
+
+        return str_starts_with($url, $CFG->wwwroot . '/') && !preg_match('/[\s\x00-\x1f]/', $url) ? $url : null;
+    }
+
+    /**
+     * What opens a page in the site's app on Android, or goes on to the page where the app is not installed.
+     *
+     * @param string $target The page, in full.
+     * @return string
+     */
+    public static function app_intent(string $target): string {
+        $scheme = get_config('tool_mobile', 'forcedurlscheme') ?: 'moodlemobile';
+        $package = get_config('tool_mobile', 'androidappid') ?: 'com.moodle.moodlemobile';
+
+        return 'intent://link=' . rawurlencode($target) . '#Intent;scheme=' . $scheme . ';package=' . $package
+            . ';S.browser_fallback_url=' . rawurlencode($target) . ';end';
+    }
+
+    /**
      * Send a user their sign-in link to the app by e-mail.
      *
      * @param int $userid The user.

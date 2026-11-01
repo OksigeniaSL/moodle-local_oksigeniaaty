@@ -90,4 +90,63 @@ final class api_test extends \advanced_testcase {
         $this->assertSame($reader->email, $emails[0]->to);
         $this->assertStringContainsString('local/oksigeniaaty/open.php', $emails[0]->body);
     }
+
+    /**
+     * A page of the site goes through the app's page only for whoever has the site's app on a phone; anything else stays.
+     */
+    public function test_app_link(): void {
+        global $CFG, $DB;
+        $this->resetAfterTest();
+
+        set_config('androidappid', 'com.example.app', 'tool_mobile');
+        $user = $this->getDataGenerator()->create_user();
+        $page = $CFG->wwwroot . '/local/oksigeniaaty/index.php?a=1&b=2';
+        $this->assertSame($page, api::app_link($user->id, $page));
+
+        $DB->insert_record('user_devices', (object) [
+            'userid' => $user->id, 'appid' => 'com.other.app', 'name' => 'x', 'model' => 'x', 'platform' => 'android',
+            'version' => '1', 'pushid' => 'p1', 'uuid' => 'u1', 'timecreated' => time(), 'timemodified' => time(),
+        ]);
+        $this->assertSame($page, api::app_link($user->id, $page));
+
+        $DB->insert_record('user_devices', (object) [
+            'userid' => $user->id, 'appid' => 'com.example.app', 'name' => 'x', 'model' => 'x', 'platform' => 'android',
+            'version' => '1', 'pushid' => 'p2', 'uuid' => 'u2', 'timecreated' => time(), 'timemodified' => time(),
+        ]);
+        $link = api::app_link($user->id, $page);
+        $this->assertStringStartsWith($CFG->wwwroot . '/local/oksigeniaaty/go.php?to=', $link);
+        parse_str((string) parse_url($link, PHP_URL_QUERY), $params);
+        $this->assertSame($page, $params['to']);
+
+        $this->assertSame('https://example.org/x', api::app_link($user->id, 'https://example.org/x'));
+    }
+
+    /**
+     * The page in between only ever leads to this site.
+     */
+    public function test_local_target(): void {
+        global $CFG;
+        $this->resetAfterTest();
+
+        $this->assertSame($CFG->wwwroot . '/my/', api::local_target('/my/'));
+        $this->assertSame($CFG->wwwroot . '/my/', api::local_target($CFG->wwwroot . '/my/'));
+        $this->assertNull(api::local_target('https://example.org/my/'));
+        $this->assertNull(api::local_target('//example.org/my/'));
+        $this->assertNull(api::local_target($CFG->wwwroot . '.example.org/my/'));
+        $this->assertNull(api::local_target($CFG->wwwroot . "/my/\r\nX-Evil: 1"));
+        $this->assertNull(api::local_target('javascript:alert(1)'));
+    }
+
+    /**
+     * The intent names the site's app and falls back to the page itself.
+     */
+    public function test_app_intent(): void {
+        $this->resetAfterTest();
+
+        set_config('forcedurlscheme', 'exampleapp', 'tool_mobile');
+        set_config('androidappid', 'com.example.app', 'tool_mobile');
+        $intent = api::app_intent('https://example.org/a?b=1&c=2');
+        $this->assertSame('intent://link=https%3A%2F%2Fexample.org%2Fa%3Fb%3D1%26c%3D2#Intent;scheme=exampleapp;'
+            . 'package=com.example.app;S.browser_fallback_url=https%3A%2F%2Fexample.org%2Fa%3Fb%3D1%26c%3D2;end', $intent);
+    }
 }
