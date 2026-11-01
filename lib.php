@@ -92,6 +92,9 @@ function local_oksigeniaaty_refresh_appcss(): void {
     if ($manageable && $current !== $target) {
         set_config('mobilecssurl', $target);
     }
+
+    // The version of the home's own sheet, in db/mobile.php, changes with the brand: the apps ask for the handlers again.
+    \cache::make('tool_mobile', 'plugininfo')->purge();
 }
 
 /**

@@ -27,6 +27,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
+
 $addons = [
     'local_oksigeniaaty' => [
         'handlers' => [
@@ -38,8 +41,14 @@ $addons = [
                 // (CoreCoursesDashboard, CoreSiteHomeDashboard); this keeps ours first even where they are not.
                 'priority' => 1400,
                 'displaydata' => [
-                    'title' => 'pluginname',
+                    'title' => 'home:tab',
                     'icon' => 'home',
+                ],
+                // The official app does not apply the site's mobile CSS, but it does load a plugin's: the home's layout
+                // and colours, scoped to it, so it reads well in both apps. Not the look of the rest of the app.
+                'styles' => [
+                    'url' => $CFG->wwwroot . '/local/oksigeniaaty/styles_home.php',
+                    'version' => crc32(local_oksigeniaaty_appcss_version()),
                 ],
             ],
             // "Your agenda on your phone": subscribe a calendar app to the user's Moodle calendar. In the user menu only.
@@ -55,7 +64,7 @@ $addons = [
             ],
         ],
         'lang' => [
-            ['pluginname', 'local_oksigeniaaty'],
+            ['home:tab', 'local_oksigeniaaty'],
             ['calendarapp:title', 'local_oksigeniaaty'],
         ],
     ],

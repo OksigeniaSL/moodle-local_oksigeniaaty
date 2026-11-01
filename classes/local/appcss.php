@@ -92,6 +92,25 @@ class appcss {
     }
 
     /**
+     * The sheet a plugin handler brings to the app: the home's layout, with the brand's colours only inside the home. The
+     * official app does not apply the site's mobile CSS but loads this one, and the rest of that app keeps its own look.
+     *
+     * @param string $brandhex The site brand colour, e.g. "#07316b".
+     * @return string The CSS.
+     */
+    public static function homesheet(string $brandhex): string {
+        $vars = self::brandvars($brandhex);
+        // Without the light canvas, which would win over the app's dark theme once it is inside the home.
+        $canvas = strpos($vars, ":root {\n    --aty-canvas");
+        $vars = $canvas === false ? $vars : substr($vars, 0, $canvas);
+
+        return strtr($vars, [
+            ":root.dark,\n:root .dark" => ":root.dark .aty-home,\n:root .dark .aty-home",
+            ':root {' => '.aty-home {',
+        ]) . self::homecss();
+    }
+
+    /**
      * Only the brand variables of a colour (light, dark and the light canvas), with no layout: a user's own brand put on
      * top of the site's sheet, such as a library's in a shared site.
      *

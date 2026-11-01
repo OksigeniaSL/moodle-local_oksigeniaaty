@@ -12,6 +12,12 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
   double braces or `@let` ran in the app of whoever saw it, with their session, and an unfinished `@if` stopped the
   page from compiling. Each brace and at sign in a text now becomes its full-width look-alike; addresses keep theirs.
 
+### Fixed
+
+- The app's home reads well in the official Moodle app too. That app does not apply the site's mobile CSS, so the home
+  came with no layout and a white logo on white. Its handler now brings a sheet of its own, with the brand's colours
+  only inside the home; the rest of the official app keeps its look. Its tab is called "Home", not the plugin's name.
+
 ### Added
 
 - Other plugins can add to the app's home for a user, with `<component>_oksigeniaaty_home_cards($userid)`: a section

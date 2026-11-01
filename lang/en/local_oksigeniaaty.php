@@ -53,6 +53,7 @@ $string['forgotpin:link'] = 'Forgot your PIN?';
 $string['forgotpin:search'] = 'Username or email';
 $string['forgotpin:sent'] = 'If that account exists and uses Aty, we have emailed a link to reset the PIN. It works once and expires in 30 minutes.';
 $string['forgotpin:submit'] = 'Send reset link';
+$string['home:tab'] = 'Home';
 $string['home:event:close'] = 'Closes';
 $string['home:event:due'] = 'Due';
 $string['home:event:expectcompletionon'] = 'To complete';

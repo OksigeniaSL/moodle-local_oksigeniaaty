@@ -55,6 +55,22 @@ final class brand_test extends \advanced_testcase {
     }
 
     /**
+     * The home's own sheet keeps the brand inside the home: the rest of the official app keeps its look.
+     */
+    public function test_homesheet(): void {
+        $css = appcss::homesheet('#8e2a3c');
+        $this->assertStringContainsString('.aty-home {', $css);
+        $this->assertStringContainsString('--primary: #8e2a3c;', $css);
+        $this->assertStringContainsString(':root.dark .aty-home', $css);
+        $this->assertStringContainsString('.aty-hero', $css);
+        $this->assertStringNotContainsString(':root {', $css);
+        $this->assertStringNotContainsString('--aty-canvas', $css);
+        $this->assertStringNotContainsString(":root.dark,", $css);
+
+        $this->assertStringContainsString('.aty-hero', appcss::homesheet('not a colour'));
+    }
+
+    /**
      * A logo that is a file of the site goes through tokenpluginfile.php with the user's files key; any other stays.
      */
     public function test_logo_for_app(): void {

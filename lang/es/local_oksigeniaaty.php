@@ -53,6 +53,7 @@ $string['forgotpin:link'] = '¿Olvidaste el PIN?';
 $string['forgotpin:search'] = 'Nombre de usuario o correo';
 $string['forgotpin:sent'] = 'Si esa cuenta existe y usa Aty, te hemos enviado por correo un enlace para reiniciar el PIN. Funciona una sola vez y caduca en 30 minutos.';
 $string['forgotpin:submit'] = 'Enviar enlace de reinicio';
+$string['home:tab'] = 'Inicio';
 $string['home:event:close'] = 'Cierre';
 $string['home:event:due'] = 'Entrega';
 $string['home:event:expectcompletionon'] = 'Para terminar';
