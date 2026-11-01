@@ -71,6 +71,20 @@ final class brand_test extends \advanced_testcase {
     }
 
     /**
+     * A user's brand wins on the home too, where the home's own sheet sets the site's: there its selectors are more specific.
+     */
+    public function test_usersheet(): void {
+        $css = appcss::usersheet('#8e2a3c');
+        $this->assertStringContainsString(":root {\n    --primary: #8e2a3c;", $css);
+        $this->assertStringContainsString(":root .aty-home.aty-home {\n    --primary: #8e2a3c;", $css);
+        $this->assertStringContainsString(":root.dark .aty-home.aty-home,\n:root .dark .aty-home.aty-home {", $css);
+        $this->assertSame(1, substr_count($css, '--aty-canvas:'));
+        $this->assertStringNotContainsString('.aty-hero', $css);
+
+        $this->assertSame('', appcss::usersheet('not a colour'));
+    }
+
+    /**
      * A logo that is a file of the site goes through tokenpluginfile.php with the user's files key; any other stays.
      */
     public function test_logo_for_app(): void {

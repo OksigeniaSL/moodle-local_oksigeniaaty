@@ -99,15 +99,40 @@ class appcss {
      * @return string The CSS.
      */
     public static function homesheet(string $brandhex): string {
+        return self::homevars($brandhex, '.aty-home', ":root.dark .aty-home,\n:root .dark .aty-home") . self::homecss();
+    }
+
+    /**
+     * The sheet of a user's own brand, on top of the site's: the variables at the root and, because the home's own sheet
+     * sets the site's on the home itself, where nothing inherited can beat it, again on the home. There its selectors are
+     * more specific than that sheet's, so it does not matter which of the two loads last.
+     *
+     * @param string $brandhex The brand colour, e.g. "#07316b".
+     * @return string The CSS, or '' for a malformed colour.
+     */
+    public static function usersheet(string $brandhex): string {
+        return self::brandvars($brandhex) . self::homevars(
+            $brandhex,
+            ':root .aty-home.aty-home',
+            ":root.dark .aty-home.aty-home,\n:root .dark .aty-home.aty-home"
+        );
+    }
+
+    /**
+     * The brand variables of a colour, set on the home instead of at the root.
+     *
+     * @param string $brandhex The brand colour, e.g. "#07316b".
+     * @param string $light The selector for the light ones.
+     * @param string $dark The selector for the dark ones.
+     * @return string The CSS, or '' for a malformed colour.
+     */
+    private static function homevars(string $brandhex, string $light, string $dark): string {
         $vars = self::brandvars($brandhex);
         // Without the light canvas, which would win over the app's dark theme once it is inside the home.
         $canvas = strpos($vars, ":root {\n    --aty-canvas");
         $vars = $canvas === false ? $vars : substr($vars, 0, $canvas);
 
-        return strtr($vars, [
-            ":root.dark,\n:root .dark" => ":root.dark .aty-home,\n:root .dark .aty-home",
-            ':root {' => '.aty-home {',
-        ]) . self::homecss();
+        return strtr($vars, [":root.dark,\n:root .dark" => $dark, ':root {' => $light . ' {']);
     }
 
     /**

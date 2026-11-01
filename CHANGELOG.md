@@ -14,6 +14,8 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Fixed
 
+- In a site shared by several schools or libraries, the home takes the user's own colour again. Its sheet for the
+  official app had set the site's on the home, over the user's.
 - The site's sign-in screens in the app take the site's brand. The bar already did, but the button kept the app's own
   colour, navy in light and sky blue in dark, next to a site's green or red.
 - The app's home reads well in the official Moodle app too. That app does not apply the site's mobile CSS, so the home

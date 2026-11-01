@@ -52,7 +52,7 @@ class get_user_style extends external_api {
 
         $brand = \local_oksigeniaaty\local\brand::for_user((int) $USER->id);
 
-        return ['css' => $brand === null ? '' : \local_oksigeniaaty\local\appcss::brandvars($brand['colour'])];
+        return ['css' => $brand === null ? '' : \local_oksigeniaaty\local\appcss::usersheet($brand['colour'])];
     }
 
     /**
