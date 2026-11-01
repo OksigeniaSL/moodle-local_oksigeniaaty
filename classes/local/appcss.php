@@ -124,6 +124,12 @@ class appcss {
 .aty-hero-logo { display: block; height: 36px; width: auto; margin: 0 0 14px; }
 /* The logo is white for the brand hero; the dark hero is light with dark text, so the logo takes a dark ink too. */
 :root.dark .aty-hero-logo, :root .dark .aty-hero-logo { filter: brightness(0); opacity: .78; }
+/* A picture on top of the hero, and the name on the brand's colour below it: it reads the same on any picture. */
+.aty-hero-pictured { overflow: hidden; padding: 0 0 18px; }
+.aty-hero-picture { display: block; width: 100%; height: 156px; object-fit: cover; }
+.aty-hero-pictured .aty-hero-logo { margin: 14px 20px 0; }
+.aty-hero-pictured .aty-hero-title { padding: 16px 20px 0; }
+.aty-hero-pictured .aty-hero-intro { padding: 0 20px; }
 .aty-hero-title { margin: 0; font-size: 1.5rem; font-weight: 800; line-height: 1.2; }
 .aty-hero-intro { margin: 6px 0 0; opacity: .9; }
 .aty-section { margin: 22px 4px 6px; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;

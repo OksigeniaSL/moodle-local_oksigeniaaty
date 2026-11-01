@@ -25,6 +25,7 @@
 
     Context variables required for this template:
     * logourl - A white logo shown over the brand hero (may be empty).
+    * pictureurl - A photo or an illustration that fills the hero (may be empty).
     * greeting - A personal greeting with the user's first name (may be empty).
     * heading - The site heading shown in the hero.
     * intro - A short welcome under the heading (may be empty).
@@ -59,7 +60,8 @@
 }}
 <div class="aty-home">
     {{#greeting}}<p class="aty-greeting">{{greeting}}</p>{{/greeting}}
-    <section class="aty-hero">
+    <section class="aty-hero{{#pictureurl}} aty-hero-pictured{{/pictureurl}}">
+        {{#pictureurl}}<img class="aty-hero-picture" src="{{pictureurl}}" alt="">{{/pictureurl}}
         {{#logourl}}<img class="aty-hero-logo" src="{{logourl}}" alt="">{{/logourl}}
         <h1 class="aty-hero-title">{{heading}}</h1>
         {{#intro}}<p class="aty-hero-intro">{{intro}}</p>{{/intro}}

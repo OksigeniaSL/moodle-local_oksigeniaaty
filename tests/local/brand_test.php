@@ -39,6 +39,7 @@ final class brand_test extends \advanced_testcase {
         $this->assertSame('Biblioteca Central', $brand['name']);
         $this->assertSame('#8e2a3c', $brand['colour']);
         $this->assertSame('', $brand['logo']);
+        $this->assertSame('', $brand['picture']);
         $this->assertSame('Lee, cuenta, vuelve', $brand['tagline']);
     }
 

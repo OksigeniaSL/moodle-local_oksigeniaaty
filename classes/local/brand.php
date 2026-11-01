@@ -31,7 +31,8 @@ class brand {
      * The first brand a plugin gives for a user, or null when none does.
      *
      * @param int $userid The user.
-     * @return array|null ['name', 'colour', 'logo', 'tagline', 'url'], or null.
+     * @return array|null ['name', 'colour', 'logo', 'picture', 'tagline', 'url'], or null. A logo is small and white; a
+     *     picture, a photo or an illustration, fills the home's hero.
      */
     public static function for_user(int $userid): ?array {
         foreach (get_plugins_with_function('oksigeniaaty_user_brand') as $plugins) {
@@ -62,6 +63,7 @@ class brand {
             'name' => (string) $brand['name'],
             'colour' => $colour,
             'logo' => empty($brand['logo']) ? '' : (string) $brand['logo'],
+            'picture' => empty($brand['picture']) ? '' : (string) $brand['picture'],
             'tagline' => (string) ($brand['tagline'] ?? ''),
             'url' => (string) ($brand['url'] ?? ''),
         ];

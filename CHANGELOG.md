@@ -22,7 +22,8 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
   registers its readers. Its own kind of key, so it leaves the user's self-service key alone; never for
   administrator, suspended or deleted accounts; each link logged with who issued it (`link_issued`).
 - A user's own brand in a site shared by several schools or libraries: plugins say which with
-  `<component>_oksigeniaaty_user_brand($userid)`. The home shows its name, tagline and logo, and the web service
+  `<component>_oksigeniaaty_user_brand($userid)`. The home shows its name, tagline and logo, or a picture that fills
+  its hero, and the web service
   `local_oksigeniaaty_get_user_style` gives the Aty app its brand colours (light and dark) to put on top of the
   site's sheet.
 - "Your agenda on your phone", in the app's user menu: subscribe the phone's calendar to the user's Moodle calendar

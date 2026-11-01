@@ -26,7 +26,7 @@ Un plugin puede estar en el inicio de la app, en la oficial de Moodle y en Oksig
 
 - `<component>_oksigeniaaty_home_cards(int $userid): array` añade para ese usuario una sección de filas y un mosaico, que
   abren una página del plugin en la app o una dirección. Los campos se explican en `classes/local/homecards.php`.
-- `<component>_oksigeniaaty_user_brand(int $userid): ?array` le da a un usuario su propio nombre, color, logo y lema,
+- `<component>_oksigeniaaty_user_brand(int $userid): ?array` le da a un usuario su propio nombre, color, logo o imagen, y lema,
   donde varios colegios o bibliotecas comparten un sitio.
 
 Y `\local_oksigeniaaty\api::issue_link($userid, $days)` y `api::send_link($userid, $days)` crean y envían un enlace de

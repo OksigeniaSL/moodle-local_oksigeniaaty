@@ -87,6 +87,23 @@ final class mobile_test extends \advanced_testcase {
     }
 
     /**
+     * The hero takes the picture only when there is one.
+     */
+    public function test_hero_picture(): void {
+        global $OUTPUT;
+        $this->resetAfterTest();
+
+        $pictured = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_home', [
+            'heading' => 'Library', 'pictureurl' => 'https://example.org/room.webp',
+        ]);
+        $this->assertStringContainsString('aty-hero-pictured', $pictured);
+        $this->assertStringContainsString('<img class="aty-hero-picture" src="https://example.org/room.webp"', $pictured);
+
+        $plain = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_home', ['heading' => 'Library']);
+        $this->assertStringNotContainsString('aty-hero-pictured', $plain);
+    }
+
+    /**
      * "Your agenda on your phone": the user's own export feed, as Google Calendar's link, as webcal and as the plain
      * address; and a plain notice when the site has calendar export turned off.
      */

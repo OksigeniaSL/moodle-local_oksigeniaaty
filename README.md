@@ -26,7 +26,7 @@ A plugin can take part in the app's home, in the official Moodle app and in Oksi
 
 - `<component>_oksigeniaaty_home_cards(int $userid): array` adds a section of rows and a tile for that user, opening a
   page of the plugin in the app or an address. The fields are described in `classes/local/homecards.php`.
-- `<component>_oksigeniaaty_user_brand(int $userid): ?array` gives a user their own name, colour, logo and tagline, where
+- `<component>_oksigeniaaty_user_brand(int $userid): ?array` gives a user their own name, colour, logo or picture, and tagline, where
   several schools or libraries share a site.
 
 And `\local_oksigeniaaty\api::issue_link($userid, $days)` and `api::send_link($userid, $days)` make and send a one-time
