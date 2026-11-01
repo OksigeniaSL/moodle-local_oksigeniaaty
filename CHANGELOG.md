@@ -14,6 +14,8 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Fixed
 
+- The site's sign-in screens in the app take the site's brand. The bar already did, but the button kept the app's own
+  colour, navy in light and sky blue in dark, next to a site's green or red.
 - The app's home reads well in the official Moodle app too. That app does not apply the site's mobile CSS, so the home
   came with no layout and a white logo on white. Its handler now brings a sheet of its own, with the brand's colours
   only inside the home; the rest of the official app keeps its look. Its tab is called "Home", not the plugin's name.

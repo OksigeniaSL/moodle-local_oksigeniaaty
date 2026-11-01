@@ -259,6 +259,9 @@ page-core-courses-my ion-list, ion-card.addon-block-myoverview { --background: t
 ion-chip.core-course-category { --background: rgba(var(--ion-color-primary-rgb), .12); --color: var(--primary);
     background: rgba(var(--ion-color-primary-rgb), .12) !important; color: var(--primary) !important; font-weight: 600; }
 :root ion-alert.md, :root ion-alert.ios { --background: var(--ion-item-background); }
+page-core-login-credentials, page-core-login-forgotten-password, page-core-login-email-signup,
+page-core-login-change-password { --core-login-brand: var(--primary) !important;
+    --core-login-brand-contrast: var(--primary-contrast) !important; }
 CSS;
     }
 

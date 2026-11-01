@@ -79,6 +79,8 @@ final class appcss_test extends \basic_testcase {
         $this->assertMatchesRegularExpression('/--aty-canvas: #[0-9a-f]{6};/', $css);
         $this->assertStringContainsString('ion-item.addon-notification-item', $css);
         $this->assertStringContainsString('addon-calendar-calendar', $css);
+        $this->assertStringContainsString('page-core-login-credentials, ', $css);
+        $this->assertStringContainsString('--core-login-brand: var(--primary) !important;', $css);
 
         $css = appcss::generate('#ffd400');
         $this->assertSame(1, preg_match('/--core-link-color: #([0-9a-f]{6});/', $css, $match));
