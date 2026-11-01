@@ -5,8 +5,17 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Security
+
+- The texts of the app's home and of "Your agenda on your phone" cannot run as templates any more. The app compiles
+  them as Angular templates and Mustache does not escape braces, so a course or an activity named with double braces
+  ran in the app of whoever saw it, with their session. Each brace now becomes its full-width look-alike.
+
 ### Added
 
+- Other plugins can add to the app's home for a user, with `<component>_oksigeniaaty_home_cards($userid)`: a section
+  of rows (a book's return date, an assignment's count) and a tile next to the shortcuts, opening a page of their own
+  in the app or an address. A library's reader, with no courses, finds their books and the way in on the home.
 - A sign-in link a school sends: `\local_oksigeniaaty\api::issue_link($userid, $days)` returns a one-time link to
   the app that lasts days (7 by default) and `api::send_link()` e-mails it, for other plugins such as a library that
   registers its readers. Its own kind of key, so it leaves the user's self-service key alone; never for

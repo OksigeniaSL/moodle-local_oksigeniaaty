@@ -163,6 +163,8 @@ class appcss {
     user-select: text; -webkit-user-select: text; background: rgba(var(--ion-color-primary-rgb), .08); }
 .aty-grading .aty-event-date { width: auto; min-width: 46px; padding: 0 8px; }
 .aty-grading .aty-event-month { letter-spacing: .02em; }
+button.aty-event { width: 100%; border: 0; font: inherit; text-align: start; }
+.aty-urgent .aty-event-date { background: rgba(var(--ion-color-danger-rgb), .14); color: var(--ion-color-danger); }
 .aty-event-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .aty-event-name { font-weight: 700; line-height: 1.25; }
 .aty-event-context { font-size: .8rem; color: var(--ion-color-medium); }

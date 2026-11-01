@@ -20,6 +20,18 @@ Copy the plugin into `local/oksigeniaaty` of your Moodle and finish the upgrade 
 
 *Site administration ▸ Plugins ▸ Local plugins ▸ Oksigenia Aty: site QR code*: the site's QR code in its brand colour and with its logo, to download as SVG for posters and letters. Each user also finds their own one-time sign-in link and QR under *Open in the Aty app*.
 
+## For other plugins
+
+A plugin can take part in the app's home, in the official Moodle app and in Oksigenia Aty, with functions in its `lib.php`:
+
+- `<component>_oksigeniaaty_home_cards(int $userid): array` adds a section of rows and a tile for that user, opening a
+  page of the plugin in the app or an address. The fields are described in `classes/local/homecards.php`.
+- `<component>_oksigeniaaty_user_brand(int $userid): ?array` gives a user their own name, colour, logo and tagline, where
+  several schools or libraries share a site.
+
+And `\local_oksigeniaaty\api::issue_link($userid, $days)` and `api::send_link($userid, $days)` make and send a one-time
+sign-in link to the app, for a plugin that registers people who have no password yet.
+
 ## Privacy
 
 The plugin stores a hash of each user's app PIN (never the PIN itself), with its failed attempts, and uses Moodle's one-time user keys for the sign-in links. Both are declared to Moodle's privacy API, which exports and deletes them with the rest of the user's data.

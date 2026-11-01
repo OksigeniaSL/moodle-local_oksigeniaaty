@@ -24,6 +24,9 @@
 
 namespace local_oksigeniaaty\output;
 
+use local_oksigeniaaty\local\homecards;
+use local_oksigeniaaty\local\template;
+
 /**
  * Builds what the app shows: for now, the per-site home tab.
  */
@@ -58,7 +61,7 @@ class mobile {
         $events = self::events();
         $grading = self::grading();
 
-        $data = [
+        $data = template::inert([
             'logourl' => $logourl,
             'greeting' => trim($USER->firstname) !== ''
                 ? get_string('home:greeting', 'local_oksigeniaaty', format_string($USER->firstname))
@@ -78,7 +81,17 @@ class mobile {
             'courses' => $courses,
             'hascourses' => !empty($courses),
             'opensoutside' => get_string('home:opensoutside', 'local_oksigeniaaty'),
-        ];
+        ]);
+
+        // What other plugins add for this user; each of their texts already inert.
+        $cards = homecards::for_user((int) $USER->id);
+        $data['cards'] = array_values(array_filter($cards, fn($card) => $card['hasitems']));
+        foreach ($cards as $card) {
+            if ($card['tile'] !== null) {
+                $data['shortcuts'][] = $card['tile'];
+                $data['hasshortcuts'] = true;
+            }
+        }
 
         return [
             'templates' => [
@@ -127,6 +140,7 @@ class mobile {
                 'googleurl' => 'https://calendar.google.com/calendar/r?cid=' . rawurlencode($webcal),
             ];
         }
+        $data = template::inert($data);
 
         return [
             'templates' => [

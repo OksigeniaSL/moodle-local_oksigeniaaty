@@ -64,6 +64,26 @@ final class mobile_test extends \advanced_testcase {
     }
 
     /**
+     * The names of a course and of its events cannot run as templates in the app of whoever sees them.
+     */
+    public function test_names_are_inert(): void {
+        $this->resetAfterTest();
+
+        $generator = $this->getDataGenerator();
+        $course = $generator->create_course(['fullname' => '{{ course }}', 'shortname' => '{{ short }}']);
+        $student = $generator->create_and_enrol($course, 'student', ['firstname' => '{{ first }}']);
+        $generator->create_event([
+            'name' => '{{ event }}', 'courseid' => $course->id, 'eventtype' => 'course', 'timestart' => time() + DAYSECS,
+        ]);
+
+        $this->setUser($student);
+        $html = self::home();
+        $this->assertStringContainsString('｛｛ course ｝｝', $html);
+        $this->assertStringContainsString('｛｛ event ｝｝', $html);
+        $this->assertStringNotContainsString('{{', $html);
+    }
+
+    /**
      * "Your agenda on your phone": the user's own export feed, as Google Calendar's link, as webcal and as the plain
      * address; and a plain notice when the site has calendar export turned off.
      */

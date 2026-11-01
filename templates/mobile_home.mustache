@@ -40,6 +40,9 @@
     * opensoutside - Accessible label for the "opens outside the app" marker.
     * gradingheading, grading, hasgrading - For teachers: the assignments waiting for a grade (name, context, count,
       countlabel, viewurl).
+    * cards - Sections other plugins add for this user: { heading, items }. An item has title, detail, urgent, its chip
+      (hasdate, timestamp, day, month; or hascount, count, countlabel) and where it opens (ispage, component, method,
+      pagetitle, argsjson; or url). Their tiles come among the shortcuts, with the same fields for where they open.
 
     Example context (json):
     {
@@ -78,6 +81,33 @@
         {{/grading}}
     </div>
     {{/hasgrading}}
+    {{#cards}}
+    <h2 class="aty-section">{{heading}}</h2>
+    <div class="aty-agenda">
+        {{#items}}
+        {{#ispage}}<button type="button" class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}
+        {{^ispage}}<a class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="true">{{/ispage}}
+            {{#hasdate}}
+            <span class="aty-event-date">
+                <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
+                <span class="aty-event-month" [textContent]="({{timestamp}} | coreFormatDate:'%b').replace('.', '')">{{month}}</span>
+            </span>
+            {{/hasdate}}
+            {{#hascount}}
+            <span class="aty-event-date">
+                <span class="aty-event-day">{{count}}</span>
+                <span class="aty-event-month">{{countlabel}}</span>
+            </span>
+            {{/hascount}}
+            <span class="aty-event-body">
+                <span class="aty-event-name">{{title}}</span>
+                {{#detail}}<span class="aty-event-context">{{detail}}</span>{{/detail}}
+            </span>
+        {{#ispage}}</button>{{/ispage}}
+        {{^ispage}}</a>{{/ispage}}
+        {{/items}}
+    </div>
+    {{/cards}}
     {{#hasevents}}
     <h2 class="aty-section">{{eventsheading}}</h2>
     <div class="aty-agenda">
@@ -101,7 +131,8 @@
     <ion-grid class="aty-tiles"><ion-row>
         {{#shortcuts}}
         <ion-col size="6">
-            <ion-card class="aty-tile" button="true" core-link href="{{url}}" capture="{{^external}}true{{/external}}{{#external}}false{{/external}}">
+            {{#ispage}}<ion-card class="aty-tile" button="true" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}
+            {{^ispage}}<ion-card class="aty-tile" button="true" core-link href="{{url}}" capture="{{^external}}true{{/external}}{{#external}}false{{/external}}">{{/ispage}}
                 <span class="aty-tile-icon"><ion-icon name="{{icon}}" aria-hidden="true"></ion-icon></span>
                 <span class="aty-tile-label">{{label}}</span>
                 {{#external}}<ion-icon class="aty-tile-out" name="fas-arrow-up-right-from-square" aria-label="{{opensoutside}}"></ion-icon>{{/external}}
