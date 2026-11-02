@@ -27,8 +27,8 @@ namespace local_oksigeniaaty\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class channels {
-    /** Icons of the channels that Marandu can offer. */
-    private const ICONS = ['whatsapp' => 'fab-whatsapp', 'telegram' => 'fab-telegram'];
+    /** Icons of the channels that Marandu can offer: the apps do not ship the logos of these two. */
+    private const ICONS = ['whatsapp' => 'fas-comment', 'telegram' => 'fas-paper-plane'];
 
     /**
      * Whether there is anything to choose: without a messaging channel, the app and the email need no page of their own.

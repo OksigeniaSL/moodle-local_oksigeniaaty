@@ -88,7 +88,7 @@ final class channels_test extends \advanced_testcase {
             'intro' => 'Intro',
             'rows' => [
                 ['name' => 'This app', 'icon' => 'fas-mobile-screen', 'detail' => 'Here', 'on' => true],
-                ['name' => 'WhatsApp', 'icon' => 'fab-whatsapp', 'url' => 'https://wa.me/1', 'connect' => 'Connect WhatsApp'],
+                ['name' => 'WhatsApp', 'icon' => 'fas-comment', 'url' => 'https://wa.me/1', 'connect' => 'Connect WhatsApp'],
             ],
             'prefsurl' => 'https://example.com/message/notificationpreferences.php',
         ]);
