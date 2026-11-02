@@ -181,6 +181,18 @@ function local_oksigeniaaty_user_can_selfservice(int $userid): bool {
 }
 
 /**
+ * The families' way into the app has just been turned on or off. The accounts it makes need the web service authentication:
+ * on, it is turned on. Off, it stays as it is, because the accounts already made go on using it.
+ *
+ * @return void
+ */
+function local_oksigeniaaty_familyapp_changed(): void {
+    if (get_config('local_oksigeniaaty', 'familyapp')) {
+        \core\plugininfo\auth::enable_plugin('webservice', 1);
+    }
+}
+
+/**
  * What the family plugin shows to whoever has just claimed a child's code: the way into the app. Not for an adult with a real
  * account of the site, who signs in as always. The account is not made until the link is used.
  *

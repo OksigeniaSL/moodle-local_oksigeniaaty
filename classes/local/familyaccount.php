@@ -45,7 +45,8 @@ class familyaccount {
     }
 
     /**
-     * Whether this site can offer the app to a family at all.
+     * Whether this site offers the app to families: the centre has said so, which also turned on the web service
+     * authentication these accounts use. Without it, Moodle refuses them, and nothing outside an administrator's hand turns it on.
      *
      * @return bool
      */
@@ -53,6 +54,7 @@ class familyaccount {
         global $CFG;
 
         return class_exists(\local_oksigeniafamily\api::class) && \local_oksigeniafamily\api::is_available()
+            && get_config('local_oksigeniaaty', 'familyapp') && is_enabled_auth('webservice')
             && !empty($CFG->enablewebservices) && !empty($CFG->enablemobilewebservice)
             && get_config('tool_mobile', 'forcedurlscheme') === 'oksigeniaaty'
             && (int) get_config('tool_mobile', 'typeoflogin') <= 1;

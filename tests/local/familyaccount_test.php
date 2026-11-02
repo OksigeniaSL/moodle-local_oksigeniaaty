@@ -48,6 +48,8 @@ final class familyaccount_test extends \advanced_testcase {
         set_config('enablemobilewebservice', 1);
         set_config('forcedurlscheme', 'oksigeniaaty', 'tool_mobile');
         set_config('typeoflogin', 1, 'tool_mobile');
+        set_config('familyapp', 1, 'local_oksigeniaaty');
+        local_oksigeniaaty_familyapp_changed();
     }
 
     /**
@@ -94,6 +96,11 @@ final class familyaccount_test extends \advanced_testcase {
         $this->assertTrue(familyaccount::is_own($user));
         $this->assertSame('ana@example.org', $user->email);
         $this->assertFalse(get_auth_plugin('webservice')->user_login($user->username, 'whatever'));
+        // Moodle lets it use the web services: without this, the app signs in and the first call is refused.
+        $this->assertTrue(is_enabled_auth('webservice'));
+        if (class_exists(\core_auth\validate_user::class)) {
+            \core\di::get(\core_auth\validate_user::class)->validate_before_external_login($user);
+        }
         $this->assertSame($userid, familyaccount::ensure((int) $adult->id));
         $this->assertSame($userid, (int) $DB->get_field('local_oksigeniafamily_adult', 'userid', ['id' => $adult->id]));
     }
@@ -138,6 +145,14 @@ final class familyaccount_test extends \advanced_testcase {
         $this->assertStringContainsString('/local/oksigeniaaty/family.php?k=', $links[0]['url']);
 
         set_config('forcedurlscheme', '', 'tool_mobile');
+        $this->assertSame([], \local_oksigeniaaty_oksigeniafamily_links($adult, (int) $student->id));
+        set_config('forcedurlscheme', 'oksigeniaaty', 'tool_mobile');
+
+        // Until the centre turns it on, nothing is offered.
+        set_config('familyapp', 0, 'local_oksigeniaaty');
+        $this->assertSame([], \local_oksigeniaaty_oksigeniafamily_links($adult, (int) $student->id));
+        set_config('familyapp', 1, 'local_oksigeniaaty');
+        \core\plugininfo\auth::enable_plugin('webservice', 0);
         $this->assertSame([], \local_oksigeniaaty_oksigeniafamily_links($adult, (int) $student->id));
     }
 

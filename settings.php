@@ -124,6 +124,14 @@ if ($hassiteconfig) {
             new lang_string('settings:family', 'local_oksigeniaaty'),
             new lang_string('settings:family_desc', 'local_oksigeniaaty')
         ));
+        $familyapp = new admin_setting_configcheckbox(
+            'local_oksigeniaaty/familyapp',
+            new lang_string('settings:familyapp', 'local_oksigeniaaty'),
+            new lang_string('settings:familyapp_desc', 'local_oksigeniaaty'),
+            0
+        );
+        $familyapp->set_updatedcallback('local_oksigeniaaty_familyapp_changed');
+        $settings->add($familyapp);
         $settings->add(new admin_setting_configcheckbox(
             'local_oksigeniaaty/familyagenda',
             new lang_string('settings:familyagenda', 'local_oksigeniaaty'),
