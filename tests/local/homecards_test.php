@@ -114,6 +114,56 @@ final class homecards_test extends \advanced_testcase {
     }
 
     /**
+     * Moodle's s() lets numeric character references through and the app's compiler decodes them before it looks for
+     * expressions, so no reference may reach a template, whatever its form or depth.
+     *
+     * @dataProvider references_provider
+     * @param string $given The text.
+     * @param string $inert What it has to become.
+     */
+    public function test_references_are_inert(string $given, string $inert): void {
+        $this->assertSame($inert, template::inert($given));
+        // What Mustache writes in the template, in a text and in an address.
+        $this->assertDoesNotMatchRegularExpression('/&#(\d+|x[0-9a-f]+);/i', s(template::inert($given)));
+        $this->assertDoesNotMatchRegularExpression('/&#(\d+|x[0-9a-f]+);/i', s(template::inert($given, true)));
+    }
+
+    /**
+     * Texts with character references.
+     *
+     * @return array
+     */
+    public static function references_provider(): array {
+        return [
+            'decimal' => ['&#123;&#123;7*7&#125;&#125;', '｛｛7*7｝｝'],
+            'hexadecimal' => ['&#x7b;&#X7B;7*7&#x7d;&#X7D;', '｛｛7*7｝｝'],
+            'leading zeros' => ['&#0000123;&#x0007b;7*7&#0125;&#x7D;', '｛｛7*7｝｝'],
+            'nested' => ['&#38;#123;&#38;#123;7*7&#38;#125;&#38;#125;', '｛｛7*7｝｝'],
+            'nested twice' => ['&amp;#38;#123;&amp;amp;#123;7*7', '｛｛7*7'],
+            'named' => ['&lbrace;&lcub;7*7&rbrace;&rcub;', '｛｛7*7｝｝'],
+            'at sign' => ['&commat;if (a)', '＠if (a)'],
+            'numeric at sign' => ['&#64;let a = 1;', '＠let a = 1;'],
+            'out of range' => ['a&#9999999999;b&#x110000;c', 'abc'],
+            'joined after removing one' => ['&#&#1;123;&#&#1;123;7*7', '｛｛7*7'],
+            'an ordinary text' => ['Tom &amp; Jerry', 'Tom & Jerry'],
+            'not a reference' => ['R&D; 5 &#; &#x;', 'R&D; 5 &#; &#x;'],
+        ];
+    }
+
+    /**
+     * A reference to a quotation mark does not leave its string in the page's arguments, which the app reads as an
+     * expression.
+     */
+    public function test_references_stay_inside_the_arguments(): void {
+        $card = homecards::clean([
+            'heading' => 'Heading',
+            'items' => [['title' => 'Title', 'method' => 'mobile_record_view', 'args' => ['q' => '&#34;+a+&#34;']]],
+        ], 'local_x');
+
+        $this->assertSame('{"q":"\"+a+\""}', $card['items'][0]['argsjson']);
+    }
+
+    /**
      * An at sign cannot start a block in a text, and stays where it is in an address and in a page's arguments.
      */
     public function test_at_signs(): void {

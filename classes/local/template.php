@@ -23,6 +23,10 @@ namespace local_oksigeniaaty\local;
  * at signs. A course or an activity named with «{{ … }}» or «@let» would run in the app of whoever sees it, with their
  * session, and an unfinished «@if» would stop the whole page from compiling.
  *
+ * Character references count too. Moodle's s() lets the numeric ones through and the compiler decodes them before it
+ * looks for expressions, so «&#123;&#123; … &#125;&#125;» runs, «&#34;» leaves a string in a bound attribute, and
+ * «&#9999999999;» does not compile.
+ *
  * @package    local_oksigeniaaty
  * @copyright  2026 Oksigenia SL <dev@oksigenia.cc>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -35,7 +39,8 @@ class template {
     private const TEXT = self::BRACES + ['@' => '＠'];
 
     /**
-     * Texts that cannot run: each brace and at sign becomes its full-width look-alike, which reads the same.
+     * Texts that cannot run: without character references, and each brace and at sign as its full-width look-alike,
+     * which reads the same.
      *
      * The values under a key ending in «url» are addresses that only go in attributes, where an at sign has to stay.
      *
@@ -52,6 +57,27 @@ class template {
             return $inert;
         }
 
-        return is_string($data) ? strtr($data, $attribute ? self::BRACES : self::TEXT) : $data;
+        return is_string($data) ? strtr(self::without_references($data), $attribute ? self::BRACES : self::TEXT) : $data;
+    }
+
+    /**
+     * A text with its character references decoded, at any depth, so that Mustache escapes what they stood for.
+     *
+     * Only for what a template shows through «{{ }}»: a reference that held a tag comes out as that tag.
+     *
+     * @param string $text The text.
+     * @return string
+     */
+    private static function without_references(string $text): string {
+        do {
+            $before = $text;
+            $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            if ($text === $before) {
+                // The numeric ones PHP keeps, such as one out of range. Removing one can join the pieces of another.
+                $text = preg_replace('/&#(\d+|x[0-9a-f]+);/i', '', $text);
+            }
+        } while ($text !== $before);
+
+        return $text;
     }
 }
