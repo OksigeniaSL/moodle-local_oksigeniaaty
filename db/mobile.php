@@ -52,6 +52,18 @@ $addons = [
                 ],
             ],
             // "Your agenda on your phone": subscribe a calendar app to the user's Moodle calendar. In the user menu only.
+            // "Where to get your notices": only where the site has a messaging channel to offer.
+            'channels' => [
+                'delegate' => 'CoreUserDelegate',
+                'init' => 'channels_init',
+                'method' => 'mobile_channels',
+                'displayinusermenu' => 'only',
+                'restricttocurrentuser' => true,
+                'displaydata' => [
+                    'title' => 'channels:title',
+                    'icon' => 'fas-bell',
+                ],
+            ],
             'calendar' => [
                 'delegate' => 'CoreUserDelegate',
                 'method' => 'mobile_calendar',
@@ -66,6 +78,7 @@ $addons = [
         'lang' => [
             ['home:tab', 'local_oksigeniaaty'],
             ['calendarapp:title', 'local_oksigeniaaty'],
+            ['channels:title', 'local_oksigeniaaty'],
         ],
     ],
 ];

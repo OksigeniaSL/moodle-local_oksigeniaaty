@@ -1,0 +1,57 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_oksigeniaaty/mobile_channels
+
+    "Where to get your notices", in the app's user menu: the places the site can reach someone, and a button to connect each
+    one they do not use yet.
+
+    Context variables required for this template:
+    * intro - What this page is, with the site's name.
+    * rows - Each place: name, icon, detail, on, url, connect (the button's words).
+    * prefsurl - Moodle's notification preferences, which the app opens in its own page.
+
+    Example context (json):
+    {
+        "intro": "These are the places Campus can reach you.",
+        "rows": [
+            {"name": "This app", "icon": "fas-mobile-screen", "detail": "Here, on your phone", "on": true},
+            {"name": "WhatsApp", "icon": "fab-whatsapp", "url": "https://wa.me/34000000000", "connect": "Connect WhatsApp"}
+        ],
+        "prefsurl": "https://example.com/message/notificationpreferences.php"
+    }
+}}
+<div class="aty-home">
+    <p>{{intro}}</p>
+    <div class="aty-agenda">
+        {{#rows}}
+        <div class="aty-event">
+            <span class="aty-event-date"><ion-icon name="{{icon}}" aria-hidden="true"></ion-icon></span>
+            <span class="aty-event-body">
+                <span class="aty-event-name">{{name}}</span>
+                {{#detail}}<span class="aty-event-context">{{detail}}</span>{{/detail}}
+            </span>
+            {{#on}}<ion-icon name="fas-circle-check" color="success" aria-label="{{#str}} channels:on, local_oksigeniaaty {{/str}}"></ion-icon>{{/on}}
+            {{#url}}<ion-button size="small" core-link href="{{url}}" capture="false" aria-label="{{connect}}">{{#str}} channels:connect, local_oksigeniaaty {{/str}}</ion-button>{{/url}}
+        </div>
+        {{/rows}}
+    </div>
+    <ion-button expand="block" fill="outline" class="ion-margin-top" core-link href="{{prefsurl}}" capture="true">
+        <ion-icon name="fas-sliders" slot="start" aria-hidden="true"></ion-icon>
+        {{#str}} channels:preferences, local_oksigeniaaty {{/str}}
+    </ion-button>
+</div>

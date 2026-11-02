@@ -24,6 +24,7 @@
 
 namespace local_oksigeniaaty\output;
 
+use local_oksigeniaaty\local\channels;
 use local_oksigeniaaty\local\homecards;
 use local_oksigeniaaty\local\template;
 
@@ -183,6 +184,49 @@ class mobile {
                 [
                     'id' => 'main',
                     'html' => $OUTPUT->render_from_template('local_oksigeniaaty/mobile_calendar', $data),
+                ],
+            ],
+            'javascript' => '',
+            'otherdata' => [],
+        ];
+    }
+
+    /**
+     * Whether "Where to get your notices" shows on this site.
+     *
+     * @param array $args The arguments the app sends.
+     * @return array What the app expects from an init method.
+     */
+    public static function channels_init(array $args): array {
+        return [
+            'templates' => [],
+            'javascript' => '',
+            'otherdata' => [],
+            'disabled' => !channels::available(),
+        ];
+    }
+
+    /**
+     * "Where to get your notices".
+     *
+     * @param array $args The arguments the app sends.
+     * @return array The template, javascript and data the app expects.
+     */
+    public static function mobile_channels(array $args): array {
+        global $OUTPUT, $USER;
+
+        $component = 'local_oksigeniaaty';
+        $data = template::inert([
+            'intro' => get_string('channels:intro', $component, format_string(get_site()->shortname)),
+            'rows' => channels::for_user($USER),
+            'prefsurl' => (new \moodle_url('/message/notificationpreferences.php'))->out(false),
+        ], true);
+
+        return [
+            'templates' => [
+                [
+                    'id' => 'main',
+                    'html' => $OUTPUT->render_from_template('local_oksigeniaaty/mobile_channels', $data),
                 ],
             ],
             'javascript' => '',
