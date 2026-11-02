@@ -219,6 +219,19 @@ function local_oksigeniaaty_oksigeniafamily_links(stdClass $adult, int $childuse
 }
 
 /**
+ * Whether the visitor is on an iPhone or an iPad while the site has no App Store address: there is no app to offer them.
+ * iPadOS's Safari can present itself as a Mac, and then it is taken for a computer, which is offered the QR.
+ *
+ * @return bool
+ */
+function local_oksigeniaaty_is_ios_without_app(): bool {
+    $useragent = (string) \core_useragent::get_user_agent_string();
+
+    return preg_match('/iPhone|iPad|iPod/', $useragent) === 1
+        && trim((string) get_config('local_oksigeniaaty', 'iosstoreurl')) === '';
+}
+
+/**
  * Add a link to a user's own Aty sign-in page on their profile (self-service).
  *
  * @param \core_user\output\myprofile\tree $tree The profile tree.
@@ -250,7 +263,7 @@ function local_oksigeniaaty_myprofile_navigation(
         ));
     }
 
-    if (local_oksigeniaaty_user_can_selfservice($userid)) {
+    if (local_oksigeniaaty_user_can_selfservice($userid) && !local_oksigeniaaty_is_ios_without_app()) {
         $tree->add_node(new \core_user\output\myprofile\node(
             'miscellaneous',
             'oksigeniaatylink',

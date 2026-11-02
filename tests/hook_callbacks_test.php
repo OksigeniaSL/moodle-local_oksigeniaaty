@@ -44,6 +44,63 @@ final class hook_callbacks_test extends \advanced_testcase {
     }
 
     /**
+     * Where the app is offered only to some cohorts, the bar is too: not without a session, not outside them, and in them, yes.
+     */
+    public function test_openinapp_bar_follows_the_cohorts(): void {
+        global $CFG, $PAGE;
+        require_once($CFG->dirroot . '/cohort/lib.php');
+        $this->resetAfterTest();
+        $PAGE->set_url('/my/');
+        $PAGE->set_pagelayout('standard');
+        set_config('openinappbar', 1, 'local_oksigeniaaty');
+        $android = 'Mozilla/5.0 (Linux; Android 16; Pixel 8) AppleWebKit/537.36 Chrome/130.0 Mobile Safari/537.36';
+        \core_useragent::instance(true, $android);
+
+        $generator = $this->getDataGenerator();
+        $cohort = $generator->create_cohort();
+        $inside = $generator->create_user();
+        $outside = $generator->create_user();
+        cohort_add_member($cohort->id, $inside->id);
+
+        $this->setUser(null);
+        $this->assertNotSame('', hook_callbacks::openinapp_bar());
+
+        set_config('selfservicecohorts', (string) $cohort->id, 'local_oksigeniaaty');
+        $this->assertSame('', hook_callbacks::openinapp_bar());
+
+        $this->setUser($outside);
+        $this->assertSame('', hook_callbacks::openinapp_bar());
+
+        $this->setUser($inside);
+        $this->assertNotSame('', hook_callbacks::openinapp_bar());
+
+        \core_useragent::instance(true);
+    }
+
+    /**
+     * On an iPhone with no app in the App Store, nothing offers one; when the site has its address, it is offered.
+     */
+    public function test_no_app_offered_on_iphone(): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
+        $this->resetAfterTest();
+        $iphone = 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1';
+
+        \core_useragent::instance(true, $iphone);
+        set_config('iosstoreurl', '', 'local_oksigeniaaty');
+        $this->assertTrue(local_oksigeniaaty_is_ios_without_app());
+
+        set_config('iosstoreurl', 'https://apps.apple.com/app/id1', 'local_oksigeniaaty');
+        $this->assertFalse(local_oksigeniaaty_is_ios_without_app());
+
+        set_config('iosstoreurl', '', 'local_oksigeniaaty');
+        \core_useragent::instance(true, 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/130.0 Safari/537.36');
+        $this->assertFalse(local_oksigeniaaty_is_ios_without_app());
+
+        \core_useragent::instance(true);
+    }
+
+    /**
      * The "open this page in the app" bar: only when the site turns it on, on Android, outside the app and until hidden,
      * and it opens that same page in the site's app, through its scheme and package.
      */

@@ -51,6 +51,15 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title(get_string('mylink:heading', 'local_oksigeniaaty'));
 $PAGE->set_heading(get_string('mylink:heading', 'local_oksigeniaaty'));
 
+// An address saved or shared: no app to open on this phone, so no key to hand out.
+if (local_oksigeniaaty_is_ios_without_app()) {
+    echo $OUTPUT->header();
+    echo html_writer::tag('p', get_string('noios', 'local_oksigeniaaty'));
+    echo html_writer::link(new moodle_url('/'), get_string('continue'), ['class' => 'btn btn-primary']);
+    echo $OUTPUT->footer();
+    exit;
+}
+
 // A fresh one-time key for this user on every visit.
 $key = \local_oksigeniaaty\local\loginkey::create($USER->id);
 $openurl = new moodle_url('/local/oksigeniaaty/open.php', ['key' => $key]);

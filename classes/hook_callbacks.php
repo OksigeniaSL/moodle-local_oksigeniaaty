@@ -46,7 +46,7 @@ class hook_callbacks {
             return;
         }
         require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
-        if (!local_oksigeniaaty_user_can_selfservice((int) $USER->id)) {
+        if (!local_oksigeniaaty_user_can_selfservice((int) $USER->id) || local_oksigeniaaty_is_ios_without_app()) {
             return;
         }
 
@@ -88,7 +88,7 @@ class hook_callbacks {
      * @return string The HTML.
      */
     public static function openinapp_bar(): string {
-        global $CFG, $OUTPUT, $PAGE;
+        global $CFG, $OUTPUT, $PAGE, $USER;
 
         if (
             during_initial_install() || empty($CFG->enablemobilewebservice)
@@ -102,6 +102,14 @@ class hook_callbacks {
         }
         if (!empty($_COOKIE[self::BAR_COOKIE]) || in_array($PAGE->pagelayout, self::BAR_SKIP_LAYOUTS, true)) {
             return '';
+        }
+        // Where the app is offered only to some cohorts, so is the bar: with a session and in one of them, which also leaves
+        // out the sign-in page, where nobody is known yet.
+        if (trim((string) get_config('local_oksigeniaaty', 'selfservicecohorts')) !== '') {
+            require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
+            if (!isloggedin() || isguestuser() || !local_oksigeniaaty_user_can_selfservice((int) $USER->id)) {
+                return '';
+            }
         }
         $pageurl = $PAGE->has_set_url() ? $PAGE->url : new \moodle_url('/');
         if (strpos($pageurl->get_path(), '/local/oksigeniaaty/') !== false) {

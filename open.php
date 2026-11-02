@@ -28,6 +28,7 @@
 define('NO_MOODLE_COOKIES', true);
 
 require(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
 
 $keyvalue = required_param('key', PARAM_ALPHANUMEXT);
 
@@ -41,7 +42,17 @@ $iosurl = trim((string) get_config('local_oksigeniaaty', 'iosstoreurl'));
 
 $title = s(get_string('open:title', 'local_oksigeniaaty'));
 
-if ($live) {
+if ($live && local_oksigeniaaty_is_ios_without_app()) {
+    // No app to open or to install: the way on is the browser, and the key stays good for an Android phone.
+    $noios = s(get_string('noios', 'local_oksigeniaaty'));
+    $siteurl = s($CFG->wwwroot);
+    $gotosite = s(get_string('open:gotosite', 'local_oksigeniaaty'));
+    $body = <<<HTML
+    <h1>$title</h1>
+    <p>$noios</p>
+    <a class="btn" href="$siteurl">$gotosite</a>
+HTML;
+} else if ($live) {
     $opening = s(get_string('open:opening', 'local_oksigeniaaty'));
     $openbtn = s(get_string('open:openbtn', 'local_oksigeniaaty'));
     $noapp = s(get_string('open:noapp', 'local_oksigeniaaty'));
