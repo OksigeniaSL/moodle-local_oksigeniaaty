@@ -18,7 +18,8 @@
  * A page of this site that opens in the app on the phone that has it: the buttons of e-mails, which mail programs would
  * otherwise open in the browser, asking to sign in again. Elsewhere, and where the app is not installed, it goes on to the page.
  *
- * Public and pre-login. It only ever leads to a page of this site, which asks for what it asks for.
+ * Public and pre-login. It only ever leads to a page of this site, which asks for what it asks for. The account the link is
+ * for, if it says, goes on to the app as it came; nothing here looks it up.
  *
  * @package    local_oksigeniaaty
  * @copyright  2026 Oksigenia SL <dev@oksigenia.cc>
@@ -45,7 +46,7 @@ $title = s(get_string('go:title', 'local_oksigeniaaty'));
 $opening = s(get_string('open:opening', 'local_oksigeniaaty'));
 $openbtn = s(get_string('go:openbtn', 'local_oksigeniaaty'));
 $web = s(get_string('go:web', 'local_oksigeniaaty'));
-$intent = \local_oksigeniaaty\api::app_intent($target);
+$intent = \local_oksigeniaaty\api::app_intent($target, optional_param('for', '', PARAM_ALPHANUM));
 $intentattr = s($intent);
 $targetattr = s($target);
 $intentjs = json_encode($intent);

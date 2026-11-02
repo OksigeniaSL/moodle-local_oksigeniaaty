@@ -31,6 +31,9 @@ use local_oksigeniaaty\local\loginkey;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class api {
+    /** @var string The Android package of Aty, whose links carry a mark of their own. */
+    private const ATY_PACKAGE = 'com.oksigenia.aty';
+
     /**
      * A one-time sign-in link to the app for a user.
      *
@@ -66,21 +69,28 @@ class api {
     /**
      * The address of a page of this site for a message to someone: it opens in the app if they have used it on a phone, so
      * a button in an e-mail does not leave them in the browser, asked to sign in again. Otherwise, the page itself. Any
-     * other address stays as it is. It works with whichever app the site has set.
+     * other address stays as it is. It works with whichever app the site has set. With Aty it opens in their account, if there
+     * are several on the phone: the address says which one as the app knows it, a hash of the site and the username, as Moodle's
+     * own notices do.
      *
      * @param int $userid Who the message is for.
      * @param string $url The page.
      * @return string The address to use.
      */
     public static function app_link(int $userid, string $url): string {
-        global $DB;
+        global $CFG, $DB;
 
         $package = get_config('tool_mobile', 'androidappid') ?: 'com.moodle.moodlemobile';
         if (self::local_target($url) === null || !$DB->record_exists('user_devices', ['userid' => $userid, 'appid' => $package])) {
             return $url;
         }
 
-        return (new \moodle_url('/local/oksigeniaaty/go.php', ['to' => $url]))->out(false);
+        $username = $DB->get_field('user', 'username', ['id' => $userid], MUST_EXIST);
+
+        return (new \moodle_url('/local/oksigeniaaty/go.php', [
+            'to' => $url,
+            'for' => md5($CFG->wwwroot . $username),
+        ]))->out(false);
     }
 
     /**
@@ -102,14 +112,25 @@ class api {
     /**
      * What opens a page in the site's app on Android, or goes on to the page where the app is not installed.
      *
+     * For Aty, the link carries a mark that the app takes off: the account, and something new each time. Android hands the
+     * link that opened the app over again when it brings the app back after closing it, and the mark tells that from a tap.
+     *
      * @param string $target The page, in full.
+     * @param string $account The account it is for, as the app knows it; empty if unknown.
      * @return string
      */
-    public static function app_intent(string $target): string {
+    public static function app_intent(string $target, string $account = ''): string {
         $scheme = get_config('tool_mobile', 'forcedurlscheme') ?: 'moodlemobile';
         $package = get_config('tool_mobile', 'androidappid') ?: 'com.moodle.moodlemobile';
 
-        return 'intent://link=' . rawurlencode($target) . '#Intent;scheme=' . $scheme . ';package=' . $package
+        $link = $target;
+        if ($package === self::ATY_PACKAGE) {
+            $marked = new \moodle_url($target);
+            $marked->param('atylink', $account . '.' . random_string(12));
+            $link = $marked->out(false);
+        }
+
+        return 'intent://link=' . rawurlencode($link) . '#Intent;scheme=' . $scheme . ';package=' . $package
             . ';S.browser_fallback_url=' . rawurlencode($target) . ';end';
     }
 

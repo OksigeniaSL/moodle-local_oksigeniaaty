@@ -117,6 +117,7 @@ final class api_test extends \advanced_testcase {
         $this->assertStringStartsWith($CFG->wwwroot . '/local/oksigeniaaty/go.php?to=', $link);
         parse_str((string) parse_url($link, PHP_URL_QUERY), $params);
         $this->assertSame($page, $params['to']);
+        $this->assertSame(md5($CFG->wwwroot . $user->username), $params['for']);
 
         $this->assertSame('https://example.org/x', api::app_link($user->id, 'https://example.org/x'));
     }
@@ -148,5 +149,23 @@ final class api_test extends \advanced_testcase {
         $intent = api::app_intent('https://example.org/a?b=1&c=2');
         $this->assertSame('intent://link=https%3A%2F%2Fexample.org%2Fa%3Fb%3D1%26c%3D2#Intent;scheme=exampleapp;'
             . 'package=com.example.app;S.browser_fallback_url=https%3A%2F%2Fexample.org%2Fa%3Fb%3D1%26c%3D2;end', $intent);
+    }
+
+    /**
+     * Aty's link says whose account it is and is new each time; where the app is not installed, the page as it was.
+     */
+    public function test_app_intent_for_aty(): void {
+        $this->resetAfterTest();
+
+        set_config('forcedurlscheme', 'oksigeniaaty', 'tool_mobile');
+        set_config('androidappid', 'com.oksigenia.aty', 'tool_mobile');
+        $page = 'https://example.org/a?b=1';
+        $intent = api::app_intent($page, 'abc123');
+
+        $link = rawurlencode($page) . '%26atylink%3Dabc123';
+        $this->assertMatchesRegularExpression('/^intent:\/\/link=' . preg_quote($link, '/') . '\.[a-zA-Z0-9]{12}#Intent;/', $intent);
+        $this->assertStringEndsWith(';S.browser_fallback_url=' . rawurlencode($page) . ';end', $intent);
+        $this->assertNotSame($intent, api::app_intent($page, 'abc123'));
+        $this->assertStringContainsString('%3Fatylink%3D.', api::app_intent('https://example.org/a'));
     }
 }
