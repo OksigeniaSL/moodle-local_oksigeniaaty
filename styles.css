@@ -5,7 +5,8 @@
 .local-oksigeniaaty-bar {
     position: fixed;
     right: 0;
-    bottom: 0;
+    /* Above Moodle's sticky footer where the page has one: it holds the buttons to go on to the next activity. */
+    bottom: var(--sticky-footer-total-height, 0px);
     left: 0;
     z-index: 1035;
     display: flex;
@@ -32,18 +33,27 @@
     text-decoration: none;
 }
 
-/* Room for the bar, so it never covers the end of the page or the footer's help button. */
+/* Room for the bar, so it never covers the end of the page or what floats at its foot, with or without a sticky footer. */
 body:has(.local-oksigeniaaty-bar) {
-    padding-bottom: 4rem;
+    padding-bottom: calc(4rem + var(--sticky-footer-total-height, 0px));
 }
 
 body:has(.local-oksigeniaaty-bar) .btn-footer-popover {
-    bottom: 5rem;
+    bottom: calc(5rem + var(--sticky-footer-total-height, 0px));
+}
+
+body:has(.local-oksigeniaaty-bar) .btn-footer-communication {
+    bottom: calc(8rem + var(--sticky-footer-total-height, 0px));
+}
+
+body:has(.local-oksigeniaaty-bar) .maintenancewarning {
+    bottom: calc(4rem + var(--sticky-footer-total-height, 0px));
 }
 
 /* The button of Oksigenia Access rises with it: left where it was, it covers the start of the bar's text. */
+/* stylelint-disable-next-line selector-type-no-unknown */
 html body:has(.local-oksigeniaaty-bar) oksigenia-access-panel {
-    --oks-bottom-offset: 4.5rem;
+    --oks-bottom-offset: calc(4.5rem + var(--sticky-footer-total-height, 0px));
 }
 
 /* "Send the app": the counts and the list, in the theme's colours, in light and dark. */

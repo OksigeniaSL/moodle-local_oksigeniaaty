@@ -141,6 +141,7 @@ class homecards {
      *
      * @param array $item What the plugin returned.
      * @param string $component The plugin.
+     * @param bool $plainrows Whether the row may open nothing.
      * @return array|null
      */
     private static function item(array $item, string $component, bool $plainrows = false): ?array {

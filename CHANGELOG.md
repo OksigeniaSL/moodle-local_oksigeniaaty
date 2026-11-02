@@ -12,7 +12,9 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Fixed
 
-- The button of Oksigenia Access rises with the "Open in the app" bar instead of covering the start of its text.
+- The "Open in the app" bar sits above Moodle's sticky footer instead of covering it: on an activity page it hid the
+  buttons to complete it and to go on to the next one.
+- The button of Oksigenia Access rises with the bar instead of covering the start of its text.
 
 ### Security
 
