@@ -158,7 +158,9 @@ try {
         'validuntil' => isset($token->validuntil) ? (int) $token->validuntil : 0,
     ]);
 } catch (Throwable $e) {
-    // Do not leak internals: a generic message, except for an administrator, who is told to use their password.
-    $foradmins = $e instanceof moodle_exception && $e->errorcode === 'selfservicenotforadmins';
-    echo json_encode(['error' => get_string($foradmins ? 'selfservicenotforadmins' : 'signinfailed', 'local_oksigeniaaty')]);
+    // Do not leak internals: a generic message, except for an administrator, who is told to use their password, and for
+    // someone whose plan does not include the app.
+    $said = ['selfservicenotforadmins', 'appnotallowed'];
+    $code = $e instanceof moodle_exception && in_array($e->errorcode, $said, true) ? $e->errorcode : 'signinfailed';
+    echo json_encode(['error' => get_string($code, 'local_oksigeniaaty')]);
 }
