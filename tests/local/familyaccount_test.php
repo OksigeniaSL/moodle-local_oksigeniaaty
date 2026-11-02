@@ -40,6 +40,8 @@ final class familyaccount_test extends \advanced_testcase {
         if (!class_exists(family::class)) {
             $this->markTestSkipped('Oksigenia Family is not installed.');
         }
+        global $CFG;
+        require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
         $this->resetAfterTest();
         set_config('enabled', 1, 'local_oksigeniafamily');
         set_config('enablewebservices', 1);
@@ -122,7 +124,7 @@ final class familyaccount_test extends \advanced_testcase {
         ]);
 
         $this->assertNull(familyaccount::ensure((int) $adult->id));
-        $this->assertSame([], local_oksigeniaaty_links_for_test($adult, (int) $student->id));
+        $this->assertSame([], \local_oksigeniaaty_oksigeniafamily_links($adult, (int) $student->id));
     }
 
     /**
@@ -131,12 +133,12 @@ final class familyaccount_test extends \advanced_testcase {
     public function test_claim_page_link(): void {
         [$student, $adult] = $this->claimed();
 
-        $links = local_oksigeniaaty_links_for_test($adult, (int) $student->id);
+        $links = \local_oksigeniaaty_oksigeniafamily_links($adult, (int) $student->id);
         $this->assertCount(1, $links);
         $this->assertStringContainsString('/local/oksigeniaaty/family.php?k=', $links[0]['url']);
 
         set_config('forcedurlscheme', '', 'tool_mobile');
-        $this->assertSame([], local_oksigeniaaty_links_for_test($adult, (int) $student->id));
+        $this->assertSame([], \local_oksigeniaaty_oksigeniafamily_links($adult, (int) $student->id));
     }
 
     /**
@@ -190,7 +192,8 @@ final class familyaccount_test extends \advanced_testcase {
         $this->assertStringNotContainsString('Essay', $html);
 
         set_config('familygrades', 1, 'local_oksigeniaaty');
-        $this->assertStringContainsString('Essay', mobile::mobile_child(['childid' => (int) $student->id])['templates'][0]['html']);
+        $html = mobile::mobile_child(['childid' => (int) $student->id])['templates'][0]['html'];
+        $this->assertStringContainsString('Essay', $html);
 
         $home = mobile::mobile_home([])['templates'][0]['html'];
         $this->assertStringContainsString('mobile_child', $home);
@@ -226,18 +229,4 @@ final class familyaccount_test extends \advanced_testcase {
         $this->expectExceptionMessage(get_string('family:toomany', 'local_oksigeniaaty'));
         family_claim::execute('NOPE');
     }
-}
-
-/**
- * The function of lib.php, loaded when needed.
- *
- * @param \stdClass $adult The adult.
- * @param int $childuserid The child.
- * @return array
- */
-function local_oksigeniaaty_links_for_test(\stdClass $adult, int $childuserid): array {
-    global $CFG;
-    require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
-
-    return \local_oksigeniaaty_oksigeniafamily_links($adult, $childuserid);
 }
