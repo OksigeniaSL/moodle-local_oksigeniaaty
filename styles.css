@@ -5,13 +5,14 @@
 .local-oksigeniaaty-bar {
     position: fixed;
     right: 0;
-    /* Above Moodle's sticky footer where the page has one: it holds the buttons to go on to the next activity. */
-    bottom: var(--sticky-footer-total-height, 0px);
+    bottom: 0;
     left: 0;
     z-index: 1035;
     display: flex;
     gap: .75rem;
     align-items: center;
+    box-sizing: border-box;
+    min-height: var(--local-oksigeniaaty-bar-height);
     padding: .625rem 1rem calc(.625rem + env(safe-area-inset-bottom, 0px));
     color: var(--bs-body-color, #1d2125);
     background: var(--bs-body-bg, #fff);
@@ -33,39 +34,52 @@
     text-decoration: none;
 }
 
-/* Room for the bar, so it never covers the end of the page or what floats at its foot, with or without a sticky footer. */
+/* The bar has one height, so that everything can make room for it, and the end of the page stays clear of it. */
 body:has(.local-oksigeniaaty-bar) {
-    padding-bottom: calc(4rem + var(--sticky-footer-total-height, 0px));
+    --local-oksigeniaaty-bar-height: calc(4rem + env(safe-area-inset-bottom, 0px));
+    padding-bottom: var(--local-oksigeniaaty-bar-height);
 }
 
-body:has(.local-oksigeniaaty-bar) .btn-footer-popover {
-    bottom: calc(5rem + var(--sticky-footer-total-height, 0px));
+/* Moodle's sticky footer goes on top of the bar, whatever its height: with completion it can take two rows, which Moodle's
+   variable for its height does not count. */
+body.hasstickyfooter:has(.local-oksigeniaaty-bar) .stickyfooter {
+    bottom: var(--local-oksigeniaaty-bar-height);
 }
 
-body:has(.local-oksigeniaaty-bar) .btn-footer-communication {
-    bottom: calc(8rem + var(--sticky-footer-total-height, 0px));
-}
-
-body:has(.local-oksigeniaaty-bar) .maintenancewarning {
-    bottom: calc(4rem + var(--sticky-footer-total-height, 0px));
-}
-
-/* Boost Union's buttons, such as back to top, have a different height in each case: a margin lifts them from wherever they are. */
+/* What floats at the foot of the page rises as much, from wherever each one is in each case: hence a margin. */
+body:has(.local-oksigeniaaty-bar) .btn-footer-popover,
+body:has(.local-oksigeniaaty-bar) .btn-footer-communication,
+body:has(.local-oksigeniaaty-bar) .maintenancewarning,
 body:has(.local-oksigeniaaty-bar) #boost-union-footer-buttons {
-    margin-bottom: 4rem;
+    margin-bottom: var(--local-oksigeniaaty-bar-height);
 }
 
-/* The button of Oksigenia Access rises with it: left where it was, it covers the start of the bar's text. */
+/* The button of Oksigenia Access: above the bar, and above a sticky footer of up to two rows. */
 /* stylelint-disable-next-line selector-type-no-unknown */
 html body:has(.local-oksigeniaaty-bar) oksigenia-access-panel {
-    --oks-bottom-offset: calc(4.5rem + var(--sticky-footer-total-height, 0px));
+    --oks-bottom-offset: var(--local-oksigeniaaty-bar-height);
 }
 
-/* On a phone, the button that opens the course index or the blocks sits just above the bar: Access goes above that too. */
+/* stylelint-disable-next-line selector-type-no-unknown */
+html body.hasstickyfooter:has(.local-oksigeniaaty-bar) oksigenia-access-panel {
+    --oks-bottom-offset: calc(var(--local-oksigeniaaty-bar-height) + var(--sticky-footer-total-height, 4rem) + 1.5rem);
+}
+
+/* On a phone, the buttons that open the course index and the blocks hang from the top of the screen: they rise with the
+   sticky footer, which would cover them, and Access stays above them. */
 @media (max-width: 767.98px) {
+    body.hasstickyfooter:has(.local-oksigeniaaty-bar) .drawer-toggler {
+        margin-top: calc(var(--local-oksigeniaaty-bar-height) * -1);
+    }
+
     /* stylelint-disable-next-line selector-type-no-unknown */
     html body:has(.local-oksigeniaaty-bar):has(#page.drawers:not(.scroll-down) .drawer-toggler) oksigenia-access-panel {
         --oks-bottom-offset: calc(1vh + 142px);
+    }
+
+    /* stylelint-disable-next-line selector-type-no-unknown */
+    html body.hasstickyfooter:has(.local-oksigeniaaty-bar):has(#page.drawers:not(.scroll-down) .drawer-toggler) oksigenia-access-panel {
+        --oks-bottom-offset: calc(1vh + 142px + var(--local-oksigeniaaty-bar-height));
     }
 }
 

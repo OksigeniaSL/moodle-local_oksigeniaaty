@@ -12,10 +12,10 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Fixed
 
-- The "Open in the app" bar sits above Moodle's sticky footer instead of covering it: on an activity page it hid the
-  buttons to complete it and to go on to the next one.
-- The buttons of Oksigenia Access and of Boost Union rise with the bar instead of being covered by it, or covering its text.
-- On a phone, the button of Oksigenia Access stays clear of the button that opens the course index when the bar lifts it.
+- Moodle's sticky footer sits above the "Open in the app" bar instead of under it, whatever its height: on an activity page
+  the bar hid the buttons to complete it and to go on to the next one.
+- The buttons of Oksigenia Access and of Boost Union, and the ones that open the drawers on a phone, make room for the bar
+  and the footer instead of being covered by them, or covering them.
 
 ### Security
 
