@@ -70,8 +70,11 @@ final class channels_test extends \advanced_testcase {
         global $CFG;
         $this->resetAfterTest();
         $CFG->airnotifieraccesskey = '';
-        $user = $this->getDataGenerator()->create_user(['auth' => 'webservice', 'username' => 'atyfamily-x',
-            'email' => 'atyfamily-x@invalid.invalid']);
+        $user = $this->getDataGenerator()->create_user([
+            'auth' => 'webservice',
+            'username' => 'atyfamily-x',
+            'email' => 'atyfamily-x@invalid.invalid',
+        ]);
         $this->assertSame([], channels::for_user($user));
     }
 

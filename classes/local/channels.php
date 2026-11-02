@@ -59,19 +59,31 @@ class channels {
 
         $rows = [];
         if (!empty($CFG->airnotifieraccesskey) && $DB->get_field('message_processors', 'enabled', ['name' => 'airnotifier'])) {
-            $rows[] = self::row(get_string('channels:app', 'local_oksigeniaaty'), 'fas-mobile-screen',
-                get_string('channels:appdetail', 'local_oksigeniaaty'), true);
+            $rows[] = self::row(
+                get_string('channels:app', 'local_oksigeniaaty'),
+                'fas-mobile-screen',
+                get_string('channels:appdetail', 'local_oksigeniaaty'),
+                true
+            );
         }
         // An account of a family with no address of its own has an invented one, which is nobody's.
         if (!familyaccount::is_own($user) || validate_email((string) $user->email) && !self::invented((string) $user->email)) {
-            $rows[] = self::row(get_string('channels:email', 'local_oksigeniaaty'), 'fas-envelope',
+            $rows[] = self::row(
+                get_string('channels:email', 'local_oksigeniaaty'),
+                'fas-envelope',
                 $user->emailstop ? get_string('channels:emailoff', 'local_oksigeniaaty') : (string) $user->email,
-                !$user->emailstop);
+                !$user->emailstop
+            );
         }
         if (self::available()) {
             foreach (self::marandu_channels((int) $user->id) as $channel => $info) {
-                $rows[] = self::row((string) $info['name'], self::ICONS[$channel] ?? 'fas-comment',
-                    (string) ($info['where'] ?? ''), !empty($info['joined']), empty($info['joined']) ? (string) $info['url'] : '');
+                $rows[] = self::row(
+                    (string) $info['name'],
+                    self::ICONS[$channel] ?? 'fas-comment',
+                    (string) ($info['where'] ?? ''),
+                    !empty($info['joined']),
+                    empty($info['joined']) ? (string) $info['url'] : ''
+                );
             }
         }
 
@@ -99,8 +111,12 @@ class channels {
 
         $adultid = 0;
         if (class_exists(\local_oksigeniafamily\api::class)) {
-            $adultid = (int) $DB->get_field('local_oksigeniafamily_adult', 'id', ['userid' => $userid, 'status' => 'active'],
-                IGNORE_MULTIPLE);
+            $adultid = (int) $DB->get_field(
+                'local_oksigeniafamily_adult',
+                'id',
+                ['userid' => $userid, 'status' => 'active'],
+                IGNORE_MULTIPLE
+            );
         }
 
         return $adultid ? \local_oksigeniamarandu\api::adult_channels($adultid)
