@@ -50,6 +50,11 @@ body:has(.local-oksigeniaaty-bar) .maintenancewarning {
     bottom: calc(4rem + var(--sticky-footer-total-height, 0px));
 }
 
+/* Boost Union's buttons, such as back to top, have a different height in each case: a margin lifts them from wherever they are. */
+body:has(.local-oksigeniaaty-bar) #boost-union-footer-buttons {
+    margin-bottom: 4rem;
+}
+
 /* The button of Oksigenia Access rises with it: left where it was, it covers the start of the bar's text. */
 /* stylelint-disable-next-line selector-type-no-unknown */
 html body:has(.local-oksigeniaaty-bar) oksigenia-access-panel {
