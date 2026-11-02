@@ -23,7 +23,7 @@
     * nothing - What shows when there is nothing yet.
     * hasevents, eventsheading, events - What comes next: name, day, month, time, timestamp, context.
     * hasgrades, gradesheading, grades - The latest grades: grade, name, context.
-    * cards - What other plugins add: heading, items.
+    * cards - What other plugins add: heading, items, each of which opens a page, a link or, when plain, nothing.
     * empty - Whether there is nothing to show.
 
     Example context (json):
@@ -55,7 +55,8 @@
     <div class="aty-agenda">
         {{#items}}
         {{#ispage}}<button type="button" class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}
-        {{^ispage}}<a class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="true">{{/ispage}}
+        {{#isplain}}<div class="aty-event{{#urgent}} aty-urgent{{/urgent}}">{{/isplain}}
+        {{^ispage}}{{^isplain}}<a class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="true">{{/isplain}}{{/ispage}}
             {{#hasdate}}
             <span class="aty-event-date">
                 <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
@@ -73,7 +74,8 @@
                 {{#detail}}<span class="aty-event-context">{{detail}}</span>{{/detail}}
             </span>
         {{#ispage}}</button>{{/ispage}}
-        {{^ispage}}</a>{{/ispage}}
+        {{#isplain}}</div>{{/isplain}}
+        {{^ispage}}{{^isplain}}</a>{{/isplain}}{{/ispage}}
         {{/items}}
     </div>
     {{/cards}}

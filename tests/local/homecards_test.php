@@ -223,4 +223,30 @@ final class homecards_test extends \advanced_testcase {
         $this->assertStringContainsString('<button type="button" class="aty-event"', $html);
         $this->assertStringContainsString('</button>', $html);
     }
+
+    /**
+     * A row that opens nothing: on a child's page, for what the adult may know exists but not see; never on the home.
+     */
+    public function test_plain_rows(): void {
+        global $OUTPUT;
+        $this->resetAfterTest();
+
+        $given = ['heading' => 'In the library', 'items' => [['title' => 'A book', 'date' => 1800000000, 'plain' => true,
+            'method' => 'mobile_library_view']]];
+        $this->assertSame('mobile_library_view', homecards::clean($given, 'local_x')['items'][0]['method']);
+        unset($given['items'][0]['method']);
+        $this->assertNull(homecards::clean($given, 'local_x'));
+
+        $given['items'][0]['method'] = 'mobile_library_view';
+        $card = homecards::clean($given, 'local_x', true);
+        $this->assertTrue($card['items'][0]['isplain']);
+        $this->assertFalse($card['items'][0]['ispage']);
+        $this->assertArrayNotHasKey('method', $card['items'][0]);
+
+        $html = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_child', ['cards' => [$card]]);
+        $this->assertStringContainsString('<div class="aty-event">', $html);
+        $this->assertStringContainsString('A book', $html);
+        $this->assertStringNotContainsString('<button', $html);
+        $this->assertStringNotContainsString('<a ', $html);
+    }
 }

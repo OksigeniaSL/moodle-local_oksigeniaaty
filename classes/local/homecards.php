@@ -69,7 +69,8 @@ class homecards {
     /**
      * What the plugins add to a child's page in the app of an adult of their family, through
      * `<component>_oksigeniaaty_child_cards(int $adultuserid, int $childuserid): array`, with the same cards as the home. Tiles
-     * do not show there. One plugin that fails does not take the page down.
+     * do not show there. A row may also say `'plain' => true`: it opens nothing, for what the adult may know exists but not
+     * see. One plugin that fails does not take the page down.
      *
      * @param int $adultuserid The adult. Whoever calls this has checked that they are in the child's family.
      * @param int $childuserid The child.
@@ -86,7 +87,7 @@ class homecards {
                     continue;
                 }
                 foreach (is_array($given) ? $given : [] as $card) {
-                    $card = self::clean($card, $plugintype . '_' . $pluginname);
+                    $card = self::clean($card, $plugintype . '_' . $pluginname, true);
                     if ($card !== null && $card['hasitems']) {
                         $cards[] = $card;
                     }
@@ -102,16 +103,17 @@ class homecards {
      *
      * @param mixed $card What the plugin returned.
      * @param string $component The plugin, whose pages the card may open.
+     * @param bool $plainrows Whether a row may open nothing: on a child's page, not on the home.
      * @return array|null
      */
-    public static function clean($card, string $component): ?array {
+    public static function clean($card, string $component, bool $plainrows = false): ?array {
         if (!is_array($card)) {
             return null;
         }
 
         $items = [];
         foreach (is_array($card['items'] ?? null) ? $card['items'] : [] as $item) {
-            $item = is_array($item) ? self::item($item, $component) : null;
+            $item = is_array($item) ? self::item($item, $component, $plainrows) : null;
             if ($item !== null) {
                 $items[] = $item;
             }
@@ -141,9 +143,11 @@ class homecards {
      * @param string $component The plugin.
      * @return array|null
      */
-    private static function item(array $item, string $component): ?array {
+    private static function item(array $item, string $component, bool $plainrows = false): ?array {
         $title = (string) ($item['title'] ?? '');
-        $target = self::target($item, $component, $title);
+        $target = $plainrows && !empty($item['plain'])
+            ? ['ispage' => false, 'isplain' => true]
+            : self::target($item, $component, $title);
         if ($title === '' || $target === null) {
             return null;
         }

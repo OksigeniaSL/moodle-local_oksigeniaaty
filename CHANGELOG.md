@@ -5,6 +5,15 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- A row on a child's page can open nothing (`'plain' => true` in `_oksigeniaaty_child_cards`), for what a family may know
+  exists but not see.
+
+### Fixed
+
+- The button of Oksigenia Access rises with the "Open in the app" bar instead of covering the start of its text.
+
 ### Security
 
 - The texts of the app's home and of "Your agenda on your phone" cannot run as templates any more. The app compiles

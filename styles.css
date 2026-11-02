@@ -41,6 +41,11 @@ body:has(.local-oksigeniaaty-bar) .btn-footer-popover {
     bottom: 5rem;
 }
 
+/* The button of Oksigenia Access rises with it: left where it was, it covers the start of the bar's text. */
+html body:has(.local-oksigeniaaty-bar) oksigenia-access-panel {
+    --oks-bottom-offset: 4.5rem;
+}
+
 /* "Send the app": the counts and the list, in the theme's colours, in light and dark. */
 .local-oksigeniaaty-send {
     margin-top: 1.5rem;
