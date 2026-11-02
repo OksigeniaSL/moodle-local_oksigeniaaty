@@ -118,6 +118,25 @@ if ($hassiteconfig) {
         $extracss->set_updatedcallback('local_oksigeniaaty_refresh_appcss');
         $settings->add($extracss);
 
+        // What the families' page shows, for sites with Oksigenia Family.
+        $settings->add(new admin_setting_heading(
+            'local_oksigeniaaty/family',
+            new lang_string('settings:family', 'local_oksigeniaaty'),
+            new lang_string('settings:family_desc', 'local_oksigeniaaty')
+        ));
+        $settings->add(new admin_setting_configcheckbox(
+            'local_oksigeniaaty/familyagenda',
+            new lang_string('settings:familyagenda', 'local_oksigeniaaty'),
+            new lang_string('settings:familyagenda_desc', 'local_oksigeniaaty'),
+            1
+        ));
+        $settings->add(new admin_setting_configcheckbox(
+            'local_oksigeniaaty/familygrades',
+            new lang_string('settings:familygrades', 'local_oksigeniaaty'),
+            new lang_string('settings:familygrades_desc', 'local_oksigeniaaty'),
+            0
+        ));
+
         // App sign-in: store links shown on the bridge page when the app is not installed.
         $settings->add(new admin_setting_heading(
             'local_oksigeniaaty/signin',

@@ -31,4 +31,9 @@ $observers = [
         'eventname' => '\core\event\config_log_created',
         'callback' => '\local_oksigeniaaty\observer::config_log_created',
     ],
+    // An adult who leaves a family takes with them the account the app made for them. Only heard if the family plugin is there.
+    [
+        'eventname' => '\local_oksigeniafamily\event\adult_removed',
+        'callback' => '\local_oksigeniaaty\observer::family_adult_removed',
+    ],
 ];

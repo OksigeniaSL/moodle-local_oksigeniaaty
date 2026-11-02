@@ -1,0 +1,103 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_oksigeniaaty/mobile_child
+
+    A child in the app of an adult of their family: what comes next, the latest grades, and what other plugins add.
+
+    Context variables required for this template:
+    * hello, nothing - The child's name and what shows when there is nothing yet.
+    * hasevents, eventsheading, events - What comes next: name, day, month, time, timestamp, context.
+    * hasgrades, gradesheading, grades - The latest grades: grade, name, context.
+    * cards - What other plugins add: heading, items.
+    * empty - Whether there is nothing to show.
+
+    Example context (json):
+    {
+        "hello": "Ana Ejemplo",
+        "nothing": "Nothing to show yet.",
+        "hasevents": true,
+        "eventsheading": "Upcoming",
+        "events": [{"name": "Exam", "day": "4", "month": "NOV", "time": "", "timestamp": 1793000000000, "context": "English"}],
+        "hasgrades": true,
+        "gradesheading": "Latest grades",
+        "grades": [{"grade": "8", "name": "Essay", "context": "English"}]
+    }
+}}
+<div class="aty-home">
+    <h1 class="aty-section">{{hello}}</h1>
+    {{#empty}}<p>{{nothing}}</p>{{/empty}}
+    {{#hasgrades}}
+    <h2 class="aty-section">{{gradesheading}}</h2>
+    <div class="aty-agenda">
+        {{#grades}}
+        <div class="aty-event aty-grading">
+            <span class="aty-event-date"><span class="aty-event-day">{{grade}}</span></span>
+            <span class="aty-event-body">
+                <span class="aty-event-name">{{name}}</span>
+                <span class="aty-event-context">{{context}}</span>
+            </span>
+        </div>
+        {{/grades}}
+    </div>
+    {{/hasgrades}}
+    {{#cards}}
+    <h2 class="aty-section">{{heading}}</h2>
+    <div class="aty-agenda">
+        {{#items}}
+        {{#ispage}}<button type="button" class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}
+        {{^ispage}}<a class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="true">{{/ispage}}
+            {{#hasdate}}
+            <span class="aty-event-date">
+                <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
+                <span class="aty-event-month" [textContent]="({{timestamp}} | coreFormatDate:'%b').replace('.', '')">{{month}}</span>
+            </span>
+            {{/hasdate}}
+            {{#hascount}}
+            <span class="aty-event-date">
+                <span class="aty-event-day">{{count}}</span>
+                <span class="aty-event-month">{{countlabel}}</span>
+            </span>
+            {{/hascount}}
+            <span class="aty-event-body">
+                <span class="aty-event-name">{{title}}</span>
+                {{#detail}}<span class="aty-event-context">{{detail}}</span>{{/detail}}
+            </span>
+        {{#ispage}}</button>{{/ispage}}
+        {{^ispage}}</a>{{/ispage}}
+        {{/items}}
+    </div>
+    {{/cards}}
+    {{#hasevents}}
+    <h2 class="aty-section">{{eventsheading}}</h2>
+    <div class="aty-agenda">
+        {{#events}}
+        <div class="aty-event">
+            <span class="aty-event-date">
+                <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
+                <span class="aty-event-month" [textContent]="({{timestamp}} | coreFormatDate:'%b').replace('.', '')">{{month}}</span>
+            </span>
+            <span class="aty-event-body">
+                <span class="aty-event-name">{{name}}</span>
+                {{#context}}<span class="aty-event-context">{{context}}</span>{{/context}}
+            </span>
+            {{#time}}<span class="aty-event-time" [textContent]="{{timestamp}} | coreFormatDate:'strftimetime'">{{time}}</span>{{/time}}
+        </div>
+        {{/events}}
+    </div>
+    {{/hasevents}}
+</div>

@@ -1,0 +1,47 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_oksigeniaaty/mobile_family_add
+
+    Another child's code, typed in the app.
+
+    Context variables required for this template:
+    * intro, codelabel, add, sent - The words of the page.
+
+    Example context (json):
+    {
+        "intro": "Type the code on the letter from the centre.",
+        "codelabel": "Code",
+        "add": "Add",
+        "sent": "Added."
+    }
+}}
+<div class="ion-padding">
+    <p>{{intro}}</p>
+    <ion-list>
+        <ion-item>
+            <ion-input label="{{codelabel}}" labelPlacement="stacked" autocapitalize="characters" [(ngModel)]="CONTENT_OTHERDATA.code"></ion-input>
+        </ion-item>
+    </ion-list>
+    <ion-button expand="block" class="ion-margin-top" core-site-plugins-call-ws name="local_oksigeniaaty_family_claim"
+        [params]="{code: CONTENT_OTHERDATA.code}"
+        [preSets]="{getFromCache: 0, saveToCache: 0}"
+        successMessage="{{sent}}" goBackOnSuccess="true"
+        [disabled]="!CONTENT_OTHERDATA.code">
+        {{add}}
+    </ion-button>
+</div>

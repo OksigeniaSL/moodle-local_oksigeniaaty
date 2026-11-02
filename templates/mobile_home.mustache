@@ -29,6 +29,8 @@
     * greeting - A personal greeting with the user's first name (may be empty).
     * heading - The site heading shown in the hero.
     * intro - A short welcome under the heading (may be empty).
+    * hasfamily, familyheading, children, familyaddname - For an adult of a family: their children (id, name, initial,
+      argsjson) and the way to add another with their code.
     * todayheading, hastoday, today - What is left of today, like the events below.
     * hasunread, unread, unreadlabel, messagesname, messagesurl - The unread conversations, among today's things.
     * eventsheading - The label above the upcoming events.
@@ -68,6 +70,21 @@
         <h1 class="aty-hero-title">{{heading}}</h1>
         {{#intro}}<p class="aty-hero-intro">{{intro}}</p>{{/intro}}
     </section>
+    {{#hasfamily}}
+    <h2 class="aty-section">{{familyheading}}</h2>
+    <div class="aty-agenda">
+        {{#children}}
+        <button type="button" class="aty-event" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_child" title="{{name}}" [args]="{{argsjson}}">
+            <span class="aty-event-date"><span class="aty-event-day">{{initial}}</span></span>
+            <span class="aty-event-body"><span class="aty-event-name">{{name}}</span></span>
+        </button>
+        {{/children}}
+        <button type="button" class="aty-event" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_family_add" title="{{familyaddname}}">
+            <span class="aty-event-date"><span class="aty-event-day">+</span></span>
+            <span class="aty-event-body"><span class="aty-event-name">{{familyaddname}}</span></span>
+        </button>
+    </div>
+    {{/hasfamily}}
     {{#hastoday}}
     <h2 class="aty-section">{{todayheading}}</h2>
     <div class="aty-agenda">

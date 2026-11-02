@@ -67,6 +67,37 @@ class homecards {
     }
 
     /**
+     * What the plugins add to a child's page in the app of an adult of their family, through
+     * `<component>_oksigeniaaty_child_cards(int $adultuserid, int $childuserid): array`, with the same cards as the home. Tiles
+     * do not show there. One plugin that fails does not take the page down.
+     *
+     * @param int $adultuserid The adult. Whoever calls this has checked that they are in the child's family.
+     * @param int $childuserid The child.
+     * @return array A list of cards with items.
+     */
+    public static function for_child(int $adultuserid, int $childuserid): array {
+        $cards = [];
+        foreach (get_plugins_with_function('oksigeniaaty_child_cards') as $plugintype => $plugins) {
+            foreach ($plugins as $pluginname => $function) {
+                try {
+                    $given = $function($adultuserid, $childuserid);
+                } catch (\Throwable $e) {
+                    debugging('Child cards of ' . $plugintype . '_' . $pluginname . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
+                    continue;
+                }
+                foreach (is_array($given) ? $given : [] as $card) {
+                    $card = self::clean($card, $plugintype . '_' . $pluginname);
+                    if ($card !== null && $card['hasitems']) {
+                        $cards[] = $card;
+                    }
+                }
+            }
+        }
+
+        return array_slice($cards, 0, self::MAX_CARDS);
+    }
+
+    /**
      * A card as a plugin returned it, checked and ready for the template, or null when nothing in it can be shown.
      *
      * @param mixed $card What the plugin returned.

@@ -63,6 +63,7 @@ class mobile {
         [$today, $upcoming] = self::split_events(self::events());
         $grading = self::grading();
         $unread = self::unread();
+        $children = self::children();
 
         $data = template::inert([
             'logourl' => $logourl,
@@ -72,6 +73,10 @@ class mobile {
                 : '',
             'heading' => $heading,
             'intro' => $intro,
+            'familyheading' => get_string('family:heading', 'local_oksigeniaaty'),
+            'hasfamily' => $children !== null,
+            'children' => $children ?? [],
+            'familyaddname' => get_string('family:add', 'local_oksigeniaaty'),
             'todayheading' => get_string('home:today', 'local_oksigeniaaty'),
             'today' => $today,
             'hastoday' => !empty($today) || $unread > 0,
@@ -94,6 +99,11 @@ class mobile {
             'hascourses' => !empty($courses),
             'opensoutside' => get_string('home:opensoutside', 'local_oksigeniaaty'),
         ]);
+
+        // Never through inert(): its braces are the object the template binds.
+        foreach ($data['children'] as $index => $child) {
+            $data['children'][$index]['argsjson'] = json_encode(['childid' => $child['id']]);
+        }
 
         // What other plugins add for this user; each of their texts already inert.
         $cards = homecards::for_user((int) $USER->id);
@@ -219,6 +229,207 @@ class mobile {
                 'message' => '',
             ],
         ];
+    }
+
+    /**
+     * A child, for an adult of their family: what comes next, their latest grades if the centre shows them, and what other
+     * plugins add. Nothing for anyone else.
+     *
+     * @param array $args The arguments the app sends: childid.
+     * @return array The template, javascript and data the app expects.
+     */
+    public static function mobile_child(array $args): array {
+        global $OUTPUT, $USER;
+
+        $component = 'local_oksigeniaaty';
+        $childid = (int) ($args['childid'] ?? 0);
+        $allowed = class_exists(\local_oksigeniafamily\api::class)
+            && \local_oksigeniafamily\api::is_guardian((int) $USER->id, $childid);
+        if (!$allowed) {
+            throw new \moodle_exception('family:notyours', $component);
+        }
+        $child = \core_user::get_user($childid, '*', MUST_EXIST);
+        $events = get_config($component, 'familyagenda') === '0' ? [] : self::child_events($childid);
+        $grades = get_config($component, 'familygrades') ? self::child_grades($childid) : [];
+        $data = template::inert([
+            'hello' => fullname($child),
+            'nothing' => get_string('family:nothing', $component),
+            'eventsheading' => get_string('home:upcoming', $component),
+            'events' => $events,
+            'hasevents' => !empty($events),
+            'gradesheading' => get_string('family:grades', $component),
+            'grades' => $grades,
+            'hasgrades' => !empty($grades),
+        ]);
+        // Each of their texts already inert.
+        $data['cards'] = homecards::for_child((int) $USER->id, $childid);
+        $data['empty'] = !$events && !$grades && !$data['cards'];
+
+        return [
+            'templates' => [
+                [
+                    'id' => 'main',
+                    'html' => $OUTPUT->render_from_template('local_oksigeniaaty/mobile_child', $data),
+                ],
+            ],
+            'javascript' => '',
+            'otherdata' => [],
+        ];
+    }
+
+    /**
+     * Another child's code, typed in the app.
+     *
+     * @param array $args The arguments the app sends.
+     * @return array The template, javascript and data the app expects.
+     */
+    public static function mobile_family_add(array $args): array {
+        global $OUTPUT;
+
+        $component = 'local_oksigeniaaty';
+        $data = template::inert([
+            'intro' => get_string('family:addintro', $component),
+            'codelabel' => get_string('family:code', $component),
+            'add' => get_string('family:addbutton', $component),
+            'sent' => get_string('family:added', $component),
+        ]);
+
+        return [
+            'templates' => [
+                [
+                    'id' => 'main',
+                    'html' => $OUTPUT->render_from_template('local_oksigeniaaty/mobile_family_add', $data),
+                ],
+            ],
+            'javascript' => '',
+            'otherdata' => ['code' => ''],
+        ];
+    }
+
+    /**
+     * The user's children, for an adult of a family; null for anyone who is not one.
+     *
+     * @return array|null A list of { id, name, initial }.
+     */
+    private static function children(): ?array {
+        global $DB, $USER;
+
+        if (!class_exists(\local_oksigeniafamily\api::class) || !\local_oksigeniafamily\api::is_available()) {
+            return null;
+        }
+        if (!$DB->record_exists('local_oksigeniafamily_adult', ['userid' => $USER->id, 'status' => 'active'])) {
+            return null;
+        }
+
+        $children = [];
+        foreach (\local_oksigeniafamily\api::children_of_user((int) $USER->id) as $childid) {
+            $user = \core_user::get_user((int) $childid);
+            if ($user && !$user->deleted) {
+                $name = fullname($user);
+                $children[] = [
+                    'id' => (int) $user->id,
+                    'name' => $name,
+                    'initial' => \core_text::strtoupper(\core_text::substr(trim($name), 0, 1)),
+                ];
+            }
+        }
+
+        return $children;
+    }
+
+    /**
+     * What comes next for a child, in their courses and groups. Not their own calendar entries, which are theirs.
+     *
+     * @param int $childid The child.
+     * @return array A list of { name, timestamp, day, month, time, context }, at most eight.
+     */
+    private static function child_events(int $childid): array {
+        global $CFG;
+
+        require_once($CFG->dirroot . '/calendar/lib.php');
+
+        $courses = enrol_get_users_courses($childid, true, 'id, shortname');
+        if (!$courses) {
+            return [];
+        }
+        $groupids = [];
+        foreach ($courses as $course) {
+            $groupids = array_merge($groupids, array_keys(groups_get_all_groups($course->id, $childid)));
+        }
+
+        $now = time();
+        $events = calendar_get_legacy_events(
+            $now,
+            $now + 14 * DAYSECS,
+            false,
+            $groupids ?: false,
+            array_keys($courses),
+            true,
+            true
+        );
+        \core_collator::asort_objects_by_property($events, 'timestart', \core_collator::SORT_NUMERIC);
+
+        $list = [];
+        foreach ($events as $event) {
+            if (!empty($event->modulename) && !empty($event->instance)) {
+                $instances = get_fast_modinfo($event->courseid, $childid)->get_instances_of($event->modulename);
+                if (!isset($instances[$event->instance]) || !$instances[$event->instance]->uservisible) {
+                    continue;
+                }
+            }
+            $list[] = [
+                'name' => format_string($event->name),
+                'timestamp' => (int) $event->timestart * 1000,
+                'day' => ltrim(userdate($event->timestart, '%e')),
+                'month' => \core_text::strtoupper(trim(userdate($event->timestart, '%b'))),
+                'time' => (int) $event->timeduration >= DAYSECS ? ''
+                    : userdate($event->timestart, get_string('strftimetime', 'langconfig')),
+                'context' => isset($courses[$event->courseid]) ? format_string($courses[$event->courseid]->shortname) : '',
+            ];
+            if (count($list) >= 8) {
+                break;
+            }
+        }
+
+        return $list;
+    }
+
+    /**
+     * A child's latest grades in activities, leaving out whatever a course or its grade book hides from them.
+     *
+     * @param int $childid The child.
+     * @return array A list of { grade, name, context }, at most five.
+     */
+    private static function child_grades(int $childid): array {
+        global $CFG, $DB;
+
+        require_once($CFG->libdir . '/gradelib.php');
+
+        $sql = "SELECT g.id, g.itemid, g.finalgrade, c.shortname
+                  FROM {grade_grades} g
+                  JOIN {grade_items} i ON i.id = g.itemid
+                  JOIN {course} c ON c.id = i.courseid
+                 WHERE g.userid = :userid
+                   AND g.finalgrade IS NOT NULL
+                   AND g.hidden = 0
+                   AND i.hidden = 0
+                   AND i.itemtype = 'mod'
+                   AND c.showgrades = 1
+              ORDER BY g.timemodified DESC";
+
+        $list = [];
+        foreach ($DB->get_records_sql($sql, ['userid' => $childid], 0, 5) as $row) {
+            $item = \grade_item::fetch(['id' => $row->itemid]);
+            if ($item) {
+                $list[] = [
+                    'grade' => grade_format_gradevalue($row->finalgrade, $item),
+                    'name' => $item->get_name(),
+                    'context' => format_string($row->shortname),
+                ];
+            }
+        }
+
+        return $list;
     }
 
     /**

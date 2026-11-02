@@ -50,4 +50,16 @@ class observer {
         require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
         local_oksigeniaaty_refresh_appcss();
     }
+
+    /**
+     * An adult has left their family: the account the app made for them goes too. A real account of the site stays.
+     *
+     * @param \core\event\base $event The family plugin's event.
+     * @return void
+     */
+    public static function family_adult_removed(\core\event\base $event): void {
+        if ($event->relateduserid) {
+            \local_oksigeniaaty\local\familyaccount::remove((int) $event->relateduserid);
+        }
+    }
 }

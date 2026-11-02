@@ -50,6 +50,14 @@ $functions = [
         'capabilities' => 'mod/forum:addnews',
         'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
     ],
+    'local_oksigeniaaty_family_claim' => [
+        'classname' => 'local_oksigeniaaty\external\family_claim',
+        'methodname' => 'execute',
+        'description' => 'Another child\'s code, typed in the app by an adult of a family who is already in.',
+        'type' => 'write',
+        'ajax' => true,
+        'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
     'local_oksigeniaaty_renew' => [
         'classname' => 'local_oksigeniaaty\external\renew',
         'methodname' => 'execute',

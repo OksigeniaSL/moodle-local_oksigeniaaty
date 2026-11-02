@@ -181,6 +181,32 @@ function local_oksigeniaaty_user_can_selfservice(int $userid): bool {
 }
 
 /**
+ * What the family plugin shows to whoever has just claimed a child's code: the way into the app. Not for an adult with a real
+ * account of the site, who signs in as always. The account is not made until the link is used.
+ *
+ * @param stdClass $adult The adult of the family.
+ * @param int $childuserid The child.
+ * @return array A list of ['label', 'url', 'note'].
+ */
+function local_oksigeniaaty_oksigeniafamily_links(stdClass $adult, int $childuserid): array {
+    if (!\local_oksigeniaaty\local\familyaccount::available()) {
+        return [];
+    }
+    if ($adult->userid) {
+        $user = core_user::get_user((int) $adult->userid);
+        if (!$user || !\local_oksigeniaaty\local\familyaccount::is_own($user)) {
+            return [];
+        }
+    }
+
+    return [[
+        'label' => get_string('family:openapp', 'local_oksigeniaaty'),
+        'url' => \local_oksigeniaaty\local\familyaccount::link((int) $adult->id),
+        'note' => get_string('family:openappnote', 'local_oksigeniaaty'),
+    ]];
+}
+
+/**
  * Add a link to a user's own Aty sign-in page on their profile (self-service).
  *
  * @param \core_user\output\myprofile\tree $tree The profile tree.
