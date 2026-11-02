@@ -16,6 +16,8 @@
 
 namespace local_oksigeniaaty\output;
 
+use local_oksigeniaaty\external\post_to_class;
+
 /**
  * Tests for the app's home.
  *
@@ -84,6 +86,98 @@ final class mobile_test extends \advanced_testcase {
         $this->assertStringContainsString('＠let f = 1;', $html);
         $this->assertStringNotContainsString('{{', $html);
         $this->assertDoesNotMatchRegularExpression('/@[a-z]/i', $html);
+    }
+
+    /**
+     * Today's things, for anyone: what is left of today apart from what comes later, and the unread messages.
+     */
+    public function test_today(): void {
+        $this->resetAfterTest();
+
+        $generator = $this->getDataGenerator();
+        $course = $generator->create_course();
+        $student = $generator->create_and_enrol($course, 'student');
+        $other = $generator->create_and_enrol($course, 'student');
+        $this->setAdminUser();
+        $midnight = usergetmidnight(time(), \core_date::get_user_timezone($student));
+        $generator->create_event([
+            'name' => 'Later today', 'courseid' => $course->id, 'eventtype' => 'course', 'timestart' => time() + 60,
+        ]);
+        $generator->create_event([
+            'name' => 'In three days',
+            'courseid' => $course->id,
+            'eventtype' => 'course',
+            'timestart' => $midnight + 3 * DAYSECS + 3600,
+        ]);
+
+        $this->setUser($student);
+        $html = self::home();
+        $today = get_string('home:today', 'local_oksigeniaaty');
+        $upcoming = get_string('home:upcoming', 'local_oksigeniaaty');
+        $this->assertStringNotContainsString(get_string('home:unread', 'local_oksigeniaaty'), $html);
+        // Unless the test runs in the last minute of the day.
+        if (usergetmidnight(time() + 60) === usergetmidnight(time())) {
+            $this->assertLessThan(strpos($html, 'Later today'), strpos($html, '>' . $today . '<'));
+            $this->assertLessThan(strpos($html, $upcoming), strpos($html, 'Later today'));
+        }
+        $this->assertGreaterThan(strpos($html, $upcoming), strpos($html, 'In three days'));
+
+        $conversation = \core_message\api::create_conversation(
+            \core_message\api::MESSAGE_CONVERSATION_TYPE_INDIVIDUAL,
+            [(int) $other->id, (int) $student->id]
+        );
+        \core_message\api::send_message_to_conversation($other->id, $conversation->id, 'Hello', FORMAT_PLAIN);
+        $this->assertStringContainsString(get_string('home:unread', 'local_oksigeniaaty'), self::home());
+
+        set_config('disabledfeatures', 'CoreMainMenuDelegate_AddonMessages', 'tool_mobile');
+        $this->assertStringNotContainsString(get_string('home:unread', 'local_oksigeniaaty'), self::home());
+    }
+
+    /**
+     * Writing to a course goes by permission, not by role: a teacher can, a manager who is not enrolled can, a student cannot.
+     */
+    public function test_write_to_a_course(): void {
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/mod/forum/lib.php');
+        $this->resetAfterTest();
+
+        $generator = $this->getDataGenerator();
+        $course = $generator->create_course(['fullname' => 'English B2']);
+        $forum = forum_get_course_forum($course->id, 'news');
+        $teacher = $generator->create_and_enrol($course, 'editingteacher');
+        $student = $generator->create_and_enrol($course, 'student');
+        $manager = $generator->create_user();
+        role_assign($DB->get_field('role', 'id', ['shortname' => 'manager']), $manager->id, \context_system::instance());
+
+        $this->setUser($teacher);
+        $this->assertStringContainsString('mobile_compose', self::home());
+        $page = mobile::mobile_compose([]);
+        $this->assertStringContainsString('English B2', $page['templates'][0]['html']);
+        $this->assertSame((string) $forum->id, $page['otherdata']['forumid']);
+
+        $this->setUser($manager);
+        $this->assertStringContainsString('mobile_compose', self::home());
+
+        $this->setUser($student);
+        $this->assertStringNotContainsString('mobile_compose', self::home());
+        $this->assertStringNotContainsString('English B2', mobile::mobile_compose([])['templates'][0]['html']);
+        try {
+            post_to_class::execute((int) $forum->id, 'Title', 'Words');
+            $this->fail('A student cannot post in the announcements.');
+        } catch (\moodle_exception $e) {
+            $this->assertSame('cannotcreatediscussion', $e->errorcode);
+        }
+
+        $this->setUser($teacher);
+        $result = post_to_class::execute((int) $forum->id, 'No class tomorrow', "See you on <b>Monday</b>\nBye");
+        $post = $DB->get_record('forum_posts', ['discussion' => $result['discussionid']], '*', MUST_EXIST);
+        $this->assertSame('No class tomorrow', $post->subject);
+        $this->assertStringContainsString('&lt;b&gt;Monday&lt;/b&gt;', $post->message);
+        $this->assertStringContainsString('<br', $post->message);
+        $this->assertSame(1, (int) $post->mailnow);
+
+        $this->expectException(\invalid_parameter_exception::class);
+        post_to_class::execute((int) $forum->id, 'Title', '   ');
     }
 
     /**

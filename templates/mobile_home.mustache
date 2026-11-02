@@ -29,6 +29,8 @@
     * greeting - A personal greeting with the user's first name (may be empty).
     * heading - The site heading shown in the hero.
     * intro - A short welcome under the heading (may be empty).
+    * todayheading, hastoday, today - What is left of today, like the events below.
+    * hasunread, unread, unreadlabel, messagesname, messagesurl - The unread conversations, among today's things.
     * eventsheading - The label above the upcoming events.
     * hasevents - Whether there is at least one upcoming event.
     * events - A list of { name, day, month, time, context, viewurl }.
@@ -66,6 +68,35 @@
         <h1 class="aty-hero-title">{{heading}}</h1>
         {{#intro}}<p class="aty-hero-intro">{{intro}}</p>{{/intro}}
     </section>
+    {{#hastoday}}
+    <h2 class="aty-section">{{todayheading}}</h2>
+    <div class="aty-agenda">
+        {{#hasunread}}
+        <a class="aty-event aty-grading" core-link href="{{messagesurl}}" capture="true">
+            <span class="aty-event-date">
+                <span class="aty-event-day">{{unread}}</span>
+                <span class="aty-event-month">{{unreadlabel}}</span>
+            </span>
+            <span class="aty-event-body">
+                <span class="aty-event-name">{{messagesname}}</span>
+            </span>
+        </a>
+        {{/hasunread}}
+        {{#today}}
+        <a class="aty-event" core-link href="{{viewurl}}" capture="true">
+            <span class="aty-event-date">
+                <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
+                <span class="aty-event-month" [textContent]="({{timestamp}} | coreFormatDate:'%b').replace('.', '')">{{month}}</span>
+            </span>
+            <span class="aty-event-body">
+                <span class="aty-event-name">{{name}}</span>
+                {{#context}}<span class="aty-event-context">{{context}}</span>{{/context}}
+            </span>
+            {{#time}}<span class="aty-event-time" [textContent]="{{timestamp}} | coreFormatDate:'strftimetime'">{{time}}</span>{{/time}}
+        </a>
+        {{/today}}
+    </div>
+    {{/hastoday}}
     {{#hasgrading}}
     <h2 class="aty-section">{{gradingheading}}</h2>
     <div class="aty-agenda">

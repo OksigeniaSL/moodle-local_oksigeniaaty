@@ -60,8 +60,9 @@ class mobile {
         }
         $shortcuts = local_oksigeniaaty_get_shortcuts();
         $courses = self::courses();
-        $events = self::events();
+        [$today, $upcoming] = self::split_events(self::events());
         $grading = self::grading();
+        $unread = self::unread();
 
         $data = template::inert([
             'logourl' => $logourl,
@@ -71,12 +72,20 @@ class mobile {
                 : '',
             'heading' => $heading,
             'intro' => $intro,
+            'todayheading' => get_string('home:today', 'local_oksigeniaaty'),
+            'today' => $today,
+            'hastoday' => !empty($today) || $unread > 0,
+            'hasunread' => $unread > 0,
+            'unread' => $unread,
+            'unreadlabel' => get_string('home:unread', 'local_oksigeniaaty'),
+            'messagesname' => get_string('home:messages', 'local_oksigeniaaty'),
+            'messagesurl' => (new \moodle_url('/message/index.php'))->out(false),
             'gradingheading' => get_string('home:tograde', 'local_oksigeniaaty'),
             'grading' => $grading,
             'hasgrading' => !empty($grading),
             'eventsheading' => get_string('home:upcoming', 'local_oksigeniaaty'),
-            'events' => $events,
-            'hasevents' => !empty($events),
+            'events' => $upcoming,
+            'hasevents' => !empty($upcoming),
             'shortcutsheading' => get_string('home:shortcuts', 'local_oksigeniaaty'),
             'shortcuts' => $shortcuts,
             'hasshortcuts' => !empty($shortcuts),
@@ -94,6 +103,20 @@ class mobile {
                 $data['shortcuts'][] = $card['tile'];
                 $data['hasshortcuts'] = true;
             }
+        }
+
+        // Whoever may post in a course's announcements, whatever their role is called.
+        if (self::writable_classes(1)) {
+            $label = get_string('compose:title', 'local_oksigeniaaty');
+            $data['shortcuts'][] = template::inert(['label' => $label, 'icon' => 'fas-pen-to-square']) + [
+                'ispage' => true,
+                'component' => 'local_oksigeniaaty',
+                'method' => 'mobile_compose',
+                'pagetitle' => template::inert($label),
+                // Never through inert(): its braces are the object the template binds.
+                'argsjson' => '{}',
+            ];
+            $data['hasshortcuts'] = true;
         }
 
         return [
@@ -155,6 +178,103 @@ class mobile {
             'javascript' => '',
             'otherdata' => [],
         ];
+    }
+
+    /**
+     * "Write to a course": a course, a title and a few words, which go to its announcements.
+     *
+     * @param array $args The arguments the app sends.
+     * @return array The template, javascript and data the app expects.
+     */
+    public static function mobile_compose(array $args): array {
+        global $OUTPUT;
+
+        $classes = self::writable_classes(100);
+        $component = 'local_oksigeniaaty';
+        $data = template::inert([
+            'hasclasses' => !empty($classes),
+            'classes' => $classes,
+            'intro' => get_string('compose:intro', $component),
+            'courselabel' => get_string('compose:course', $component),
+            'subjectlabel' => get_string('compose:subject', $component),
+            'messagelabel' => get_string('compose:message', $component),
+            'publish' => get_string('compose:publish', $component),
+            'confirm' => get_string('compose:confirm', $component),
+            'sent' => get_string('compose:sent', $component),
+            'empty' => get_string('compose:empty', $component),
+        ]);
+
+        return [
+            'templates' => [
+                [
+                    'id' => 'main',
+                    'html' => $OUTPUT->render_from_template('local_oksigeniaaty/mobile_compose', $data),
+                ],
+            ],
+            'javascript' => '',
+            'otherdata' => [
+                // With only one course, it is already chosen.
+                'forumid' => count($classes) === 1 ? (string) $classes[0]['forumid'] : '',
+                'subject' => '',
+                'message' => '',
+            ],
+        ];
+    }
+
+    /**
+     * Where the user may write: the courses whose announcements they may post in. It asks the permission, not the role, so it
+     * reaches whoever the centre has allowed.
+     *
+     * @param int $limit The most courses to look at.
+     * @return array A list of { forumid, name }.
+     */
+    private static function writable_classes(int $limit): array {
+        global $DB;
+
+        $courses = get_user_capability_course('mod/forum:addnews', null, true, 'fullname', 'fullname', $limit) ?: [];
+        $classes = [];
+        foreach ($courses as $course) {
+            if ((int) $course->id === (int) SITEID) {
+                continue;
+            }
+            $forum = $DB->get_record('forum', ['course' => $course->id, 'type' => 'news'], 'id', IGNORE_MULTIPLE);
+            $cm = $forum ? (get_fast_modinfo($course->id)->get_instances_of('forum')[$forum->id] ?? null) : null;
+            if ($cm && $cm->uservisible && has_capability('mod/forum:addnews', $cm->context)) {
+                $classes[] = ['forumid' => (int) $forum->id, 'name' => format_string($course->fullname)];
+            }
+        }
+
+        return $classes;
+    }
+
+    /**
+     * How many conversations the user has unread; none where the site has messaging off, or off in the app.
+     *
+     * @return int
+     */
+    private static function unread(): int {
+        global $CFG, $USER;
+
+        $disabled = explode(',', (string) get_config('tool_mobile', 'disabledfeatures'));
+        if (empty($CFG->messaging) || in_array('CoreMainMenuDelegate_AddonMessages', $disabled, true)) {
+            return 0;
+        }
+
+        return (int) \core_message\api::count_unread_conversations($USER);
+    }
+
+    /**
+     * An agenda in two: what is left of today, and what comes after it.
+     *
+     * @param array $events From events().
+     * @return array [today, upcoming], at most five each.
+     */
+    private static function split_events(array $events): array {
+        $istoday = fn($event) => usergetmidnight((int) ($event['timestamp'] / 1000)) === usergetmidnight(time());
+        $today = array_values(array_filter($events, $istoday));
+        $upcoming = array_values(array_filter($events, fn($event) => !$istoday($event)));
+
+        return [array_slice($today, 0, 5), array_slice($upcoming, 0, 5)];
     }
 
     /**
@@ -264,7 +384,7 @@ class mobile {
      * Built from the same filters as the site calendar (the user's courses, their groups and their own events), so the
      * app agenda matches what the user sees on the web.
      *
-     * @return array A list of { name, day, month, time, context, viewurl }, soonest first, at most five.
+     * @return array A list of { name, timestamp, day, month, time, context, viewurl }, soonest first, at most ten.
      */
     private static function events(): array {
         global $CFG;
@@ -318,7 +438,7 @@ class mobile {
                 'context' => implode(' · ', $labels),
                 'viewurl' => (new \moodle_url('/calendar/view.php', ['view' => 'day', 'time' => $event->timestart]))->out(false),
             ];
-            if (count($agenda) >= 5) {
+            if (count($agenda) >= 10) {
                 break;
             }
         }

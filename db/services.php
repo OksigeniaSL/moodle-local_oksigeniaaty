@@ -41,6 +41,15 @@ $functions = [
         'ajax' => true,
         'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
     ],
+    'local_oksigeniaaty_post_to_class' => [
+        'classname' => 'local_oksigeniaaty\external\post_to_class',
+        'methodname' => 'execute',
+        'description' => 'Publish a few plain words in the announcements of a course, for whoever may post there.',
+        'type' => 'write',
+        'ajax' => true,
+        'capabilities' => 'mod/forum:addnews',
+        'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
+    ],
     'local_oksigeniaaty_renew' => [
         'classname' => 'local_oksigeniaaty\external\renew',
         'methodname' => 'execute',
