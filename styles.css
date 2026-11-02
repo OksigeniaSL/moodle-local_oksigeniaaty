@@ -61,6 +61,14 @@ html body:has(.local-oksigeniaaty-bar) oksigenia-access-panel {
     --oks-bottom-offset: calc(4.5rem + var(--sticky-footer-total-height, 0px));
 }
 
+/* On a phone, the button that opens the course index or the blocks sits just above the bar: Access goes above that too. */
+@media (max-width: 767.98px) {
+    /* stylelint-disable-next-line selector-type-no-unknown */
+    html body:has(.local-oksigeniaaty-bar):has(#page.drawers:not(.scroll-down) .drawer-toggler) oksigenia-access-panel {
+        --oks-bottom-offset: calc(1vh + 142px);
+    }
+}
+
 /* "Send the app": the counts and the list, in the theme's colours, in light and dark. */
 .local-oksigeniaaty-send {
     margin-top: 1.5rem;
