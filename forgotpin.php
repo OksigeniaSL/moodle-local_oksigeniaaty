@@ -67,11 +67,21 @@ if ($submitted && confirm_sesskey() && $search !== '') {
             $key = \local_oksigeniaaty\local\loginkey::create_reset($user->id);
             $openurl = new moodle_url('/local/oksigeniaaty/open.php', ['key' => $key]);
 
+            $lang = force_current_language($user->lang ?? '');
             $data = (object) ['name' => fullname($user), 'link' => $openurl->out(false)];
             $subject = get_string('forgotpin:emailsubject', 'local_oksigeniaaty');
             $bodytext = get_string('forgotpin:emailbody', 'local_oksigeniaaty', $data);
+            $html = \local_oksigeniaaty\local\linkmail::html((int) $user->id, [
+                'hello' => get_string('issued:hello', 'local_oksigeniaaty', (object) ['firstname' => $user->firstname]),
+                'heading' => get_string('forgotpin:emailheading', 'local_oksigeniaaty'),
+                'lead' => [get_string('forgotpin:emaillead', 'local_oksigeniaaty')],
+                'button' => ['url' => $openurl->out(false), 'text' => get_string('forgotpin:emailbutton', 'local_oksigeniaaty')],
+                'after' => [get_string('forgotpin:emailonce', 'local_oksigeniaaty')],
+                'why' => get_string('forgotpin:emailwhy', 'local_oksigeniaaty'),
+            ]);
+            force_current_language($lang);
 
-            email_to_user($user, core_user::get_support_user(), $subject, $bodytext);
+            email_to_user($user, core_user::get_support_user(), $subject, $bodytext, $html);
         }
     }
 

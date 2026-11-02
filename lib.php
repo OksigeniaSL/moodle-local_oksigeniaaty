@@ -201,6 +201,17 @@ function local_oksigeniaaty_myprofile_navigation(
 
     $userid = (int) $user->id;
 
+    // Whoever may send the app to others finds it here too: the site's administration is far for a secretary.
+    if (has_capability('local/oksigeniaaty:issuelink', context_system::instance())) {
+        $tree->add_node(new \core_user\output\myprofile\node(
+            'miscellaneous',
+            'oksigeniaatysendapp',
+            get_string('sendapp:heading', 'local_oksigeniaaty'),
+            null,
+            new moodle_url('/local/oksigeniaaty/sendapp.php')
+        ));
+    }
+
     if (local_oksigeniaaty_user_can_selfservice($userid)) {
         $tree->add_node(new \core_user\output\myprofile\node(
             'miscellaneous',

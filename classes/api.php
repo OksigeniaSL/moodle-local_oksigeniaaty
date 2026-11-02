@@ -16,6 +16,7 @@
 
 namespace local_oksigeniaaty;
 
+use local_oksigeniaaty\local\linkmail;
 use local_oksigeniaaty\local\loginkey;
 
 /**
@@ -145,17 +146,30 @@ class api {
     public static function send_link(int $userid, int $days = loginkey::ISSUED_DAYS): bool {
         $link = self::issue_link($userid, $days);
         $user = \core_user::get_user($userid, '*', MUST_EXIST);
+        $component = 'local_oksigeniaaty';
+        $lang = force_current_language($user->lang ?? '');
         $a = (object) [
             'firstname' => $user->firstname,
-            'site' => format_string(get_site()->fullname),
+            'site' => linkmail::centre($userid),
             'url' => $link['url'],
-            'expires' => userdate($link['expires'], get_string('strftimedatetime', 'langconfig')),
+            'expires' => userdate(
+                $link['expires'],
+                get_string('strftimedatetime', 'langconfig'),
+                \core_date::get_user_timezone($user)
+            ),
         ];
-        $lang = force_current_language($user->lang ?? '');
-        $subject = get_string('issued:subject', 'local_oksigeniaaty', $a);
-        $body = get_string('issued:body', 'local_oksigeniaaty', $a);
+        $subject = get_string('issued:subject', $component, $a);
+        $body = get_string('issued:body', $component, $a);
+        $html = linkmail::html($userid, [
+            'hello' => get_string('issued:hello', $component, $a),
+            'heading' => get_string('issued:heading', $component, $a),
+            'lead' => [get_string('issued:lead', $component)],
+            'button' => ['url' => $link['url'], 'text' => get_string('issued:button', $component)],
+            'after' => [get_string('issued:noapp', $component), get_string('issued:once', $component, $a)],
+            'why' => get_string('issued:why', $component, $a),
+        ]);
         force_current_language($lang);
 
-        return email_to_user($user, \core_user::get_noreply_user(), $subject, $body);
+        return email_to_user($user, linkmail::from($userid), $subject, $body, $html);
     }
 }

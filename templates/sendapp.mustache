@@ -1,0 +1,103 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_oksigeniaaty/sendapp
+
+    "Send the app": how many people have entered, the button for those still waiting, and the list.
+
+    Context variables required for this template:
+    * chosen - Whether someone has been chosen yet.
+    * hasrows, rows - The list: picture, name, state, label, cansend, sendurl, sendto, sendtext, sesskey.
+    * inapp, sent, waiting, blocked, hasblocked - How many in each state.
+    * cansendall, sendallurl, sendalltext - The button for everyone waiting.
+    * alldone - Everyone listed has entered or has a link.
+    * truncated, max - The list stopped at the most it can hold.
+    * canmobile - Whether the site has the app on.
+
+    Example context (json):
+    {
+        "chosen": true,
+        "hasrows": true,
+        "canmobile": true,
+        "rows": [{"picture": "", "name": "Ana Ejemplo", "state": "waiting", "label": "No link yet", "cansend": true,
+            "sendurl": "#", "sendto": 2, "sendtext": "Send", "sesskey": "abc"}],
+        "inapp": 3,
+        "sent": 1,
+        "waiting": 1,
+        "blocked": 0,
+        "cansendall": true,
+        "sendallurl": "#",
+        "sendalltext": "Send to the 1 still waiting"
+    }
+}}
+<div class="local-oksigeniaaty-send">
+{{^chosen}}
+    <p class="local-oksigeniaaty-send-empty">{{#str}} sendapp:start, local_oksigeniaaty {{/str}}</p>
+{{/chosen}}
+{{#chosen}}
+{{^hasrows}}
+    <p class="local-oksigeniaaty-send-empty">{{#str}} sendapp:nobody, local_oksigeniaaty {{/str}}</p>
+{{/hasrows}}
+{{#hasrows}}
+    <div class="local-oksigeniaaty-send-counts">
+        <div class="local-oksigeniaaty-send-count" data-state="inapp">
+            <span class="local-oksigeniaaty-send-number">{{inapp}}</span>
+            <span>{{#str}} sendapp:countinapp, local_oksigeniaaty {{/str}}</span>
+        </div>
+        <div class="local-oksigeniaaty-send-count" data-state="sent">
+            <span class="local-oksigeniaaty-send-number">{{sent}}</span>
+            <span>{{#str}} sendapp:countsent, local_oksigeniaaty {{/str}}</span>
+        </div>
+        <div class="local-oksigeniaaty-send-count" data-state="waiting">
+            <span class="local-oksigeniaaty-send-number">{{waiting}}</span>
+            <span>{{#str}} sendapp:countwaiting, local_oksigeniaaty {{/str}}</span>
+        </div>
+        {{#hasblocked}}
+        <div class="local-oksigeniaaty-send-count" data-state="blocked">
+            <span class="local-oksigeniaaty-send-number">{{blocked}}</span>
+            <span>{{#str}} sendapp:countblocked, local_oksigeniaaty {{/str}}</span>
+        </div>
+        {{/hasblocked}}
+    </div>
+    {{#cansendall}}
+    <p><a class="btn btn-primary" href="{{sendallurl}}">{{sendalltext}}</a></p>
+    {{/cansendall}}
+    {{#alldone}}
+    <p class="local-oksigeniaaty-send-done">{{#str}} sendapp:alldone, local_oksigeniaaty {{/str}}</p>
+    {{/alldone}}
+    {{#truncated}}
+    <p class="text-muted">{{#str}} sendapp:truncated, local_oksigeniaaty, {{max}} {{/str}}</p>
+    {{/truncated}}
+    <ul class="local-oksigeniaaty-send-list">
+        {{#rows}}
+        <li class="local-oksigeniaaty-send-row">
+            {{{picture}}}
+            <span class="local-oksigeniaaty-send-name">{{name}}</span>
+            <span class="local-oksigeniaaty-send-state" data-state="{{state}}">{{label}}</span>
+            {{#cansend}}
+            <form method="post" action="{{sendurl}}">
+                <input type="hidden" name="sendto" value="{{sendto}}">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <button type="submit" class="btn btn-sm btn-secondary">{{sendtext}}</button>
+            </form>
+            {{/cansend}}
+        </li>
+        {{/rows}}
+    </ul>
+{{/hasrows}}
+{{/chosen}}
+</div>

@@ -29,6 +29,14 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
 
+// Send people their way into the app: for whoever the centre allows, who is not usually an administrator.
+$ADMIN->add('localplugins', new admin_externalpage(
+    'local_oksigeniaaty_sendapp',
+    new lang_string('sendapp:menu', 'local_oksigeniaaty'),
+    new moodle_url('/local/oksigeniaaty/sendapp.php'),
+    'local/oksigeniaaty:issuelink'
+));
+
 if ($hassiteconfig) {
     $settings = new admin_settingpage(
         'local_oksigeniaaty',

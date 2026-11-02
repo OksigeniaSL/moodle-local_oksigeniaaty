@@ -40,3 +40,92 @@ body:has(.local-oksigeniaaty-bar) {
 body:has(.local-oksigeniaaty-bar) .btn-footer-popover {
     bottom: 5rem;
 }
+
+/* "Send the app": the counts and the list, in the theme's colours, in light and dark. */
+.local-oksigeniaaty-send {
+    margin-top: 1.5rem;
+}
+
+.local-oksigeniaaty-send-empty {
+    padding: 1.5rem;
+    color: var(--bs-secondary-color, #6c757d);
+    border: 1px dashed var(--bs-border-color, #dee2e6);
+    border-radius: .75rem;
+}
+
+.local-oksigeniaaty-send-counts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+    gap: .75rem;
+    margin-bottom: 1.25rem;
+}
+
+.local-oksigeniaaty-send-count {
+    display: flex;
+    flex-direction: column;
+    padding: .875rem 1rem;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: .75rem;
+}
+
+.local-oksigeniaaty-send-number {
+    font-size: 1.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.local-oksigeniaaty-send-list {
+    padding: 0;
+    margin: 1.25rem 0 0;
+    list-style: none;
+}
+
+.local-oksigeniaaty-send-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem .875rem;
+    align-items: center;
+    padding: .625rem 0;
+    border-top: 1px solid var(--bs-border-color, #dee2e6);
+}
+
+.local-oksigeniaaty-send-row form {
+    margin: 0;
+}
+
+.local-oksigeniaaty-send-row .userpicture {
+    margin: 0;
+}
+
+.local-oksigeniaaty-send-name {
+    flex: 1 1 14rem;
+    font-weight: 500;
+}
+
+.local-oksigeniaaty-send-state {
+    display: inline-flex;
+    gap: .5rem;
+    align-items: center;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+.local-oksigeniaaty-send-state::before {
+    flex: none;
+    width: .625rem;
+    height: .625rem;
+    content: "";
+    background: var(--bs-secondary-color, #6c757d);
+    border-radius: 50%;
+}
+
+.local-oksigeniaaty-send-state[data-state="inapp"]::before {
+    background: var(--bs-success, #198754);
+}
+
+.local-oksigeniaaty-send-state[data-state="sent"]::before {
+    background: var(--bs-info, #0dcaf0);
+}
+
+.local-oksigeniaaty-send-state[data-state="waiting"]::before {
+    background: var(--bs-warning, #ffc107);
+}
