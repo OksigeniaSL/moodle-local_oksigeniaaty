@@ -20,7 +20,7 @@
     A child in the app of an adult of their family: what comes next, the latest grades, and what other plugins add.
 
     Context variables required for this template:
-    * hello, nothing - The child's name and what shows when there is nothing yet.
+    * nothing - What shows when there is nothing yet.
     * hasevents, eventsheading, events - What comes next: name, day, month, time, timestamp, context.
     * hasgrades, gradesheading, grades - The latest grades: grade, name, context.
     * cards - What other plugins add: heading, items.
@@ -28,7 +28,6 @@
 
     Example context (json):
     {
-        "hello": "Ana Ejemplo",
         "nothing": "Nothing to show yet.",
         "hasgrades": true,
         "gradesheading": "Latest grades",
@@ -36,7 +35,6 @@
     }
 }}
 <div class="aty-home">
-    <h1 class="aty-section">{{hello}}</h1>
     {{#empty}}<p>{{nothing}}</p>{{/empty}}
     {{#hasgrades}}
     <h2 class="aty-section">{{gradesheading}}</h2>

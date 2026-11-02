@@ -186,7 +186,7 @@ final class familyaccount_test extends \advanced_testcase {
 
         $this->setUser(\core_user::get_user(familyaccount::ensure((int) $adult->id)));
         $html = mobile::mobile_child(['childid' => (int) $student->id])['templates'][0]['html'];
-        $this->assertStringContainsString('Hugo Rey', $html);
+        $this->assertStringNotContainsString('Hugo Rey', $html);
         $this->assertStringContainsString('Exam of English', $html);
         $this->assertStringNotContainsString('Private entry', $html);
         $this->assertStringNotContainsString('Essay', $html);

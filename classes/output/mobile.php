@@ -248,11 +248,9 @@ class mobile {
         if (!$allowed) {
             throw new \moodle_exception('family:notyours', $component);
         }
-        $child = \core_user::get_user($childid, '*', MUST_EXIST);
         $events = get_config($component, 'familyagenda') === '0' ? [] : self::child_events($childid);
         $grades = get_config($component, 'familygrades') ? self::child_grades($childid) : [];
         $data = template::inert([
-            'hello' => fullname($child),
             'nothing' => get_string('family:nothing', $component),
             'eventsheading' => get_string('home:upcoming', $component),
             'events' => $events,
@@ -371,20 +369,28 @@ class mobile {
 
         $list = [];
         foreach ($events as $event) {
+            // As in the home: the activity's own name, and what the date is next to the course.
+            $name = format_string($event->name);
+            $labels = isset($courses[$event->courseid]) ? [format_string($courses[$event->courseid]->shortname)] : [];
             if (!empty($event->modulename) && !empty($event->instance)) {
                 $instances = get_fast_modinfo($event->courseid, $childid)->get_instances_of($event->modulename);
                 if (!isset($instances[$event->instance]) || !$instances[$event->instance]->uservisible) {
                     continue;
                 }
+                $kind = 'home:event:' . $event->eventtype;
+                if (get_string_manager()->string_exists($kind, 'local_oksigeniaaty')) {
+                    $name = $instances[$event->instance]->get_formatted_name();
+                    $labels[] = get_string($kind, 'local_oksigeniaaty');
+                }
             }
             $list[] = [
-                'name' => format_string($event->name),
+                'name' => $name,
                 'timestamp' => (int) $event->timestart * 1000,
                 'day' => ltrim(userdate($event->timestart, '%e')),
                 'month' => \core_text::strtoupper(trim(userdate($event->timestart, '%b'))),
                 'time' => (int) $event->timeduration >= DAYSECS ? ''
                     : userdate($event->timestart, get_string('strftimetime', 'langconfig')),
-                'context' => isset($courses[$event->courseid]) ? format_string($courses[$event->courseid]->shortname) : '',
+                'context' => implode(' · ', $labels),
             ];
             if (count($list) >= 8) {
                 break;
