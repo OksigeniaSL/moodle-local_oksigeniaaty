@@ -46,6 +46,23 @@ class mobile {
 
         require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
 
+        // Whoever entered Aty with a password, on a plan without the app. The official app stays as it is.
+        if (($args['appid'] ?? '') === \local_oksigeniaaty\api::ATY_PACKAGE && !local_oksigeniaaty_user_allowed((int) $USER->id)) {
+            return [
+                'templates' => [
+                    [
+                        'id' => 'main',
+                        'html' => $OUTPUT->render_from_template('local_oksigeniaaty/mobile_notallowed', template::inert([
+                            'message' => get_string('appnotallowed', 'local_oksigeniaaty'),
+                            'url' => $CFG->wwwroot,
+                        ], true)),
+                    ],
+                ],
+                'javascript' => '',
+                'otherdata' => [],
+            ];
+        }
+
         $config = get_config('local_oksigeniaaty');
         $heading = !empty($config->homeheading) ? $config->homeheading : format_string(get_site()->fullname);
         $intro = !empty($config->homeintro) ? $config->homeintro : '';

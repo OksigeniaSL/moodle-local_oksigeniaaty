@@ -9,6 +9,8 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 - "Where to get your notices", in the app's user menu: the app, the email and, where the site has Oksigenia Marandu, WhatsApp
   and Telegram, with a button to connect them.
+- `<component>_oksigeniaaty_user_allowed(int $userid): bool`: another plugin can close Aty to someone, such as a plan of a shared
+  site that does not include the app. They get no link, and the home says so in Aty; the official app stays as it is.
 - A row on a child's page can open nothing (`'plain' => true` in `_oksigeniaaty_child_cards`), for what a family may know
   exists but not see.
 

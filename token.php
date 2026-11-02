@@ -65,6 +65,11 @@ try {
         throw new moodle_exception('selfservicenotforadmins', 'local_oksigeniaaty');
     }
 
+    // A plugin may say this person's plan does not include the app.
+    if (!local_oksigeniaaty_user_allowed((int) $user->id)) {
+        throw new moodle_exception('appnotallowed', 'local_oksigeniaaty');
+    }
+
     // Respect the site's app login type: when it forces browser login (e.g. to enforce MFA), do not bypass it.
     if ((int) get_config('tool_mobile', 'typeoflogin') > 1) {
         throw new moodle_exception('signinfailed', 'local_oksigeniaaty');

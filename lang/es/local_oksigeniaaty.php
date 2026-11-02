@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['appnotallowed'] = 'El plan de tu centro no incluye la app. Puedes seguir usándolo en el navegador.';
+$string['appnotallowed:browser'] = 'Abrir en el navegador';
 $string['calendarapp:address'] = 'Si tu app de calendario te pide la dirección, copia esta:';
 $string['calendarapp:disabled'] = 'Tu centro no tiene activada la exportación del calendario.';
 $string['calendarapp:google'] = 'Añadir a Google Calendar';

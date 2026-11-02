@@ -24,6 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['appnotallowed'] = 'Your organisation\'s plan does not include the app. You can keep using it in your browser.';
+$string['appnotallowed:browser'] = 'Open in the browser';
 $string['calendarapp:address'] = 'If your calendar app asks for the address, copy this one:';
 $string['calendarapp:disabled'] = 'Your site does not have calendar export turned on.';
 $string['calendarapp:google'] = 'Add to Google Calendar';

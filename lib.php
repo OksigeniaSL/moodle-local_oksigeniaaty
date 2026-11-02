@@ -148,6 +148,28 @@ function local_oksigeniaaty_is_admin_account(int $userid): bool {
 }
 
 /**
+ * Whether someone may use Aty: another plugin can say no through <component>_oksigeniaaty_user_allowed(int $userid): bool in
+ * its lib.php, for example where a plan of a shared site does not include the app. One that fails does not close the door.
+ *
+ * @param int $userid The user id.
+ * @return bool
+ */
+function local_oksigeniaaty_user_allowed(int $userid): bool {
+    foreach (get_plugins_with_function('oksigeniaaty_user_allowed') as $plugins) {
+        foreach ($plugins as $function) {
+            try {
+                if (!$function($userid)) {
+                    return false;
+                }
+            } catch (\Throwable $e) {
+                debugging('User allowed in the app: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            }
+        }
+    }
+    return true;
+}
+
+/**
  * Whether a user may use passwordless self-service sign-in (get their own link or QR).
  *
  * Gated by the selfservicecohorts setting: empty means everyone, otherwise only members of the listed cohorts. This
@@ -160,7 +182,7 @@ function local_oksigeniaaty_user_can_selfservice(int $userid): bool {
     global $DB;
 
     // Administrators never sign in without a password (token.php refuses them), so they are not offered it.
-    if (local_oksigeniaaty_is_admin_account($userid)) {
+    if (local_oksigeniaaty_is_admin_account($userid) || !local_oksigeniaaty_user_allowed($userid)) {
         return false;
     }
 

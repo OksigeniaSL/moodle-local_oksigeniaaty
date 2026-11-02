@@ -226,4 +226,23 @@ final class mobile_test extends \advanced_testcase {
     private static function home(): string {
         return mobile::mobile_home([])['templates'][0]['html'];
     }
+
+    /**
+     * Nobody is kept out of the app unless a plugin says so; the page for those who are says why and where to go.
+     */
+    public function test_not_allowed_page(): void {
+        global $CFG, $OUTPUT;
+        $this->resetAfterTest();
+        require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
+        $user = $this->getDataGenerator()->create_user();
+
+        $this->assertTrue(local_oksigeniaaty_user_allowed((int) $user->id));
+
+        $html = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_notallowed', [
+            'message' => 'Not in your plan',
+            'url' => 'https://example.com',
+        ]);
+        $this->assertStringContainsString('Not in your plan', $html);
+        $this->assertStringContainsString('core-link href="https://example.com" capture="false"', $html);
+    }
 }

@@ -33,7 +33,7 @@ use local_oksigeniaaty\local\loginkey;
  */
 class api {
     /** @var string The Android package of Aty, whose links carry a mark of their own. */
-    private const ATY_PACKAGE = 'com.oksigenia.aty';
+    public const ATY_PACKAGE = 'com.oksigenia.aty';
 
     /**
      * A one-time sign-in link to the app for a user.
