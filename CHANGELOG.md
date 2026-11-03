@@ -19,6 +19,9 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Fixed
 
+- A family with no e-mail gets the notices on the phone. Their account had Moodle's «stop e-mail» on, which stops every
+  notice and not only mail; its `.invalid` address is what keeps mail from going out. The upgrade turns it off in the
+  accounts already made.
 - Moodle's sticky footer sits above the "Open in the app" bar instead of under it, whatever its height: on an activity page
   the bar hid the buttons to complete it and to go on to the next one.
 - The buttons of Oksigenia Access and of Boost Union, and the ones that open the drawers on a phone, make room for the bar

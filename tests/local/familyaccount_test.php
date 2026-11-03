@@ -115,7 +115,9 @@ final class familyaccount_test extends \advanced_testcase {
         $user = \core_user::get_user(familyaccount::ensure((int) $adult->id));
 
         $this->assertFalse(user_not_fully_set_up($user, false));
-        $this->assertSame(1, (int) $user->emailstop);
+        // Mail stopped would stop the notices to the phone too; without an address, the .invalid domain is what sends no mail.
+        $this->assertSame(0, (int) $user->emailstop);
+        $this->assertStringEndsWith('.invalid', $user->email);
     }
 
     /**

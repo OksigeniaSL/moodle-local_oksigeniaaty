@@ -125,8 +125,8 @@ class familyaccount {
             'lastname' => (string) $adult->lastname !== ''
                 ? (string) $adult->lastname
                 : get_string('family:nosurname', 'local_oksigeniaaty'),
+            // Moodle sends no mail to a .invalid domain. Not with emailstop, which would stop the notices to the phone as well.
             'email' => validate_email($email) ? $email : self::PREFIX . $suffix . '@invalid.invalid',
-            'emailstop' => validate_email($email) ? 0 : 1,
         ];
         // Moodle 5.3 moved it; 4.5 only has the function.
         $userid = method_exists(\core_user::class, 'create_user')
