@@ -46,8 +46,12 @@ class homecards {
      */
     public static function for_user(int $userid): array {
         $cards = [];
+        $off = self::off_in_app();
         foreach (get_plugins_with_function('oksigeniaaty_home_cards') as $plugintype => $plugins) {
             foreach ($plugins as $pluginname => $function) {
+                if (isset($off[$plugintype . '_' . $pluginname])) {
+                    continue;
+                }
                 try {
                     $given = $function($userid);
                 } catch (\Throwable $e) {
@@ -78,8 +82,12 @@ class homecards {
      */
     public static function for_child(int $adultuserid, int $childuserid): array {
         $cards = [];
+        $off = self::off_in_app();
         foreach (get_plugins_with_function('oksigeniaaty_child_cards') as $plugintype => $plugins) {
             foreach ($plugins as $pluginname => $function) {
+                if (isset($off[$plugintype . '_' . $pluginname])) {
+                    continue;
+                }
                 try {
                     $given = $function($adultuserid, $childuserid);
                 } catch (\Throwable $e) {
@@ -96,6 +104,32 @@ class homecards {
         }
 
         return array_slice($cards, 0, self::MAX_CARDS);
+    }
+
+    /**
+     * The plugins the site has turned off in the app: every handler they have there is among its disabled features (Site
+     * administration ▸ Mobile app ▸ Mobile features). Their cards do not show either, so that one switch hides a plugin
+     * from the app while, say, a library gets ready.
+     *
+     * @return array The components, as keys.
+     */
+    public static function off_in_app(): array {
+        $disabled = array_filter(array_map('trim', explode(',', (string) get_config('tool_mobile', 'disabledfeatures'))));
+        if (!$disabled || !class_exists(\tool_mobile\api::class)) {
+            return [];
+        }
+        $features = [];
+        foreach (\tool_mobile\api::get_plugins_supporting_mobile() as $plugin) {
+            $features[$plugin['component']][] = 'sitePlugin_' . $plugin['component'] . '_' . $plugin['addon'];
+        }
+        $off = [];
+        foreach ($features as $component => $names) {
+            if (!array_diff($names, $disabled)) {
+                $off[$component] = true;
+            }
+        }
+
+        return $off;
     }
 
     /**

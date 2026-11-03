@@ -249,4 +249,29 @@ final class homecards_test extends \advanced_testcase {
         $this->assertStringNotContainsString('<button', $html);
         $this->assertStringNotContainsString('<a ', $html);
     }
+
+    /**
+     * A plugin whose handlers in the app are all among the site's disabled features is off in the app, and so are its cards.
+     */
+    public function test_off_in_app(): void {
+        $this->resetAfterTest();
+        // As in the app, signed in: without a session Moodle lists only the sign-in plugins that support the app.
+        $this->setUser($this->getDataGenerator()->create_user());
+        $this->assertSame([], homecards::off_in_app());
+
+        $mine = [];
+        foreach (\tool_mobile\api::get_plugins_supporting_mobile() as $plugin) {
+            if ($plugin['component'] === 'local_oksigeniaaty') {
+                $mine[] = 'sitePlugin_local_oksigeniaaty_' . $plugin['addon'];
+            }
+        }
+        $this->assertNotEmpty($mine);
+
+        set_config('disabledfeatures', implode(',', array_merge(['CoreMainMenuDelegate_AddonMessages'], $mine)), 'tool_mobile');
+        $this->assertArrayHasKey('local_oksigeniaaty', homecards::off_in_app());
+
+        // Another feature off is not this plugin off.
+        set_config('disabledfeatures', 'CoreMainMenuDelegate_AddonMessages', 'tool_mobile');
+        $this->assertArrayNotHasKey('local_oksigeniaaty', homecards::off_in_app());
+    }
 }

@@ -25,7 +25,8 @@ Copy the plugin into `local/oksigeniaaty` of your Moodle and finish the upgrade 
 A plugin can take part in the app's home, in the official Moodle app and in Oksigenia Aty, with functions in its `lib.php`:
 
 - `<component>_oksigeniaaty_home_cards(int $userid): array` adds a section of rows and a tile for that user, opening a
-  page of the plugin in the app or an address. The fields are described in `classes/local/homecards.php`.
+  page of the plugin in the app or an address. The fields are described in `classes/local/homecards.php`. A plugin the
+  site turns off in the app (*Site administration ▸ Mobile app ▸ Mobile features*) shows no cards either.
 - `<component>_oksigeniaaty_user_brand(int $userid): ?array` gives a user their own name, colour, logo or picture, and tagline, where
   several schools or libraries share a site.
 

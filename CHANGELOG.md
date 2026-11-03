@@ -7,6 +7,9 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Added
 
+- A plugin the site turns off in the app (all its handlers among the mobile features disabled under *Site administration ▸
+  Mobile app ▸ Mobile features*) shows no cards on the app's home or on a child's page either: one switch hides it from
+  the app, say while a library gets ready.
 - "Where to get your notices", in the app's user menu: the app, the email and, where the site has Oksigenia Marandu, WhatsApp
   and Telegram, with a button to connect them.
 - `<component>_oksigeniaaty_user_allowed(int $userid): bool`: another plugin can close Aty to someone, such as a plan of a shared
