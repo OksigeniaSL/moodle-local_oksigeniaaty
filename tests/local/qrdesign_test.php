@@ -35,13 +35,13 @@ namespace local_oksigeniaaty\local;
 #[\PHPUnit\Framework\Attributes\CoversClass(qrdesign::class)]
 final class qrdesign_test extends \advanced_testcase {
     /** @var string A short link, like a site address: a small code with room for the logo. */
-    const SHORT = 'https://aula.ofilingua.com';
+    const SHORT = 'https://campus.example.org';
 
     /** @var string A 1x1 transparent PNG, base64. */
     const PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
     /** @var string A long link, like a personal sign-in link: a code with an alignment pattern in the middle. */
-    const LONG = 'https://aula.ofilingua.com/local/oksigeniaaty/open.php?key=qrsampleqrsampleqrsampleqrsample';
+    const LONG = 'https://campus.example.org/local/oksigeniaaty/open.php?key=qrsampleqrsampleqrsampleqrsample';
 
     /**
      * Every dot of the drawing is a dark module, and every dark module outside the eyes and the logo pad has its dot.
