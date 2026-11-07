@@ -172,4 +172,29 @@ class loginkey {
     public static function is_live(string $keyvalue): bool {
         return self::peek($keyvalue) !== null;
     }
+
+    /**
+     * The app token for a user who has just signed in with a key, minted as login/token.php does: the service capability
+     * check, token reuse, $CFG->tokenduration expiry, the creator id and the audit log.
+     *
+     * The private token comes too, as login/token.php sends it (over https, and not to site admins): the app needs it to
+     * open the site's own pages signed in (an H5P played online, an embedded page). It is read before logging the request,
+     * because logging blanks it on the token object.
+     *
+     * @param \stdClass $user The user, already signed in as the current user.
+     * @param \stdClass $service The mobile service.
+     * @return array The token, the private token (or null) and when the token expires (0 = never).
+     */
+    public static function app_token(\stdClass $user, \stdClass $service): array {
+        $token = \core_external\util::generate_token_for_current_user($service);
+        $siteadmin = has_capability('moodle/site:config', \context_system::instance(), $user->id);
+        $privatetoken = (!empty($token->privatetoken) && is_https() && !$siteadmin) ? $token->privatetoken : null;
+        \core_external\util::log_token_request($token);
+
+        return [
+            'token' => $token->token,
+            'privatetoken' => $privatetoken,
+            'validuntil' => isset($token->validuntil) ? (int) $token->validuntil : 0,
+        ];
+    }
 }
