@@ -118,13 +118,9 @@ try {
         \local_oksigeniaaty\local\pin::delete($userid);
     }
 
-    // Mint the token exactly as login/token.php does: this applies the service capability check, token reuse,
-    // $CFG->tokenduration expiry, the creator id and the audit log, instead of a raw permanent token.
+    // Mint the token exactly as login/token.php does, private token included (loginkey::app_token).
     \core\session\manager::set_user($user);
-    $token = \core_external\util::generate_token_for_current_user($service);
-    \core_external\util::log_token_request($token);
-
-    $privatetoken = (!empty($token->privatetoken) && is_https()) ? $token->privatetoken : null;
+    $apptoken = \local_oksigeniaaty\local\loginkey::app_token($user, $service);
 
     // When the user has no PIN yet, tell the app to offer setting one (trust on first use), with the pad wording
     // already localised here. The user's own language travels back too, so the app can dress itself in it: open a
@@ -143,14 +139,14 @@ try {
         'biometricask' => get_string('pinbiometricask', 'local_oksigeniaaty'),
     ];
     echo json_encode([
-        'token' => $token->token,
-        'privatetoken' => $privatetoken,
+        'token' => $apptoken['token'],
+        'privatetoken' => $apptoken['privatetoken'],
         'siteurl' => $CFG->wwwroot,
         'needspinsetup' => !$haspin,
         'pinui' => $setupui,
         'lang' => !empty($user->lang) ? $user->lang : $CFG->lang,
         // When the token expires (0 = never), so the app can renew it before it does.
-        'validuntil' => isset($token->validuntil) ? (int) $token->validuntil : 0,
+        'validuntil' => $apptoken['validuntil'],
     ]);
 } catch (Throwable $e) {
     // Do not leak internals: a generic message, except for an administrator, who is told to use their password.
