@@ -34,6 +34,9 @@ Un plugin puede estar en el inicio de la app, en la oficial de Moodle y en Oksig
 Y `\local_oksigeniaaty\api::issue_link($userid, $days)` y `api::send_link($userid, $days)` crean y envían un enlace de
 entrada a la app, de un solo uso, para un plugin que da de alta a gente que aún no tiene contraseña.
 
+Con Oksigenia Tembiapo («Tu trabajo» en el área personal), quien puede mandar la app tiene una puerta a ella con cuántas
+personas la tienen, y quien administra el sitio, el QR del centro a mano.
+
 ## Privacidad
 
 El plugin guarda un hash del PIN de la app de cada usuario (nunca el PIN), con sus intentos fallidos, y usa las claves de un solo uso de Moodle para los enlaces de entrada. Los dos están declarados en la API de privacidad de Moodle, que los exporta y los borra con el resto de los datos del usuario.

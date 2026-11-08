@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $string['appnotallowed'] = 'El plan de tu centro no incluye la app. Puedes seguir usándolo en el navegador.';
 $string['appnotallowed:browser'] = 'Abrir en el navegador';
+$string['cachedef_work'] = 'Cuántas personas tienen la app, para «Tu trabajo»';
 $string['calendarapp:address'] = 'Si tu app de calendario te pide la dirección, copia esta:';
 $string['calendarapp:disabled'] = 'Tu centro no tiene activada la exportación del calendario.';
 $string['calendarapp:google'] = 'Añadir a Google Calendar';
@@ -259,3 +260,7 @@ $string['settings:selfservicecohorts_desc'] = 'Solo los miembros de las cohortes
 $string['settings:signin'] = 'Acceso a la app';
 $string['settings:signin_desc'] = 'Enlaces y códigos QR que inician la sesión de un usuario en la app sin contraseña. La clave es de un solo uso y caduca en 30 minutos; el token se puede revocar desde Moodle.';
 $string['signinfailed'] = 'No se pudo iniciar sesión. El enlace puede haber caducado o haberse usado ya.';
+$string['work:qr'] = 'QR del centro';
+$string['work:status'] = '{$a} personas con la app';
+$string['work:status:one'] = '{$a} persona con la app';
+$string['work:title'] = 'App móvil';

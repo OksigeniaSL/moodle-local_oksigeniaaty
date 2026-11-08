@@ -33,6 +33,9 @@ A plugin can take part in the app's home, in the official Moodle app and in Oksi
 And `\local_oksigeniaaty\api::issue_link($userid, $days)` and `api::send_link($userid, $days)` make and send a one-time
 sign-in link to the app, for a plugin that registers people who have no password yet.
 
+With Oksigenia Tembiapo («Your work» on the dashboard), whoever may send the app gets a door to it with how many people
+have it, and the site's QR code at hand for whoever runs the site.
+
 ## Privacy
 
 The plugin stores a hash of each user's app PIN (never the PIN itself), with its failed attempts, and uses Moodle's one-time user keys for the sign-in links. Both are declared to Moodle's privacy API, which exports and deletes them with the rest of the user's data.

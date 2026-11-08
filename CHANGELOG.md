@@ -7,6 +7,10 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Added
 
+- A door in «Your work», the dashboard block of Oksigenia Tembiapo (contract version 2), from
+  `local_oksigeniaaty_oksigenia_work()` (0.5.52-dev): for whoever may send the app, how many people have the app the
+  site has set, with the site's QR code at hand for whoever runs the site; the figure kept for a minute (cache `work`).
+  The emblem of Aty in `pix/icon.svg`.
 - A plugin the site turns off in the app (all its handlers among the mobile features disabled under *Site administration ▸
   Mobile app ▸ Mobile features*) shows no cards on the app's home or on a child's page either: one switch hides it from
   the app, say while a library gets ready.

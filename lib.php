@@ -306,3 +306,13 @@ function local_oksigeniaaty_myprofile_navigation(
         ));
     }
 }
+
+/**
+ * For «Your work», the dashboard block of the Oksigenia plugins: the door of the app, for whoever may send it.
+ *
+ * @param int $userid The person.
+ * @return array Its door; none when the person may not send the app.
+ */
+function local_oksigeniaaty_oksigenia_work(int $userid): array {
+    return \local_oksigeniaaty\local\work::for_user($userid);
+}
