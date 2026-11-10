@@ -136,7 +136,7 @@
     <div class="aty-agenda">
         {{#items}}
         {{#ispage}}<button type="button" class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}
-        {{^ispage}}<a class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="true">{{/ispage}}
+        {{^ispage}}<a class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="true" inApp="true">{{/ispage}}
             {{#hasdate}}
             <span class="aty-event-date">
                 <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
@@ -182,7 +182,7 @@
         {{#shortcuts}}
         <ion-col size="6">
             {{#ispage}}<ion-card class="aty-tile" button="true" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}
-            {{^ispage}}<ion-card class="aty-tile" button="true" core-link href="{{url}}" capture="{{^external}}true{{/external}}{{#external}}false{{/external}}">{{/ispage}}
+            {{^ispage}}<ion-card class="aty-tile" button="true" core-link href="{{url}}" capture="{{^external}}true{{/external}}{{#external}}false{{/external}}"{{^external}} inApp="true"{{/external}}>{{/ispage}}
                 <span class="aty-tile-icon"><ion-icon name="{{icon}}" aria-hidden="true"></ion-icon></span>
                 <span class="aty-tile-label">{{label}}</span>
                 {{#external}}<ion-icon class="aty-tile-out" name="fas-arrow-up-right-from-square" aria-label="{{opensoutside}}"></ion-icon>{{/external}}

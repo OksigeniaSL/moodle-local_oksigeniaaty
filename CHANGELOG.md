@@ -5,6 +5,13 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- A row or a tile of another plugin on the app's home, and a shortcut to a page of the site that the app cannot open by
+  itself, open inside the app with the session signed in (0.5.53-dev). They went to the phone's browser, which asked to
+  sign in again; seen with the canteen of Oksigenia Meals. Pages the app opens by itself (courses, calendar, badges) and
+  addresses outside the site stay as they were.
+
 ### Added
 
 - A door in «Your work», the dashboard block of Oksigenia Tembiapo (contract version 2), from
