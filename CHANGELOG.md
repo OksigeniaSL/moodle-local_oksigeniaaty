@@ -5,6 +5,14 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- H5P content plays in the app on the phone itself, iPhones included (0.5.55-dev, setting «H5P content plays in the
+  app», on by default, and the task `h5p_in_app` every ten minutes). Moodle serves an H5P package only while its
+  download is allowed, and without the package the app shows the site in a frame, which on an iPhone shows the login
+  page instead of the game. For every H5P whose action bar is hidden, download is now allowed: without the bar no
+  download button appears on the web. H5P content that shows its bar keeps what its author chose.
+
 ### Fixed
 
 - When the app cannot save the PIN chosen at the first sign-in, it now says so (0.5.54-dev, string `pinnotsaved`

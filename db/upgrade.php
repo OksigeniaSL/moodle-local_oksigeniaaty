@@ -87,6 +87,15 @@ function xmldb_local_oksigeniaaty_upgrade($oldversion): bool {
         upgrade_plugin_savepoint(true, 2026110301, 'local', 'oksigeniaaty');
     }
 
+    if ($oldversion < 2026111101) {
+        // H5P content with its action bar hidden plays in the app: download on, which the web does not show without the
+        // bar. The setting is on unless a site turns it off.
+        if (\local_oksigeniaaty\local\h5pinapp::enabled()) {
+            \local_oksigeniaaty\local\h5pinapp::apply();
+        }
+        upgrade_plugin_savepoint(true, 2026111101, 'local', 'oksigeniaaty');
+    }
+
     // Any release may change the generated CSS: always point mobilecssurl at the new version, so the app and the CDN
     // refetch the stylesheet. (Campus found 0.5.21 left the 0.5.20 URL in place.)
     local_oksigeniaaty_refresh_appcss();

@@ -118,6 +118,21 @@ if ($hassiteconfig) {
         $extracss->set_updatedcallback('local_oksigeniaaty_refresh_appcss');
         $settings->add($extracss);
 
+        // What the app can play on the phone itself.
+        $settings->add(new admin_setting_heading(
+            'local_oksigeniaaty/content',
+            new lang_string('settings:content', 'local_oksigeniaaty'),
+            new lang_string('settings:content_desc', 'local_oksigeniaaty')
+        ));
+        $h5pinapp = new admin_setting_configcheckbox(
+            'local_oksigeniaaty/h5pinapp',
+            new lang_string('settings:h5pinapp', 'local_oksigeniaaty'),
+            new lang_string('settings:h5pinapp_desc', 'local_oksigeniaaty'),
+            1
+        );
+        $h5pinapp->set_updatedcallback('local_oksigeniaaty_h5pinapp_changed');
+        $settings->add($h5pinapp);
+
         // What the families' page shows, for sites with Oksigenia Family.
         $settings->add(new admin_setting_heading(
             'local_oksigeniaaty/family',

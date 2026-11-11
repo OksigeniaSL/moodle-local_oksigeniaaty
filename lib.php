@@ -316,3 +316,14 @@ function local_oksigeniaaty_myprofile_navigation(
 function local_oksigeniaaty_oksigenia_work(int $userid): array {
     return \local_oksigeniaaty\local\work::for_user($userid);
 }
+
+/**
+ * Turned on, make the site's H5P content playable in the app at once, without waiting for the task.
+ *
+ * @return void
+ */
+function local_oksigeniaaty_h5pinapp_changed(): void {
+    if (\local_oksigeniaaty\local\h5pinapp::enabled()) {
+        \local_oksigeniaaty\local\h5pinapp::apply();
+    }
+}

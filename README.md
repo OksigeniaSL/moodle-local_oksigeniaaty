@@ -20,6 +20,8 @@ Copy the plugin into `local/oksigeniaaty` of your Moodle and finish the upgrade 
 
 *Site administration ▸ Plugins ▸ Local plugins ▸ Oksigenia Aty: site QR code*: the site's QR code in its brand colour and with its logo, to download as SVG for posters and letters. Each user also finds their own one-time sign-in link and QR under *Open in the Aty app*.
 
+*H5P content plays in the app* (on by default): allows download for every H5P whose action bar is hidden, so the app can play it on the phone, offline and on iPhones too. Without the bar no download button shows on the site.
+
 ## For other plugins
 
 A plugin can take part in the app's home, in the official Moodle app and in Oksigenia Aty, with functions in its `lib.php`:

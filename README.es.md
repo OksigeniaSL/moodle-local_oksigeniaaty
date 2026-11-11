@@ -20,6 +20,8 @@ Copia el plugin en `local/oksigeniaaty` de tu Moodle y termina la actualización
 
 *Administración del sitio ▸ Extensiones ▸ Plugins locales ▸ Oksigenia Aty: QR del centro*: el código QR del sitio con su color de marca y su logo, para descargarlo en SVG y usarlo en carteles y circulares. Además, cada usuario tiene su propio enlace y QR de un solo uso en *Abrir en la app Aty*.
 
+*Los H5P se juegan en la app* (activado de serie): permite la descarga de todos los H5P que tienen oculta la barra de acciones, para que la app los juegue en el teléfono, también sin conexión y en iPhone. Sin la barra, en la web no aparece ningún botón de descarga.
+
 ## Para otros plugins
 
 Un plugin puede estar en el inicio de la app, en la oficial de Moodle y en Oksigenia Aty, con funciones en su `lib.php`:
