@@ -62,6 +62,7 @@ final class h5pinapp_test extends \advanced_testcase {
         // download off, which the teacher chose. 13 and 8: download already on.
         $ids = $this->contents([15, 3, 14, 13, 8]);
 
+        $this->setAdminUser(); // The H5P activity generator needs a current user.
         $course = $this->getDataGenerator()->create_course();
         $hidden = $this->getDataGenerator()->create_module('h5pactivity', ['course' => $course->id, 'displayoptions' => 15]);
         $shown = $this->getDataGenerator()->create_module('h5pactivity', ['course' => $course->id, 'displayoptions' => 14]);
