@@ -43,7 +43,7 @@ final class h5pinapp_test extends \advanced_testcase {
 
         $ids = [];
         foreach ($options as $option) {
-            $id = $generator->create_h5p_record($library);
+            $id = $generator->create_h5p_record((int) $library->id);
             $DB->set_field('h5p', 'displayoptions', $option, ['id' => $id]);
             $ids[$option] = $id;
         }
