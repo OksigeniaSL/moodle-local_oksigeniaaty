@@ -161,6 +161,7 @@ $string['pinconfirm'] = 'Vuelve a escribirlo para comprobar que está bien.';
 $string['pininvalid'] = 'El PIN debe tener de 4 a 8 cifras.';
 $string['pinlocked'] = 'Demasiados PIN incorrectos. Espera unos minutos y vuelve a intentarlo, o pide un enlace de acceso nuevo.';
 $string['pinmismatch'] = 'No coincide. Escribe otra vez el mismo PIN.';
+$string['pinnotsaved'] = 'No se ha podido guardar el PIN. Has entrado igual; puedes crearlo la próxima vez que entres con un enlace o un código.';
 $string['pinokconfirm'] = 'Confirmar PIN';
 $string['pinokenter'] = 'Entrar';
 $string['pinoksetup'] = 'Crear PIN';

@@ -140,6 +140,8 @@ try {
         'confirmmessage' => get_string('pinconfirm', 'local_oksigeniaaty'),
         'confirmok' => get_string('pinokconfirm', 'local_oksigeniaaty'),
         'mismatch' => get_string('pinmismatch', 'local_oksigeniaaty'),
+        // Said by the app when the new PIN could not be saved, so nobody trusts a PIN that does not exist.
+        'notsaved' => get_string('pinnotsaved', 'local_oksigeniaaty'),
         'biometric' => get_string('pinbiometric', 'local_oksigeniaaty'),
         'biometricask' => get_string('pinbiometricask', 'local_oksigeniaaty'),
     ];

@@ -161,6 +161,7 @@ $string['pinconfirm'] = 'Type it again to make sure it is right.';
 $string['pininvalid'] = 'The PIN must be 4 to 8 digits.';
 $string['pinlocked'] = 'Too many wrong PINs. Wait a few minutes and try again, or ask for a new sign-in link.';
 $string['pinmismatch'] = 'They do not match. Type the same PIN again.';
+$string['pinnotsaved'] = 'The PIN could not be saved. You are signed in anyway; you can create it the next time you sign in with a link or a code.';
 $string['pinokconfirm'] = 'Confirm PIN';
 $string['pinokenter'] = 'Sign in';
 $string['pinoksetup'] = 'Create PIN';

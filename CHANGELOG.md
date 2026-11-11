@@ -7,6 +7,10 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Fixed
 
+- When the app cannot save the PIN chosen at the first sign-in, it now says so (0.5.54-dev, string `pinnotsaved`
+  sent with the rest of the PIN wording); before, the user believed they had a PIN. Seen on an iPhone, where the app
+  lost the second pad and saved nothing; the app fix is in Oksigenia Aty.
+
 - A row or a tile of another plugin on the app's home, and a shortcut to a page of the site that the app cannot open by
   itself, open inside the app with the session signed in (0.5.53-dev). They went to the phone's browser, which asked to
   sign in again; seen with the canteen of Oksigenia Meals. Pages the app opens by itself (courses, calendar, badges) and
