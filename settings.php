@@ -53,6 +53,16 @@ if ($hassiteconfig) {
     ));
 
     if ($ADMIN->fulltree) {
+        // Above everything, when the app would hide the login form the web shows (also in the site status report).
+        $loginform = (new \local_oksigeniaaty\check\loginform())->get_result();
+        if ($loginform->get_status() !== \core\check\result::OK) {
+            $settings->add(new admin_setting_description(
+                'local_oksigeniaaty/loginformcheck',
+                '',
+                $OUTPUT->notification($loginform->get_summary(), \core\output\notification::NOTIFY_WARNING, false)
+            ));
+        }
+
         $settings->add(new admin_setting_heading(
             'local_oksigeniaaty/designintro',
             new lang_string('settings:design', 'local_oksigeniaaty'),

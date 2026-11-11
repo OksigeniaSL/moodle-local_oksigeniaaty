@@ -7,6 +7,11 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Added
 
+- A site status check, «Login form in the app» (0.5.56-dev), also shown at the top of the plugin's settings when it
+  fails. The app follows Moodle's «Display manual login form»; Boost Union ignores it and shows the form on the web
+  through its own «Local login». With the first off and the second on, people with a manual account log in on the web
+  but the app only offers the identity providers. The check says so and points to the setting.
+
 - H5P content plays in the app on the phone itself, iPhones included (0.5.55-dev, setting «H5P content plays in the
   app», on by default, and the task `h5p_in_app` every ten minutes). Moodle serves an H5P package only while its
   download is allowed, and without the package the app shows the site in a frame, which on an iPhone shows the login

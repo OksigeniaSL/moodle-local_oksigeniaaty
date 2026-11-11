@@ -327,3 +327,12 @@ function local_oksigeniaaty_h5pinapp_changed(): void {
         \local_oksigeniaaty\local\h5pinapp::apply();
     }
 }
+
+/**
+ * The site status checks of the plugin (Site administration > Reports > Check system status).
+ *
+ * @return \core\check\check[]
+ */
+function local_oksigeniaaty_status_checks(): array {
+    return [new \local_oksigeniaaty\check\loginform()];
+}
