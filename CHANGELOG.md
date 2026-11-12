@@ -20,6 +20,11 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Fixed
 
+- After a new version of an H5P library, the app plays the new version too (0.5.57-dev). Moodle updates the content and
+  makes its package again on the next web view, but the apps ask for the package itself and went on playing the old
+  one. The task `h5p_in_app` now deletes the package of every H5P whose content Moodle has refreshed, and the app asks
+  for a new one, which Moodle makes then. Seen with the letter wheel 1.0.4 on a site that had 1.0.3.
+
 - When the app cannot save the PIN chosen at the first sign-in, it now says so (0.5.54-dev, string `pinnotsaved`
   sent with the rest of the PIN wording); before, the user believed they had a PIN. Seen on an iPhone, where the app
   lost the second pad and saved nothing; the app fix is in Oksigenia Aty.

@@ -68,4 +68,35 @@ class h5pinapp {
 
         return $changed;
     }
+
+    /**
+     * Delete the exported package of every H5P whose filtered content Moodle has emptied: it does so when one of the
+     * content's libraries gets a new version, or the content changes. The web makes the package again on the next view,
+     * but the apps ask for the package itself and would go on playing the old one, with the old library. Without it,
+     * the app asks Moodle for the package, and Moodle makes it then.
+     *
+     * @return int How many packages were deleted.
+     */
+    public static function refresh_exports(): int {
+        global $DB;
+
+        // The export of content 51 is "<slug>-51.h5p": the dash keeps 51 from matching 151.
+        $named = $DB->sql_like('f.filename', $DB->sql_concat("'%-'", 'h.id', "'.h5p'"));
+        $empty = 'h.filtered IS NULL OR ' . $DB->sql_isempty('h5p', 'h.filtered', true, true);
+        $sql = "SELECT f.id
+                  FROM {files} f
+                  JOIN {h5p} h ON $named
+                 WHERE f.component = :component AND f.filearea = :filearea AND f.filename <> '.' AND ($empty)";
+
+        $fs = get_file_storage();
+        $deleted = 0;
+        foreach ($DB->get_fieldset_sql($sql, ['component' => 'core_h5p', 'filearea' => 'export']) as $fileid) {
+            if ($file = $fs->get_file_by_id((int) $fileid)) {
+                $file->delete();
+                $deleted++;
+            }
+        }
+
+        return $deleted;
+    }
 }

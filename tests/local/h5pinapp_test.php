@@ -86,6 +86,32 @@ final class h5pinapp_test extends \advanced_testcase {
     }
 
     /**
+     * After a library update Moodle empties the content's filtered parameters, and the exported package, made with the
+     * old library, goes: the app then asks for a new one. Content whose parameters are filtered keeps its package.
+     */
+    public function test_refresh_exports_after_a_library_update(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $ids = $this->contents([13, 15]);
+        $fs = get_file_storage();
+        $context = \context_system::instance();
+        foreach ($ids as $id) {
+            $fs->create_file_from_string([
+                'contextid' => $context->id, 'component' => 'core_h5p', 'filearea' => 'export', 'itemid' => 0,
+                'filepath' => '/', 'filename' => "example-$id.h5p",
+            ], 'package');
+        }
+        $DB->set_field('h5p', 'filtered', '', ['id' => $ids[13]]);
+        $DB->set_field('h5p', 'filtered', '{"words":[]}', ['id' => $ids[15]]);
+
+        $this->assertSame(1, h5pinapp::refresh_exports());
+        $this->assertFalse($fs->file_exists($context->id, 'core_h5p', 'export', 0, '/', "example-{$ids[13]}.h5p"));
+        $this->assertTrue($fs->file_exists($context->id, 'core_h5p', 'export', 0, '/', "example-{$ids[15]}.h5p"));
+        $this->assertSame(0, h5pinapp::refresh_exports());
+    }
+
+    /**
      * The task leaves everything alone on a site that turned the setting off, and works when it is on or unset.
      */
     public function test_task_follows_the_setting(): void {

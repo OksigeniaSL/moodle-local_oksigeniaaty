@@ -45,5 +45,6 @@ class h5p_in_app extends \core\task\scheduled_task {
         }
 
         mtrace('H5P content made playable in the app: ' . h5pinapp::apply() . '.');
+        mtrace('H5P packages made again with their current libraries: ' . h5pinapp::refresh_exports() . '.');
     }
 }
