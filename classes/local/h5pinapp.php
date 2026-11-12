@@ -80,18 +80,17 @@ class h5pinapp {
     public static function refresh_exports(): int {
         global $DB;
 
-        // The export of content 51 is "<slug>-51.h5p": the dash keeps 51 from matching 151.
-        $named = $DB->sql_like('f.filename', $DB->sql_concat("'%-'", 'h.id', "'.h5p'"));
-        $empty = 'h.filtered IS NULL OR ' . $DB->sql_isempty('h5p', 'h.filtered', true, true);
-        $sql = "SELECT f.id
-                  FROM {files} f
-                  JOIN {h5p} h ON $named
-                 WHERE f.component = :component AND f.filearea = :filearea AND f.filename <> '.' AND ($empty)";
+        $empty = 'filtered IS NULL OR ' . $DB->sql_isempty('h5p', 'filtered', true, true);
+        $stale = array_flip(array_map('intval', $DB->get_fieldset_select('h5p', 'id', $empty)));
+        if (!$stale) {
+            return 0;
+        }
 
-        $fs = get_file_storage();
+        // The export of content 51 is "<slug>-51.h5p".
         $deleted = 0;
-        foreach ($DB->get_fieldset_sql($sql, ['component' => 'core_h5p', 'filearea' => 'export']) as $fileid) {
-            if ($file = $fs->get_file_by_id((int) $fileid)) {
+        $files = get_file_storage()->get_area_files(\context_system::instance()->id, 'core_h5p', 'export', false, 'id', false);
+        foreach ($files as $file) {
+            if (preg_match('/-(\d+)\.h5p$/', $file->get_filename(), $m) && isset($stale[(int) $m[1]])) {
                 $file->delete();
                 $deleted++;
             }
