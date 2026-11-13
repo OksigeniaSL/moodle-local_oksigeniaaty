@@ -5,6 +5,11 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed (0.5.64-dev)
+
+- The day's line of the home no longer ends «…2027-28?.» when the thing to do is a question: a title that already ends a
+  sentence takes no full stop. Seen on the Pixel with Eguahe's card.
+
 ### Changed (0.5.63-dev)
 
 - «Send the app», redone (Jujol). One search for a course, a person or a cohort takes the place of the tabs and the

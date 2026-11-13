@@ -729,7 +729,12 @@ class mobile {
         array $events,
         int $now
     ): string {
-        $say = fn(string $id, $a = null) => get_string('home:day:' . $id, 'local_oksigeniaaty', $a);
+        // A title that already ends a sentence (a question, an exclamation) does not take the sentence's full stop.
+        $say = fn(string $id, $a = null) => preg_replace(
+            '/([?!…])\.$/u',
+            '$1',
+            get_string('home:day:' . $id, 'local_oksigeniaaty', $a)
+        );
         $some = fn(string $id, int $count) => $count === 1 ? $say($id . '1') : $say($id, $count);
 
         if ($todo) {
