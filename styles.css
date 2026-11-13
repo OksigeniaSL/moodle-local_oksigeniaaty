@@ -83,42 +83,491 @@ html body.hasstickyfooter:has(.local-oksigeniaaty-bar) oksigenia-access-panel {
     }
 }
 
-/* "Send the app": the counts and the list, in the theme's colours, in light and dark. */
+/* "Send the app" (Jujol, 13 Nov 2026). Only the theme's variables, so it follows the site's colours in light and in
+   dark. One search, the courses under way as the app's own tiles (the big number of who is missing), a phone for each
+   person, and the people by how they stand. Chrome 93 and Firefox 98: no :has(), no color-mix(). States, always in this
+   order, left to right: in the app, link on its way, still waiting, cannot be sent one. */
+
 .local-oksigeniaaty-send {
-    margin-top: 1.5rem;
+    margin-top: 1.25rem;
+}
+
+.local-oksigeniaaty-send-block {
+    margin-top: 2rem;
+}
+
+.local-oksigeniaaty-send-title {
+    margin: 0 0 .25rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.local-oksigeniaaty-send-subtitle {
+    display: inline-flex;
+    gap: .5rem;
+    align-items: center;
+    margin: 1.5rem 0 .5rem;
+    font-size: 1.0625rem;
+    font-weight: 600;
+}
+
+.local-oksigeniaaty-send-subtitle span {
+    padding: 0 .5rem;
+    font-size: .875rem;
+    font-weight: 600;
+    background: var(--bs-secondary-bg, #e9ecef);
+    border-radius: 999px;
+}
+
+.local-oksigeniaaty-send-lead {
+    margin: 0 0 1rem;
+    color: var(--bs-secondary-color, #6c757d);
 }
 
 .local-oksigeniaaty-send-empty {
-    padding: 1.5rem;
+    padding: 1.25rem 1.5rem;
     color: var(--bs-secondary-color, #6c757d);
     border: 1px dashed var(--bs-border-color, #dee2e6);
     border-radius: .75rem;
 }
 
-.local-oksigeniaaty-send-counts {
+/* ---------- The search: one field for a course, a person or a cohort ---------- */
+.local-oksigeniaaty-send-ask {
+    display: block;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.local-oksigeniaaty-send-search .local-oksigeniaaty-send-lead {
+    margin-bottom: .625rem;
+}
+
+.local-oksigeniaaty-send-field {
+    display: flex;
+    align-items: center;
+    padding: .3125rem .3125rem .3125rem 1rem;
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 999px;
+}
+
+.local-oksigeniaaty-send-field:focus-within {
+    border-color: var(--bs-primary, #0f6cbf);
+    box-shadow: 0 0 0 .25rem rgba(var(--bs-primary-rgb, 15, 108, 191), .25);
+}
+
+.local-oksigeniaaty-send-lupa {
+    flex: none;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+.local-oksigeniaaty-send-field input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 2.75rem;
+    padding: 0 .75rem;
+    font-size: 1.0625rem;
+    color: var(--bs-body-color, #1d2125);
+    background: transparent;
+    border: 0;
+    outline: 0;
+}
+
+.local-oksigeniaaty-send-field .btn {
+    flex: none;
+    min-height: 2.75rem;
+    padding: 0 1.25rem;
+    border-radius: 999px;
+}
+
+/* ---------- The courses: the app's own tiles ---------- */
+.local-oksigeniaaty-send-courses {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
-    gap: .75rem;
+    /* min() keeps a narrow phone in one column; csstree does not know it inside minmax(). */
+    /* stylelint-disable-next-line csstree/validator */
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
+    gap: 1rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.local-oksigeniaaty-send-course {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: .875rem 1rem;
+    align-items: center;
+    height: 100%;
+    padding: 1rem 1.125rem;
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+}
+
+.local-oksigeniaaty-send-course:hover,
+.local-oksigeniaaty-send-course:focus-within {
+    border-color: var(--bs-primary, #0f6cbf);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .1);
+}
+
+.local-oksigeniaaty-send-course:focus-within {
+    outline: 3px solid rgba(var(--bs-primary-rgb, 15, 108, 191), .45);
+    outline-offset: 2px;
+}
+
+.local-oksigeniaaty-send-course .stretched-link:focus {
+    outline: 0;
+    box-shadow: none;
+}
+
+.local-oksigeniaaty-send-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 3.75rem;
+    height: 3.75rem;
+    padding: 0 .375rem;
+    border-radius: .875rem;
+}
+
+.local-oksigeniaaty-send-badge b {
+    font-size: 1.625rem;
+    line-height: 1;
+}
+
+.local-oksigeniaaty-send-badge small {
+    margin-top: .1875rem;
+    font-size: .6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+.local-oksigeniaaty-send-badge[data-state="waiting"] {
+    color: var(--bs-warning-text-emphasis, #60451f);
+    background: var(--bs-warning-bg-subtle, #fcefdc);
+}
+
+.local-oksigeniaaty-send-badge[data-state="inapp"] {
+    color: var(--bs-success-text-emphasis, #153114);
+    background: var(--bs-success-bg-subtle, #d7e4d6);
+}
+
+.local-oksigeniaaty-send-course-text a {
+    display: block;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.local-oksigeniaaty-send-course-text span {
+    display: block;
+    margin-top: .125rem;
+    font-size: .875rem;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+/* The thin bar of how its people stand: a share for each state. */
+.local-oksigeniaaty-send-bar {
+    display: flex;
+    grid-column: 1 / -1;
+    gap: 2px;
+    height: 6px;
+    overflow: hidden;
+    background: var(--bs-secondary-bg, #e9ecef);
+    border-radius: 3px;
+}
+
+.local-oksigeniaaty-send-bar i {
+    flex: 1 1 0;
+    min-width: 3px;
+}
+
+.local-oksigeniaaty-send-bar-big {
+    height: 14px;
+    margin: 1rem 0 0;
+    border-radius: 7px;
+}
+
+/* ---------- The cohorts and the groups: chips ---------- */
+.local-oksigeniaaty-send-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+/* A chip is one of the theme's buttons (so the theme does not underline it in dark), with the look of a chip. */
+.local-oksigeniaaty-send .local-oksigeniaaty-send-chip {
+    --bs-btn-padding-x: 1rem;
+    --bs-btn-padding-y: .25rem;
+    --bs-btn-color: var(--bs-body-color, #1d2125);
+    --bs-btn-bg: var(--bs-body-bg, #fff);
+    --bs-btn-border-color: var(--bs-border-color, #dee2e6);
+    --bs-btn-border-radius: 999px;
+    --bs-btn-hover-color: var(--bs-body-color, #1d2125);
+    --bs-btn-hover-bg: var(--bs-body-bg, #fff);
+    --bs-btn-hover-border-color: var(--bs-primary, #0f6cbf);
+    --bs-btn-active-color: var(--bs-body-color, #1d2125);
+    --bs-btn-active-bg: var(--bs-tertiary-bg, #f8f9fa);
+    --bs-btn-active-border-color: var(--bs-primary, #0f6cbf);
+    display: inline-flex;
+    gap: .5rem;
+    align-items: center;
+    min-height: 2.5rem;
+}
+
+.local-oksigeniaaty-send-chip span {
+    font-size: .875rem;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+.local-oksigeniaaty-send .local-oksigeniaaty-send-chip[aria-current="page"] {
+    --bs-btn-color: #fff;
+    --bs-btn-bg: var(--bs-primary, #0f6cbf);
+    --bs-btn-border-color: var(--bs-primary, #0f6cbf);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--bs-primary, #0f6cbf);
+}
+
+/* ---------- What was chosen: its phones, the button and the people ---------- */
+.local-oksigeniaaty-send-back {
+    margin: 0 0 .75rem;
+}
+
+.local-oksigeniaaty-send > .local-oksigeniaaty-send-block:first-child {
+    margin-top: 0;
+}
+
+.local-oksigeniaaty-send-panel {
+    padding: 1.5rem;
+    background: var(--bs-tertiary-bg, #f8f9fa);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 1rem;
+}
+
+.local-oksigeniaaty-send-name {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.local-oksigeniaaty-send-detail {
+    margin: .125rem 0 1rem;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+.local-oksigeniaaty-send-panel .local-oksigeniaaty-send-chips {
     margin-bottom: 1.25rem;
 }
 
-.local-oksigeniaaty-send-count {
+/* A phone for each person: full in the app, pale with its link on the way, amber still waiting, dashed if no link can
+   reach them. */
+.local-oksigeniaaty-send-phones {
     display: flex;
-    flex-direction: column;
-    padding: .875rem 1rem;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.local-oksigeniaaty-send-phones li,
+.local-oksigeniaaty-send-legend li::before,
+.local-oksigeniaaty-send-subtitle i {
+    position: relative;
+    flex: none;
+    width: 16px;
+    height: 27px;
+    border: 2px solid;
+    border-radius: 4px;
+}
+
+.local-oksigeniaaty-send-phones li::before,
+.local-oksigeniaaty-send-subtitle i::before {
+    position: absolute;
+    top: 2px;
+    left: 50%;
+    width: 4px;
+    height: 2px;
+    margin-left: -2px;
+    content: "";
+    background: currentColor;
+    border-radius: 1px;
+}
+
+.local-oksigeniaaty-send-legend li::before {
+    display: inline-block;
+    width: 10px;
+    height: 16px;
+    margin-right: .375rem;
+    vertical-align: -3px;
+    content: "";
+    border-radius: 3px;
+}
+
+.local-oksigeniaaty-send-subtitle i {
+    width: 13px;
+    height: 21px;
+}
+
+.local-oksigeniaaty-send-group[data-state="inapp"] .local-oksigeniaaty-send-subtitle i,
+.local-oksigeniaaty-send-phones li[data-state="inapp"],
+.local-oksigeniaaty-send-legend li[data-state="inapp"]::before {
+    color: var(--bs-body-bg, #fff);
+    background: var(--bs-success, #357a32);
+    border-color: var(--bs-success, #357a32);
+}
+
+.local-oksigeniaaty-send-group[data-state="sent"] .local-oksigeniaaty-send-subtitle i,
+.local-oksigeniaaty-send-phones li[data-state="sent"],
+.local-oksigeniaaty-send-legend li[data-state="sent"]::before {
+    color: var(--bs-primary, #0f6cbf);
+    background: var(--bs-primary-bg-subtle, #cfe2f2);
+    border-color: var(--bs-primary, #0f6cbf);
+}
+
+.local-oksigeniaaty-send-group[data-state="waiting"] .local-oksigeniaaty-send-subtitle i,
+.local-oksigeniaaty-send-phones li[data-state="waiting"],
+.local-oksigeniaaty-send-legend li[data-state="waiting"]::before {
+    color: var(--bs-warning-text-emphasis, #60451f);
+    background: var(--bs-warning, #f0ad4e);
+    border-color: var(--bs-warning-text-emphasis, #60451f);
+}
+
+.local-oksigeniaaty-send-group[data-state="blocked"] .local-oksigeniaaty-send-subtitle i,
+.local-oksigeniaaty-send-phones li[data-state="blocked"],
+.local-oksigeniaaty-send-legend li[data-state="blocked"]::before {
+    color: var(--bs-secondary-color, #6c757d);
+    background: transparent;
+    border-color: var(--bs-secondary-color, #6c757d);
+    border-style: dashed;
+}
+
+.local-oksigeniaaty-send-bar i[data-state="inapp"] {
+    background: var(--bs-success, #357a32);
+}
+
+.local-oksigeniaaty-send-bar i[data-state="sent"] {
+    background: var(--bs-primary, #0f6cbf);
+}
+
+.local-oksigeniaaty-send-bar i[data-state="waiting"] {
+    background: var(--bs-warning, #f0ad4e);
+}
+
+.local-oksigeniaaty-send-bar i[data-state="blocked"] {
+    background: var(--bs-secondary-color, #6c757d);
+}
+
+.local-oksigeniaaty-send-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .25rem 1.25rem;
+    padding: 0;
+    margin: .875rem 0 0;
+    list-style: none;
+}
+
+.local-oksigeniaaty-send-legend b {
+    font-weight: 700;
+}
+
+/* Send to all who are missing: the button opens its question in place, and «Yes» sends. */
+.local-oksigeniaaty-send-all {
+    margin-top: 1.25rem;
+}
+
+.local-oksigeniaaty-send-all > summary {
+    display: inline-flex;
+    gap: .625rem;
+    align-items: center;
+    list-style: none;
+}
+
+.local-oksigeniaaty-send-all > summary::-webkit-details-marker {
+    display: none;
+}
+
+.local-oksigeniaaty-send-all[open] > summary {
+    color: var(--bs-link-color, #0f6cbf);
+    background: transparent;
+}
+
+.local-oksigeniaaty-send-confirm {
+    padding: 1rem 1.25rem;
+    margin-top: .75rem;
+    background: var(--bs-body-bg, #fff);
     border: 1px solid var(--bs-border-color, #dee2e6);
+    border-left: 4px solid var(--bs-primary, #0f6cbf);
+    border-radius: .5rem;
+}
+
+.local-oksigeniaaty-send-confirm p {
+    margin: 0 0 .75rem;
+}
+
+.local-oksigeniaaty-send-confirm form {
+    margin: 0;
+}
+
+.local-oksigeniaaty-send-done {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    padding: .75rem 1rem;
+    margin: 1.25rem 0 0;
+    font-weight: 600;
+    color: var(--bs-success-text-emphasis, #153114);
+    background: var(--bs-success-bg-subtle, #d7e4d6);
     border-radius: .75rem;
 }
 
-.local-oksigeniaaty-send-number {
-    font-size: 1.75rem;
-    font-weight: 600;
-    line-height: 1.2;
+.local-oksigeniaaty-send-done svg {
+    flex: none;
 }
 
+/* ---------- The people, by how they stand ---------- */
+.local-oksigeniaaty-send-group > summary {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    list-style: none;
+    cursor: pointer;
+}
+
+.local-oksigeniaaty-send-group > summary::-webkit-details-marker {
+    display: none;
+}
+
+.local-oksigeniaaty-send-group > summary::after {
+    width: .5rem;
+    height: .5rem;
+    margin: 1.5rem 0 .5rem .25rem;
+    content: "";
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(-45deg);
+}
+
+.local-oksigeniaaty-send-group[open] > summary::after {
+    transform: rotate(45deg);
+}
+
+/* The people in columns on a wide screen, so that each button stays near its name. */
 .local-oksigeniaaty-send-list {
+    display: grid;
+    /* min() keeps a narrow phone in one column; csstree does not know it inside minmax(). */
+    /* stylelint-disable-next-line csstree/validator */
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
+    column-gap: 2rem;
     padding: 0;
-    margin: 1.25rem 0 0;
+    margin: 0;
     list-style: none;
 }
 
@@ -131,43 +580,83 @@ html body.hasstickyfooter:has(.local-oksigeniaaty-bar) oksigenia-access-panel {
     border-top: 1px solid var(--bs-border-color, #dee2e6);
 }
 
+.local-oksigeniaaty-send-row .userpicture,
+.local-oksigeniaaty-send-row .userinitials {
+    flex: none;
+    margin: 0;
+}
+
+.local-oksigeniaaty-send-who {
+    flex: 1 1 12rem;
+    min-width: 0;
+}
+
+.local-oksigeniaaty-send-who b {
+    display: block;
+    font-weight: 600;
+}
+
+.local-oksigeniaaty-send-state {
+    display: block;
+    font-size: .875rem;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
 .local-oksigeniaaty-send-row form {
     margin: 0;
 }
 
-.local-oksigeniaaty-send-row .userpicture {
+.local-oksigeniaaty-send-row .btn {
+    min-height: 2.25rem;
+}
+
+.local-oksigeniaaty-send-fix {
+    font-size: .875rem;
+}
+
+@media (max-width: 575.98px) {
+    .local-oksigeniaaty-send-panel {
+        padding: 1rem;
+    }
+
+    .local-oksigeniaaty-send-name {
+        font-size: 1.25rem;
+    }
+
+    .local-oksigeniaaty-send-all > summary {
+        justify-content: center;
+        width: 100%;
+    }
+
+    .local-oksigeniaaty-send-field .btn {
+        padding: 0 1rem;
+    }
+
+    .local-oksigeniaaty-send-phones {
+        gap: 6px;
+    }
+
+    .local-oksigeniaaty-send-phones li {
+        width: 14px;
+        height: 24px;
+    }
+}
+
+/* «Clear the PIN», small under the name, for someone who forgot it and cannot get it back by e-mail. */
+.local-oksigeniaaty-send-pin {
     margin: 0;
 }
 
-.local-oksigeniaaty-send-name {
-    flex: 1 1 14rem;
-    font-weight: 500;
+.local-oksigeniaaty-send-row .local-oksigeniaaty-send-pin .btn {
+    min-height: 1.5rem;
+    padding: 0;
+    font-size: .8125rem;
+    text-align: left;
+    vertical-align: baseline;
+    border: 0;
 }
 
-.local-oksigeniaaty-send-state {
-    display: inline-flex;
-    gap: .5rem;
-    align-items: center;
-    color: var(--bs-secondary-color, #6c757d);
-}
-
-.local-oksigeniaaty-send-state::before {
-    flex: none;
-    width: .625rem;
-    height: .625rem;
-    content: "";
-    background: var(--bs-secondary-color, #6c757d);
-    border-radius: 50%;
-}
-
-.local-oksigeniaaty-send-state[data-state="inapp"]::before {
-    background: var(--bs-success, #198754);
-}
-
-.local-oksigeniaaty-send-state[data-state="sent"]::before {
-    background: var(--bs-info, #0dcaf0);
-}
-
-.local-oksigeniaaty-send-state[data-state="waiting"]::before {
-    background: var(--bs-warning, #ffc107);
+/* A long list shows its first people, and a link to all of them. */
+.local-oksigeniaaty-send-more {
+    margin: .75rem 0 0;
 }
