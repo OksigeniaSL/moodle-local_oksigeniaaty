@@ -30,7 +30,8 @@ $functions = [
         'methodname' => 'execute',
         'description' => 'Set or change the current user\'s Aty sign-in PIN.',
         'type' => 'write',
-        'ajax' => true,
+        // Only from the app, with its token: never from a web page's JavaScript, which would hand it the app's token.
+        'ajax' => false,
         'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
     ],
     'local_oksigeniaaty_get_user_style' => [
@@ -63,7 +64,8 @@ $functions = [
         'methodname' => 'execute',
         'description' => 'Renew the current Aty app token (extend its expiry) without a password.',
         'type' => 'write',
-        'ajax' => true,
+        // Only from the app, with its token: never from a web page's JavaScript, which would hand it the app's token.
+        'ajax' => false,
         'services' => [MOODLE_OFFICIAL_MOBILE_SERVICE],
     ],
 ];

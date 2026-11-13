@@ -37,7 +37,13 @@ class brand {
     public static function for_user(int $userid): ?array {
         foreach (get_plugins_with_function('oksigeniaaty_user_brand') as $plugins) {
             foreach ($plugins as $function) {
-                $brand = self::clean($function($userid));
+                // One plugin that fails, or gives something odd, does not take the home, the sign-in style or the mails down.
+                try {
+                    $brand = self::clean($function($userid));
+                } catch (\Throwable $e) {
+                    debugging('User brand of ' . $function . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
+                    continue;
+                }
                 if ($brand !== null) {
                     return $brand;
                 }

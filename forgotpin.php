@@ -55,9 +55,10 @@ if ($submitted && confirm_sesskey() && $search !== '') {
 
     if ($user && !isguestuser($user)) {
         $systemcontext = context_system::instance();
+        // Anyone who has a PIN already uses the app, so a reset gives nobody new access: not limited to the cohorts of
+        // self-service, or whoever entered with a link from the centre would have no way back after forgetting it.
         $eligible = !is_siteadmin($user)
             && !has_capability('moodle/site:config', $systemcontext, $user)
-            && local_oksigeniaaty_user_can_selfservice($user->id)
             && \local_oksigeniaaty\local\pin::has_pin($user->id);
 
         $last = \local_oksigeniaaty\local\loginkey::last_reset_request($user->id);

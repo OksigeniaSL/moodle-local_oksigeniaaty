@@ -5,6 +5,32 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Security
+
+- From the first full review of Aty (0.5.59-dev). Changing the app's PIN takes the current one: whoever held the token
+  alone could put their own and renew with it. The count of wrong PINs can no longer be outrun by tries sent all at
+  once (one try at a time per user), and wrong PINs and locks leave a trace in the logs (`pin_failed`, `pin_locked`).
+  `set_pin` and `renew` are no longer open to a web page's JavaScript. The family link (`family.php`) opens the app only
+  until the account is in it, not for its whole month. «Send the app» searches the whole site only for who may see the
+  site's people, by e-mail or username only for who may see those, and sends again to the same person once an hour at
+  most. A deleted account takes its PIN with it.
+
+### Fixed
+
+- A child's agenda, in the app of an adult of their family, showed no dates of the child's activities: the calendar
+  checked them against the adult, who is in none of the child's courses. It is asked as the child now.
+- A card of another plugin that cannot be read (a title that is not text), or a brand that fails, no longer takes the
+  whole home, the sign-in style or the mails down; and the strings inside an object among a row's arguments are made
+  inert too. The rows of a child's page with an address open inside the app, like the home's.
+- «Forgot your PIN?» works for anyone with a PIN, not only the cohorts of self-service: whoever entered with a link
+  from the centre had no way back.
+
+### Changed
+
+- `token.php` also says who the link signs in (`fullname`, `username`), so the app can ask before switching accounts.
+- The help of the settings, up to date: the links the centre sends last 7 days, the bar of the app is for once people
+  know they have it, and the family app says what it needs.
+
 ### Added
 
 - Pages that open in the phone's browser rather than inside the app (0.5.58-dev): a plugin lists them through

@@ -43,19 +43,20 @@ class linkroster {
     public const MAX = 2000;
 
     /**
-     * The active people whose name, username or e-mail contain a text.
+     * The active people whose name contains a text, or also their username or e-mail.
      *
      * @param string $text The text.
+     * @param bool $byidentity Whether to look in the username and the e-mail too (for who may see them).
      * @return \stdClass[] Users by id.
      */
-    public static function search(string $text): array {
+    public static function search(string $text, bool $byidentity = false): array {
         global $DB;
 
         $text = trim($text);
         if ($text === '') {
             return [];
         }
-        [$where, $params] = users_search_sql($text, 'u', USER_SEARCH_CONTAINS, ['email', 'username']);
+        [$where, $params] = users_search_sql($text, 'u', USER_SEARCH_CONTAINS, $byidentity ? ['email', 'username'] : []);
 
         return $DB->get_records_sql(self::select() . " WHERE $where AND " . self::active(), $params, 0, self::MAX);
     }

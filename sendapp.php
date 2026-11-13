@@ -42,7 +42,12 @@ $confirm = optional_param('confirm', 0, PARAM_BOOL);
 $sendto = optional_param('sendto', 0, PARAM_INT);
 
 $canseecohorts = has_capability('moodle/cohort:view', context_system::instance());
-if (!in_array($mode, array_merge(['course', 'search'], $canseecohorts ? ['cohort'] : []), true)) {
+// Looking for anyone in the whole site is for who may see the site's people; by e-mail or username, for who may see
+// those. Sending the app alone does not show everyone's name, photo and whether they use the app.
+$cansearch = has_capability('moodle/site:viewparticipants', context_system::instance());
+$canseeidentity = has_capability('moodle/site:viewuseridentity', context_system::instance());
+$modes = array_merge(['course'], $cansearch ? ['search'] : [], $canseecohorts ? ['cohort'] : []);
+if (!in_array($mode, $modes, true)) {
     $mode = 'course';
 }
 
@@ -66,7 +71,7 @@ $users = [];
 $chosen = false;
 if ($mode === 'search' && $q !== '') {
     $chosen = true;
-    $users = linkroster::search($q);
+    $users = linkroster::search($q, $canseeidentity);
 } else if ($mode === 'course' && $courseid && $courseid != SITEID) {
     require_capability('moodle/course:viewparticipants', context_course::instance($courseid));
     // A group left over from the course chosen before.
@@ -132,7 +137,7 @@ if ($sendall) {
 }
 
 $tabs = [];
-foreach (array_merge(['course', 'search'], $canseecohorts ? ['cohort'] : []) as $tab) {
+foreach ($modes as $tab) {
     $tabs[] = new tabobject(
         $tab,
         new moodle_url('/local/oksigeniaaty/sendapp.php', ['mode' => $tab]),

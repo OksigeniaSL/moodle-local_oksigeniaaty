@@ -118,6 +118,27 @@ class pin {
      * @return bool True when the PIN is correct.
      */
     public static function verify(int $userid, string $pin): bool {
+        // One try at a time per user: tries sent all at once would otherwise each read the count before any of them
+        // wrote it, and many more than the limit would be checked. A try that cannot wait its turn is not checked.
+        $lock = \core\lock\lock_config::get_lock_factory('local_oksigeniaaty_pin')->get_lock('pin' . $userid, 5);
+        if (!$lock) {
+            return false;
+        }
+        try {
+            return self::verify_locked($userid, $pin);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    /**
+     * The check itself, once no other try for the same user is running.
+     *
+     * @param int $userid The user id.
+     * @param string $pin The PIN to check.
+     * @return bool
+     */
+    private static function verify_locked(int $userid, string $pin): bool {
         global $DB;
 
         $record = $DB->get_record(self::TABLE, ['userid' => $userid]);
@@ -136,13 +157,20 @@ class pin {
             return true;
         }
 
-        // Wrong PIN: count it and, past the limit, lock for a growing while.
+        // Wrong PIN: count it and, past the limit, lock for a growing while. Both leave a trace in the logs.
         $record->fails = (int) $record->fails + 1;
-        if ($record->fails >= self::MAXFAILS) {
+        $locks = $record->fails >= self::MAXFAILS;
+        if ($locks) {
             $record->lockuntil = time() + self::LOCKSECS * ($record->fails - self::MAXFAILS + 1);
         }
         $record->timemodified = time();
         $DB->update_record(self::TABLE, $record);
+
+        $event = ['context' => \context_system::instance(), 'relateduserid' => $userid];
+        \local_oksigeniaaty\event\pin_failed::create($event)->trigger();
+        if ($locks) {
+            \local_oksigeniaaty\event\pin_locked::create($event)->trigger();
+        }
 
         return false;
     }

@@ -93,6 +93,28 @@ class familyaccount {
     }
 
     /**
+     * Whether an account made here is already in the app: it has a valid token of the mobile service.
+     *
+     * @param int $userid The account.
+     * @return bool
+     */
+    public static function in_app(int $userid): bool {
+        global $DB;
+
+        $servicename = defined('MOODLE_OFFICIAL_MOBILE_SERVICE') ? MOODLE_OFFICIAL_MOBILE_SERVICE : 'moodle_mobile_app';
+        $serviceid = $DB->get_field('external_services', 'id', ['shortname' => $servicename]);
+        if (!$serviceid) {
+            return false;
+        }
+
+        return $DB->record_exists_select(
+            'external_tokens',
+            'userid = :userid AND externalserviceid = :serviceid AND (validuntil = 0 OR validuntil > :now)',
+            ['userid' => $userid, 'serviceid' => $serviceid, 'now' => time()]
+        );
+    }
+
+    /**
      * The account of an adult, made now if they have none. Null when they should not get one this way: they are no longer in a
      * family, or they have a real account of the site, which they sign in to as always.
      *

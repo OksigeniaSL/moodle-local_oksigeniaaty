@@ -62,4 +62,14 @@ class observer {
             \local_oksigeniaaty\local\familyaccount::remove((int) $event->relateduserid);
         }
     }
+
+    /**
+     * A deleted account: its PIN goes too, as nobody can sign in with it any more.
+     *
+     * @param \core\event\user_deleted $event The event.
+     * @return void
+     */
+    public static function user_deleted(\core\event\user_deleted $event): void {
+        \local_oksigeniaaty\local\pin::delete((int) $event->objectid);
+    }
 }

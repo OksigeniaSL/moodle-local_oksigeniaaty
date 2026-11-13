@@ -59,7 +59,13 @@ class homecards {
                     continue;
                 }
                 foreach (is_array($given) ? $given : [] as $card) {
-                    $card = self::clean($card, $plugintype . '_' . $pluginname);
+                    // A card that cannot be read (a title that is an object, for one) is left out, not the whole page.
+                    try {
+                        $card = self::clean($card, $plugintype . '_' . $pluginname);
+                    } catch (\Throwable $e) {
+                        debugging('A card of ' . $plugintype . '_' . $pluginname . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
+                        continue;
+                    }
                     if ($card !== null) {
                         $cards[] = $card;
                     }
@@ -95,7 +101,12 @@ class homecards {
                     continue;
                 }
                 foreach (is_array($given) ? $given : [] as $card) {
-                    $card = self::clean($card, $plugintype . '_' . $pluginname, true);
+                    try {
+                        $card = self::clean($card, $plugintype . '_' . $pluginname, true);
+                    } catch (\Throwable $e) {
+                        debugging('A card of ' . $plugintype . '_' . $pluginname . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
+                        continue;
+                    }
                     if ($card !== null && $card['hasitems']) {
                         $cards[] = $card;
                     }

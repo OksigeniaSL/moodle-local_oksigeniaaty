@@ -36,6 +36,14 @@ header('Cache-Control: no-store');
 
 $adultid = familyaccount::available() ? familyaccount::read($sealed) : null;
 $userid = $adultid === null ? null : familyaccount::ensure($adultid);
+// The link takes the adult into the app once. After that it opens nothing: it lives in an address (a shared computer's
+// history, a forwarded message) for a month, and whoever had it would get in as the adult.
+if ($userid !== null && familyaccount::in_app($userid)) {
+    $title = s(get_string('family:linktitle', 'local_oksigeniaaty'));
+    $text = s(get_string('family:linkused', 'local_oksigeniaaty'));
+    \local_oksigeniaaty\local\bridgepage::output($title, "<h1>$title</h1><p>$text</p>");
+    exit;
+}
 if ($userid === null) {
     $title = s(get_string('family:linktitle', 'local_oksigeniaaty'));
     $text = s(get_string('family:linkgone', 'local_oksigeniaaty'));

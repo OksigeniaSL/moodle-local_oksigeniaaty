@@ -36,8 +36,8 @@ class linksender {
     /** @var int How many people a task takes. */
     private const PER_TASK = 200;
 
-    /** @var int How long before the same person can be sent another link, in seconds. */
-    public const COOLDOWN = 60;
+    /** @var int How long before the same person can be sent another link, in seconds: one an hour fills nobody's inbox. */
+    public const COOLDOWN = HOURSECS;
 
     /**
      * Send the app to some people.

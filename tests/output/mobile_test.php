@@ -245,4 +245,26 @@ final class mobile_test extends \advanced_testcase {
         $this->assertStringContainsString('Not in your plan', $html);
         $this->assertStringContainsString('core-link href="https://example.com" capture="false"', $html);
     }
+    /**
+     * A child's agenda, seen by an adult of their family who is in none of their courses, has the dates of the child's
+     * activities: the calendar is asked as the child, and given back as it was.
+     */
+    public function test_child_events_as_the_child(): void {
+        $this->resetAfterTest();
+
+        $generator = $this->getDataGenerator();
+        $course = $generator->create_course(['shortname' => 'MAT']);
+        $child = $generator->create_user();
+        $adult = $generator->create_user();
+        $generator->enrol_user($child->id, $course->id, 'student');
+        $generator->create_module('assign', ['course' => $course->id, 'name' => 'Fracciones', 'duedate' => time() + 3 * DAYSECS]);
+
+        $this->setUser($adult);
+        $method = new \ReflectionMethod(mobile::class, 'child_events');
+        $events = $method->invoke(null, (int) $child->id);
+
+        $this->assertNotEmpty($events);
+        $this->assertSame('Fracciones', $events[0]['name']);
+        $this->assertSame((int) $adult->id, (int) \core_calendar\local\event\container::get_requesting_user());
+    }
 }

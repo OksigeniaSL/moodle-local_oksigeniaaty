@@ -417,15 +417,23 @@ class mobile {
         }
 
         $now = time();
-        $events = calendar_get_legacy_events(
-            $now,
-            $now + 14 * DAYSECS,
-            false,
-            $groupids ?: false,
-            array_keys($courses),
-            true,
-            true
-        );
+        // The calendar checks each event against whoever asks, here the adult, who is in none of the child's courses: every
+        // activity's date was dropped before the child's own check below. Ask as the child, and give the calendar back.
+        $previous = \core_calendar\local\event\container::get_requesting_user();
+        \core_calendar\local\event\container::set_requesting_user($childid);
+        try {
+            $events = calendar_get_legacy_events(
+                $now,
+                $now + 14 * DAYSECS,
+                false,
+                $groupids ?: false,
+                array_keys($courses),
+                true,
+                true
+            );
+        } finally {
+            \core_calendar\local\event\container::set_requesting_user($previous);
+        }
         \core_collator::asort_objects_by_property($events, 'timestart', \core_collator::SORT_NUMERIC);
 
         $list = [];

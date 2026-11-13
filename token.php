@@ -152,6 +152,10 @@ try {
         'needspinsetup' => !$haspin,
         'pinui' => $setupui,
         'lang' => !empty($user->lang) ? $user->lang : $CFG->lang,
+        // Who the link signs in, so an app that already holds other accounts can ask «Sign in as …?» before switching:
+        // a link or a QR someone else made would otherwise put the phone in their account without a word.
+        'fullname' => fullname($user),
+        'username' => $user->username,
         // When the token expires (0 = never), so the app can renew it before it does.
         'validuntil' => $apptoken['validuntil'],
     ]);

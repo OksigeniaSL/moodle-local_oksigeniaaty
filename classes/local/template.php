@@ -49,6 +49,10 @@ class template {
      * @return mixed
      */
     public static function inert($data, bool $attribute = false) {
+        // An object (a plugin's stdClass among the args) is walked as an array, or its strings would pass untouched.
+        if (is_object($data)) {
+            $data = (array) $data;
+        }
         if (is_array($data)) {
             $inert = [];
             foreach ($data as $key => $value) {

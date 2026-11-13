@@ -40,6 +40,7 @@ class set_pin extends external_api {
     public static function execute_parameters(): external_function_parameters {
         return new external_function_parameters([
             'pin' => new external_value(PARAM_ALPHANUMEXT, 'The PIN to set (4 to 8 digits)'),
+            'currentpin' => new external_value(PARAM_ALPHANUMEXT, 'The PIN the user has now, if they have one', VALUE_DEFAULT, ''),
         ]);
     }
 
@@ -47,12 +48,13 @@ class set_pin extends external_api {
      * Set the current user's PIN.
      *
      * @param string $pin The new PIN.
+     * @param string $currentpin The PIN the user has now, when they have one.
      * @return array The status.
      */
-    public static function execute(string $pin): array {
+    public static function execute(string $pin, string $currentpin = ''): array {
         global $USER;
 
-        $params = self::validate_parameters(self::execute_parameters(), ['pin' => $pin]);
+        $params = self::validate_parameters(self::execute_parameters(), ['pin' => $pin, 'currentpin' => $currentpin]);
 
         $context = \context_system::instance();
         self::validate_context($context);
@@ -64,7 +66,19 @@ class set_pin extends external_api {
             throw new \moodle_exception('signinfailed', 'local_oksigeniaaty');
         }
 
-        \local_oksigeniaaty\local\pin::set((int) $USER->id, $params['pin']);
+        // Changing a PIN takes the one there is: whoever holds the token alone must not put their own and then renew it.
+        // A forgotten one is reset on the web (forgotpin.php, resetpin.php), and then there is none to give.
+        $userid = (int) $USER->id;
+        if (\local_oksigeniaaty\local\pin::has_pin($userid)) {
+            if (\local_oksigeniaaty\local\pin::is_locked($userid)) {
+                throw new \moodle_exception('pinlocked', 'local_oksigeniaaty');
+            }
+            if (!\local_oksigeniaaty\local\pin::verify($userid, $params['currentpin'])) {
+                throw new \moodle_exception('pinwrong', 'local_oksigeniaaty');
+            }
+        }
+
+        \local_oksigeniaaty\local\pin::set($userid, $params['pin']);
 
         return ['status' => true];
     }
