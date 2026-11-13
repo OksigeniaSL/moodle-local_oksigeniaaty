@@ -116,6 +116,10 @@ class hook_callbacks {
             // The plugin's own pages are already about the app.
             return '';
         }
+        if (\local_oksigeniaaty\local\browserpages::matches($pageurl->out(false))) {
+            // Pages their plugin wants in the phone's browser (sharing, saving a file, a long video) stay there.
+            return '';
+        }
         // Signing in or out makes no sense in the app, which has its own way in: those pages open the site's home there.
         $applink = strpos($pageurl->get_path(), '/login/') !== false ? new \moodle_url('/') : $pageurl;
 

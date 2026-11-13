@@ -251,7 +251,10 @@ class homecards {
 
         $url = (string) ($given['url'] ?? '');
         if (preg_match('#^https?://#i', $url)) {
-            return ['ispage' => false, 'url' => template::inert($url, true)];
+            // A page its plugin wants in the phone's browser opens there: from a row (browser) or a tile (external, as a
+            // shortcut that leaves the site, with its mark).
+            $browser = browserpages::matches($url);
+            return ['ispage' => false, 'url' => template::inert($url, true), 'browser' => $browser, 'external' => $browser];
         }
 
         return null;

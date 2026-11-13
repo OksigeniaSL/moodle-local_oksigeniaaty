@@ -136,7 +136,7 @@
     <div class="aty-agenda">
         {{#items}}
         {{#ispage}}<button type="button" class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}
-        {{^ispage}}<a class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="true" inApp="true">{{/ispage}}
+        {{^ispage}}<a class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="{{^browser}}true{{/browser}}{{#browser}}false{{/browser}}"{{^browser}} inApp="true"{{/browser}}>{{/ispage}}
             {{#hasdate}}
             <span class="aty-event-date">
                 <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>

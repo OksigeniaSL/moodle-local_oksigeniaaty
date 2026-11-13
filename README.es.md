@@ -30,6 +30,10 @@ Un plugin puede estar en el inicio de la app, en la oficial de Moodle y en Oksig
   abren una página del plugin en la app o una dirección. Los campos se explican en `classes/local/homecards.php`. Un
   plugin que el sitio apaga en la app (*Administración del sitio ▸ Aplicación móvil ▸ Características móviles*) tampoco
   enseña sus tarjetas.
+- `<component>_oksigeniaaty_browser_pages(): array` enumera las páginas del plugin que funcionan mejor en el navegador
+  del teléfono que dentro de la app (compartir, guardar un fichero hecho en la página, un fichero de calendario, un vídeo
+  largo): rutas desde la raíz del sitio, una página o una carpeta acabada en `/`. En ellas no sale la barra de «Abrir en
+  la app», y las filas, los mosaicos y los accesos del inicio que llevan a ellas las abren en el navegador del teléfono.
 - `<component>_oksigeniaaty_user_brand(int $userid): ?array` le da a un usuario su propio nombre, color, logo o imagen, y lema,
   donde varios colegios o bibliotecas comparten un sitio.
 

@@ -29,6 +29,10 @@ A plugin can take part in the app's home, in the official Moodle app and in Oksi
 - `<component>_oksigeniaaty_home_cards(int $userid): array` adds a section of rows and a tile for that user, opening a
   page of the plugin in the app or an address. The fields are described in `classes/local/homecards.php`. A plugin the
   site turns off in the app (*Site administration ▸ Mobile app ▸ Mobile features*) shows no cards either.
+- `<component>_oksigeniaaty_browser_pages(): array` lists the plugin's pages that work better in the phone's own browser
+  than inside the app (sharing, saving a file made on the page, a calendar file, a long video): paths from the site's
+  root, a page or a folder ending in `/`. On them the "open in the app" bar does not show, and the home's rows, tiles
+  and shortcuts that lead to them open them in the phone's browser.
 - `<component>_oksigeniaaty_user_brand(int $userid): ?array` gives a user their own name, colour, logo or picture, and tagline, where
   several schools or libraries share a site.
 

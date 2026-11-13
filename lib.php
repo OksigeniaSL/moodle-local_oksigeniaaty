@@ -100,8 +100,8 @@ function local_oksigeniaaty_refresh_appcss(): void {
 /**
  * The home shortcuts, parsed from the setting (one "Label | https://url | fas-icon" per line).
  *
- * The icon is optional (a default is used). A shortcut is "external" when its URL does not point at this site, so the
- * app marks the ones that leave it.
+ * The icon is optional (a default is used). A shortcut is "external" when its URL does not point at this site, or points
+ * at a page a plugin wants in the phone's browser (local\browserpages), so the app opens it there and marks it.
  *
  * @return array[] A list of ['label', 'url', 'icon', 'external']; malformed lines are skipped.
  */
@@ -130,7 +130,7 @@ function local_oksigeniaaty_get_shortcuts(): array {
             'label' => $label,
             'url' => $url,
             'icon' => $icon,
-            'external' => strpos($url, $CFG->wwwroot) !== 0,
+            'external' => strpos($url, $CFG->wwwroot) !== 0 || \local_oksigeniaaty\local\browserpages::matches($url),
         ];
     }
     return $shortcuts;

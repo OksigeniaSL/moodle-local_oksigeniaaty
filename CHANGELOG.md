@@ -7,6 +7,12 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Added
 
+- Pages that open in the phone's browser rather than inside the app (0.5.58-dev): a plugin lists them through
+  `<component>_oksigeniaaty_browser_pages()`, a page or a folder of its own. The app's in-app browser has no share sheet,
+  cannot save a file made on the page, keeps calendar files and WhatsApp or Telegram links inside and has little memory
+  for a long video. On those pages the "open in the app" bar does not show, and a row, a tile or a shortcut of the home
+  that leads to one opens it in the phone's browser. Asked by Oksigenia Eguahe for the pages of its families.
+
 - A site status check, «Login form in the app» (0.5.56-dev), also shown at the top of the plugin's settings when it
   fails. The app follows Moodle's «Display manual login form»; Boost Union ignores it and shows the form on the web
   through its own «Local login». With the first off and the second on, people with a manual account log in on the web
