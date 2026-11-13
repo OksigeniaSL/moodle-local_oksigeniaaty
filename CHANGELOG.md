@@ -5,6 +5,19 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.62-dev)
+
+- Managers (who may log in as anyone or assign roles across the site) get no private token with a passwordless link,
+  like site admins: a link in the wrong hands would open a web session with all of that. Their app works; a page
+  embedded in it may ask them to sign in.
+- «Send the app» lets the school clear the PIN of someone in the list who forgot it and cannot get it back by e-mail (no
+  address, or an account made for a family); the next link lets them set a new one. It is logged (`pin_cleared`).
+- On the home, the pill to add another child's code is a round «+» at the end of the children's row, with its name as
+  label; with no children yet, it keeps its text (Jujol).
+- The settings «Home heading» and «Home welcome» are gone: the new home greets the person and says their day, and the
+  site's name is in the header. What was set stays stored, unused.
+- README: what Aty needs outside the plugin, the status check that tells it, and how to bring people to the app.
+
 ### Fixed
 
 - The status check «Aty app» (0.5.61-dev) loads Moodle's file library before reading the list of sites: on a site's

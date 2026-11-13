@@ -21,7 +21,7 @@
 
     Context variables required for this template:
     * chosen - Whether someone has been chosen yet.
-    * hasrows, rows - The list: picture, name, state, label, cansend, sendurl, sendto, sendtext, sesskey.
+    * hasrows, rows - The list: picture, name, state, label, cansend, sendurl, sendto, sendtext, haspin, sesskey.
     * inapp, sent, waiting, blocked, hasblocked - How many in each state.
     * cansendall, sendallurl, sendalltext - The button for everyone waiting.
     * alldone - Everyone listed has entered or has a link.
@@ -95,6 +95,13 @@
                 <button type="submit" class="btn btn-sm btn-secondary">{{sendtext}}</button>
             </form>
             {{/cansend}}
+            {{#haspin}}
+            <form method="post" action="{{sendurl}}">
+                <input type="hidden" name="resetpin" value="{{sendto}}">
+                <input type="hidden" name="sesskey" value="{{sesskey}}">
+                <button type="submit" class="btn btn-sm btn-link">{{#str}} sendapp:clearpin, local_oksigeniaaty {{/str}}</button>
+            </form>
+            {{/haspin}}
         </li>
         {{/rows}}
     </ul>

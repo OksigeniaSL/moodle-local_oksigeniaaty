@@ -96,6 +96,7 @@ class mobile {
             'familyheading' => get_string('family:heading', 'local_oksigeniaaty'),
             'hasfamily' => $children !== null,
             'children' => $children ?? [],
+            'haschildren' => !empty($children),
             'familyaddname' => get_string('family:add', 'local_oksigeniaaty'),
             'todayheading' => get_string('home:today', 'local_oksigeniaaty'),
             'starting' => $starting,

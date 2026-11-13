@@ -2,7 +2,7 @@
 
 Inicio y diseño propios de cada sitio para la app móvil Oksigenia Aty.
 
-Este plugin de Moodle da a cada sitio alojado su propia pestaña de inicio y su aspecto en la app: un título, una bienvenida y, en versiones posteriores, los accesos, las tarjetas y el color de marca que alimentan el CSS remoto de la app. Se configura desde la administración del propio sitio, así que el diseño de cada sitio cambia sin publicar otra versión de la app. Funciona también en la app oficial de Moodle, y por eso se hace y se prueba antes que la propia app.
+Este plugin de Moodle da a cada sitio alojado su propia pestaña de inicio y su aspecto en la app: un saludo con lo de hoy, las tarjetas de los plugins que trabajan con él, los accesos y el color de marca que alimenta el CSS remoto de la app. Se configura desde la administración del propio sitio, así que el diseño de cada sitio cambia sin publicar otra versión de la app. Funciona también en la app oficial de Moodle, y por eso se hace y se prueba antes que la propia app.
 
 Oksigenia Aty es una sola app, publicada por Oksigenia SL, para las plataformas de formación que aloja Oksigenia. La app es un proyecto aparte; este plugin es su parte de Moodle.
 
@@ -14,9 +14,31 @@ Oksigenia Aty es una sola app, publicada por Oksigenia SL, para las plataformas 
 
 Copia el plugin en `local/oksigeniaaty` de tu Moodle y termina la actualización desde *Administración del sitio*, o instala el ZIP desde *Administración del sitio ▸ Extensiones ▸ Instalar extensiones*.
 
+## Con la app Aty
+
+La app Aty solo abre los sitios que aloja Oksigenia, de una lista firmada. En cualquier otro Moodle, este plugin sirve
+igual con la app oficial de Moodle.
+
+Para Aty hacen falta, además del plugin, unos ajustes fuera de él. La comprobación de estado **App Aty** (*Administración
+del sitio ▸ Informes ▸ Comprobaciones del sistema*) dice cuáles faltan, sin enseñar ninguna clave:
+- los servicios web para móviles, encendidos;
+- en *Móvil ▸ Ajustes de la app móvil*, el esquema de URL `oksigeniaaty`, el identificador de Android `com.oksigenia.aty`
+  y el tipo de entrada «Mediante la app»;
+- el tiempo mínimo entre entradas automáticas, 10 segundos;
+- los ajustes del puente de avisos de Oksigenia (`airnotifier…`, con el nombre de app `com.oksigenia.aty`).
+
+Para llevar a tu gente a la app:
+- **el QR del centro**, en carteles y circulares;
+- **«Mandar la app»**, que manda a cada persona su enlace sin contraseña, por curso, persona o cohorte, y deja borrar el
+  PIN a quien lo olvidó;
+- **la barra «Abrir en la app»** al pie de cada página, que se enciende cuando la gente ya sabe que tiene la app.
+
+Si en tu centro hay menores de 13 años, limita a algunas cohortes la entrada sin contraseña que cada uno saca por su
+cuenta: Google Play declara Aty para mayores de 13.
+
 ## Ajustes
 
-*Administración del sitio ▸ Extensiones ▸ Plugins locales ▸ Oksigenia Aty*: el color de marca, la pestaña de inicio (título, bienvenida, logo y accesos), el CSS adicional de la app, los enlaces a las tiendas y qué cohortes pueden entrar en la app sin contraseña.
+*Administración del sitio ▸ Extensiones ▸ Plugins locales ▸ Oksigenia Aty*: el color de marca, la pestaña de inicio (logo y accesos), el CSS adicional de la app, los enlaces a las tiendas y qué cohortes pueden entrar en la app sin contraseña.
 
 *Administración del sitio ▸ Extensiones ▸ Plugins locales ▸ Oksigenia Aty: QR del centro*: el código QR del sitio con su color de marca y su logo, para descargarlo en SVG y usarlo en carteles y circulares. Además, cada usuario tiene su propio enlace y QR de un solo uso en *Abrir en la app Aty*.
 

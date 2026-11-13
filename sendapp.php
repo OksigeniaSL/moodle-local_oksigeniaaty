@@ -40,6 +40,7 @@ $page = optional_param('page', 0, PARAM_INT);
 $sendall = optional_param('sendall', 0, PARAM_BOOL);
 $confirm = optional_param('confirm', 0, PARAM_BOOL);
 $sendto = optional_param('sendto', 0, PARAM_INT);
+$resetpin = optional_param('resetpin', 0, PARAM_INT);
 
 $canseecohorts = has_capability('moodle/cohort:view', context_system::instance());
 // Looking for anyone in the whole site is for who may see the site's people; by e-mail or username, for who may see
@@ -87,6 +88,26 @@ if ($mode === 'search' && $q !== '') {
 }
 $rows = linkroster::rows($users);
 $canmobile = !empty($CFG->enablewebservices) && !empty($CFG->enablemobilewebservice);
+
+// One person who forgot their PIN and cannot get it back by e-mail (no address, or an account made for a family): the
+// school clears it, and the next link they open lets them set a new one. Only for someone in the list on screen.
+if ($resetpin && confirm_sesskey()) {
+    $inlist = (bool) array_filter($rows, fn($row) => (int) $row['user']->id === $resetpin);
+    $done = $inlist && \local_oksigeniaaty\local\pin::has_pin($resetpin);
+    if ($done) {
+        \local_oksigeniaaty\local\pin::delete($resetpin);
+        \local_oksigeniaaty\event\pin_cleared::create([
+            'context' => context_system::instance(),
+            'relateduserid' => $resetpin,
+        ])->trigger();
+    }
+    redirect(
+        $here,
+        get_string($done ? 'sendapp:pincleared' : 'sendapp:pinnotcleared', 'local_oksigeniaaty'),
+        null,
+        $done ? \core\output\notification::NOTIFY_SUCCESS : \core\output\notification::NOTIFY_WARNING
+    );
+}
 
 // One person, from the list: to send it again, or for the first time.
 if ($sendto && confirm_sesskey()) {
@@ -154,7 +175,13 @@ $form->set_data(['mode' => $mode, 'q' => $q, 'courseid' => $courseid, 'groupid' 
 
 $perpage = 50;
 $shown = [];
-foreach (array_slice($rows, $page * $perpage, $perpage) as $row) {
+$pagerows = array_slice($rows, $page * $perpage, $perpage);
+$withpin = [];
+if ($pagerows) {
+    [$in, $inparams] = $DB->get_in_or_equal(array_map(fn($row) => (int) $row['user']->id, $pagerows));
+    $withpin = array_flip($DB->get_fieldset_select('local_oksigeniaaty_pin', 'userid', "userid $in", $inparams));
+}
+foreach ($pagerows as $row) {
     $state = $row['state'];
     $until = $row['until'] ? userdate($row['until'], get_string('strftimedate', 'langconfig')) : '';
     if ($state === linkroster::BLOCKED) {
@@ -176,6 +203,7 @@ foreach (array_slice($rows, $page * $perpage, $perpage) as $row) {
         'sendurl' => $here->out(false),
         'sendto' => (int) $row['user']->id,
         'sendtext' => get_string($state === linkroster::SENT ? 'sendapp:again' : 'sendapp:send', 'local_oksigeniaaty'),
+        'haspin' => isset($withpin[(int) $row['user']->id]),
         'sesskey' => sesskey(),
     ];
 }

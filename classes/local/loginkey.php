@@ -187,8 +187,15 @@ class loginkey {
      */
     public static function app_token(\stdClass $user, \stdClass $service): array {
         $token = \core_external\util::generate_token_for_current_user($service);
-        $siteadmin = has_capability('moodle/site:config', \context_system::instance(), $user->id);
-        $privatetoken = (!empty($token->privatetoken) && is_https() && !$siteadmin) ? $token->privatetoken : null;
+        // Nor to whoever may act as anyone or hand out roles across the site (a manager): a link without a password that
+        // reached the wrong hands would open a web session with all of that. Their app works; a page embedded in it may
+        // ask them to sign in.
+        $privileged = has_any_capability(
+            ['moodle/site:config', 'moodle/user:loginas', 'moodle/role:assign'],
+            \context_system::instance(),
+            $user->id
+        );
+        $privatetoken = (!empty($token->privatetoken) && is_https() && !$privileged) ? $token->privatetoken : null;
         \core_external\util::log_token_request($token);
 
         return [

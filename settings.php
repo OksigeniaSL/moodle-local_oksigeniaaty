@@ -80,23 +80,8 @@ if ($hassiteconfig) {
         $brandcolour->set_updatedcallback('local_oksigeniaaty_refresh_appcss');
         $settings->add($brandcolour);
 
-        // The heading shown at the top of the home tab.
-        $settings->add(new admin_setting_configtext(
-            'local_oksigeniaaty/homeheading',
-            new lang_string('settings:homeheading', 'local_oksigeniaaty'),
-            new lang_string('settings:homeheading_desc', 'local_oksigeniaaty'),
-            '',
-            PARAM_TEXT
-        ));
-
-        // A short welcome shown under the heading.
-        $settings->add(new admin_setting_configtextarea(
-            'local_oksigeniaaty/homeintro',
-            new lang_string('settings:homeintro', 'local_oksigeniaaty'),
-            new lang_string('settings:homeintro_desc', 'local_oksigeniaaty'),
-            '',
-            PARAM_TEXT
-        ));
+        // The home's own heading and welcome are gone since 0.5.60: the band greets the person and says their day, and the
+        // site's name is already in the header.
 
         // A white logo shown over the brand hero on the home tab.
         $settings->add(new admin_setting_configtext(

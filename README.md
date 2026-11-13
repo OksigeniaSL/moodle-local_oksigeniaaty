@@ -2,7 +2,7 @@
 
 Per-site home screen and design for the Oksigenia Aty mobile app.
 
-This Moodle plugin gives each hosted site its own home tab and its own look in the app: a heading, a welcome and, in later versions, the shortcuts, cards and the brand colour that feed the app's remote CSS. It is set from the site's own administration, so the design of each site changes without a new app build. It works in the official Moodle app too, which is why it is built and tried before the app itself.
+This Moodle plugin gives each hosted site its own home tab and its own look in the app: a greeting with today's things, the cards of the plugins that work with it, the shortcuts and the brand colour that feeds the app's remote CSS. It is set from the site's own administration, so the design of each site changes without a new app build. It works in the official Moodle app too, which is why it is built and tried before the app itself.
 
 Oksigenia Aty is one app, published by Oksigenia SL, for the learning sites hosted by Oksigenia. The app is a separate project; this plugin is the Moodle side of it.
 
@@ -14,9 +14,31 @@ Oksigenia Aty is one app, published by Oksigenia SL, for the learning sites host
 
 Copy the plugin into `local/oksigeniaaty` of your Moodle and finish the upgrade from *Site administration*, or install the ZIP from *Site administration ▸ Plugins ▸ Install plugins*.
 
+## With the Aty app
+
+The Aty app only opens the sites Oksigenia hosts, from a signed list. On any other Moodle, this plugin works the same
+with Moodle's own app.
+
+Aty also needs some settings outside the plugin. The status check **Aty app** (*Site administration ▸ Reports ▸ System
+status*) says which are missing, without showing any secret:
+- web services for mobile devices, on;
+- in *Mobile app ▸ Mobile settings*, the URL scheme `oksigeniaaty`, the Android identifier `com.oksigenia.aty` and the
+  type of login «Via the app»;
+- the minimum time between automatic sign-ins, 10 seconds;
+- the settings of Oksigenia's push bridge (`airnotifier…`, with the mobile app name `com.oksigenia.aty`).
+
+To bring your people to the app:
+- **the site's QR code**, on posters and letters;
+- **«Send the app»**, which sends each person their passwordless link, by course, person or cohort, and lets you clear
+  the PIN of someone who forgot it;
+- **the «Open in the app» bar** at the foot of every page, to turn on once people know they have the app.
+
+If your school has children under 13, limit to some cohorts the passwordless sign-in each person gets on their own:
+Google Play lists Aty for ages 13 and up.
+
 ## Settings
 
-*Site administration ▸ Plugins ▸ Local plugins ▸ Oksigenia Aty*: the brand colour, the home tab (heading, welcome, logo and shortcuts), extra app CSS, the store links and which cohorts may sign in to the app without a password.
+*Site administration ▸ Plugins ▸ Local plugins ▸ Oksigenia Aty*: the brand colour, the home tab (logo and shortcuts), extra app CSS, the store links and which cohorts may sign in to the app without a password.
 
 *Site administration ▸ Plugins ▸ Local plugins ▸ Oksigenia Aty: site QR code*: the site's QR code in its brand colour and with its logo, to download as SVG for posters and letters. Each user also finds their own one-time sign-in link and QR under *Open in the Aty app*.
 

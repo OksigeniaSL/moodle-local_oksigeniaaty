@@ -76,4 +76,23 @@ final class loginkey_test extends \advanced_testcase {
         $this->assertNotEmpty($result['token']);
         $this->assertNull($result['privatetoken']);
     }
+
+    /**
+     * Nor does a manager, who may act as anyone and hand out roles: a link without a password in the wrong hands would
+     * open a web session with all of that. Their token works.
+     */
+    public function test_app_token_no_private_token_for_managers(): void {
+        global $CFG, $DB;
+        $this->resetAfterTest();
+        $CFG->enablewebservices = 1;
+        $CFG->enablemobilewebservice = 1;
+
+        $manager = $this->getDataGenerator()->create_user();
+        $roleid = (int) $DB->get_field('role', 'id', ['shortname' => 'manager'], MUST_EXIST);
+        role_assign($roleid, $manager->id, \context_system::instance());
+        $this->setUser($manager);
+        $result = loginkey::app_token($manager, $this->service());
+        $this->assertNotEmpty($result['token']);
+        $this->assertNull($result['privatetoken']);
+    }
 }

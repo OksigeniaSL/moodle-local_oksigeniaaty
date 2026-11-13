@@ -213,6 +213,7 @@ button.aty-event { width: 100%; border: 0; font: inherit; text-align: start; }
 .aty-hijo-inicial { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
     background: rgba(var(--ion-color-primary-rgb), .14); color: var(--primary); font-weight: 800; }
 .aty-hijo-mas { padding-left: 14px; color: var(--primary); }
+.aty-hijo-solo { justify-content: center; width: 40px; padding: 0; }
 
 /* Today: the hour big where the date was (it is today); what is about to start, with "Join". */
 .aty-event-hora { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;

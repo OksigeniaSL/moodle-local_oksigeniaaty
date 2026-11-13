@@ -31,6 +31,7 @@
     * logourl - The brand's white logo, small, in the band (may be empty).
     * greeting - "Hi, Lucía", or "Hi" when there is no first name worth saying.
     * dayline - What matters most of the day, in a line (may be empty).
+    * haschildren - Whether there are children yet: then the pill to add another is a round «+» at the end of their row.
     * hasfamily, familyheading, children, familyaddname - For an adult of a family: their children as pills (id, name,
       label, initial, argsjson) and the way to add another with their code.
     * todayheading, hastoday - "Today".
@@ -69,9 +70,16 @@
             <span class="aty-hijo-inicial" aria-hidden="true">{{initial}}</span>{{label}}
         </button>
         {{/children}}
+        {{#haschildren}}
+        <button type="button" class="aty-hijo aty-hijo-mas aty-hijo-solo" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_family_add" title="{{familyaddname}}" aria-label="{{familyaddname}}">
+            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
+        </button>
+        {{/haschildren}}
+        {{^haschildren}}
         <button type="button" class="aty-hijo aty-hijo-mas" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_family_add" title="{{familyaddname}}">
             <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>{{familyaddname}}
         </button>
+        {{/haschildren}}
     </div>
     {{/hasfamily}}
     {{#hastoday}}
