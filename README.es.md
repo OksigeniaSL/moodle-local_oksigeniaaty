@@ -29,7 +29,14 @@ Un plugin puede estar en el inicio de la app, en la oficial de Moodle y en Oksig
 - `<component>_oksigeniaaty_home_cards(int $userid): array` añade para ese usuario una sección de filas y un mosaico, que
   abren una página del plugin en la app o una dirección. Los campos se explican en `classes/local/homecards.php`. Un
   plugin que el sitio apaga en la app (*Administración del sitio ▸ Aplicación móvil ▸ Características móviles*) tampoco
-  enseña sus tarjetas.
+  enseña sus tarjetas. El inicio enseña como mucho dos filas de cada tarjeta y, si el plugin los manda:
+  - en la tarjeta, `seeall` (`label` y adónde lleva): su propio «Ver todo», junto al título;
+  - en una fila, `actionlabel` («Firmar», «Contestar»): un botón que abre lo mismo que la fila. Una fila con botón es algo
+    por hacer, y el inicio la pone la primera, en «Hoy»;
+  - en una fila, `kind` (`due` o `close`): su fecha es un plazo, y la fila dice «Entrega» o «Cierra» junto a la hora;
+  - en una fila, `time` (true): la hora de su fecha importa, y sale en grande si la fila es de hoy.
+
+  Sin ellos, la tarjeta sale como antes. El mosaico va entre los accesos, en «También».
 - `<component>_oksigeniaaty_browser_pages(): array` enumera las páginas del plugin que funcionan mejor en el navegador
   del teléfono que dentro de la app (compartir, guardar un fichero hecho en la página, un fichero de calendario, un vídeo
   largo): rutas desde la raíz del sitio, una página o una carpeta acabada en `/`. En ellas no sale la barra de «Abrir en

@@ -27,11 +27,36 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Changed
 
+- The app's home, redone so that whoever opens it has almost nothing to do (0.5.60-dev):
+  - a low band of the brand in place of the big card that repeated the header's name: the logo small, «Hi, Lucía» (just
+    «Hi» when the first name is empty or a role's or a test account's word, never «Hi, Student») and a line the server
+    puts together with what matters most of the day: what there is to do, then today's live classes, deadlines, events
+    and unread conversations, then the submissions to grade, and with nothing, what comes next. In dark it is a tint of
+    the brand with its colour as an edge, no longer a light card that shouts. The heading, the welcome and the picture
+    no longer show on the home;
+  - an adult's children as small pills under the band;
+  - «Today» first, with the hour big where the date was. What is about to start, from half an hour before until it ends,
+    gets «in 12 min» and a «Join» button as wide as the card: a BigBlueButton room the user may join (its own join link,
+    until its closing time) and an event whose location is an address (until its end, when it has a duration); without
+    a known end, until it starts. A deadline of today says «Due» or «Closes» under its hour, and those to come say it
+    over the hour, no longer next to the course;
+  - the cards of other plugins show two rows at most, with their own «See all» (or their tile's when rows were left
+    out), and a row with something to do goes to «Today» with its button;
+  - «Also» (formerly «Shortcuts») keeps only what the tab bar does not have: my courses, the calendar, the notices and the
+    messages go, unless the site has turned that part of the app off; the plugins' tiles are chips there. With nothing
+    left, the section does not show. The course cards at the end go too: they are the tab «My courses».
+  The layout only reads the variables of the brand, Ionic and Aty, in light and dark, and adds no JavaScript to the app.
 - `token.php` also says who the link signs in (`fullname`, `username`), so the app can ask before switching accounts.
 - The help of the settings, up to date: the links the centre sends last 7 days, the bar of the app is for once people
   know they have it, and the family app says what it needs.
 
 ### Added
+
+- New optional fields for the cards of `<component>_oksigeniaaty_home_cards()` (0.5.60-dev), documented in
+  `classes/local/homecards.php`; without them a card shows as before. On a row, `actionlabel` (a button that opens the
+  same as the row: the row goes to «Today»), `kind` (`due` or `close`, said next to its hour) and `time` (the date has
+  an hour that matters, shown big for a row of today). On a card, `seeall`, its own «See all» with a label and where it
+  opens.
 
 - Pages that open in the phone's browser rather than inside the app (0.5.58-dev): a plugin lists them through
   `<component>_oksigeniaaty_browser_pages()`, a page or a folder of its own. The app's in-app browser has no share sheet,

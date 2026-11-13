@@ -152,54 +152,27 @@ class appcss {
     }
 
     /**
-     * The static layout of the home tab (the hero header and the shortcut mosaic).
+     * The static layout of the home tab: the low band of the brand, "Today" with what is about to start and its "Join",
+     * the deadlines that say what they are, the plugins' cards with their "See all" and the shortcuts as chips.
      *
-     * It is the same for every client and reads the brand variables above, so it follows light and dark on its own.
-     * Design: the common per-client template by the art director (agents/arte/docs/aty-app-plantilla.md).
+     * It is the same for every client and only reads the brand variables above and the app's own (Ionic's and Aty's), so it
+     * follows light and dark on its own. Design: the home of 13 November 2026, on the common per-client template
+     * (agents/arte/docs/aty-app-plantilla.md).
      *
      * @return string
      */
     private static function homecss(): string {
         return <<<CSS
 
-.aty-home { padding: 12px 16px 24px; }
-.aty-hero { border-radius: 20px; padding: 20px; background: var(--primary); color: var(--primary-contrast);
-    box-shadow: 0 10px 24px -14px rgba(var(--ion-color-primary-rgb), .7); }
-.aty-hero-logo { display: block; height: 36px; width: auto; margin: 0 0 14px; }
-/* The logo is white for the brand hero; the dark hero is light with dark text, so the logo takes a dark ink too. */
-:root.dark .aty-hero-logo, :root .dark .aty-hero-logo { filter: brightness(0); opacity: .78; }
-/* A picture on top of the hero, and the name on the brand's colour below it: it reads the same on any picture. */
-.aty-hero-pictured { overflow: hidden; padding: 0 0 18px; }
-.aty-hero-picture { display: block; width: 100%; height: 156px; object-fit: cover; }
-.aty-hero-pictured .aty-hero-logo { margin: 14px 20px 0; }
-.aty-hero-pictured .aty-hero-title { padding: 16px 20px 0; }
-.aty-hero-pictured .aty-hero-intro { padding: 0 20px; }
-.aty-hero-title { margin: 0; font-size: 1.5rem; font-weight: 800; line-height: 1.2; }
-.aty-hero-intro { margin: 6px 0 0; opacity: .9; }
+.aty-home { padding: 12px 16px 24px;
+    --aty-card-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 8px 18px -12px rgba(0, 0, 0, .35); }
+:root.dark .aty-home, :root .dark .aty-home { --aty-card-shadow: 0 0 0 1px rgba(255, 255, 255, .08); }
 .aty-section { margin: 22px 4px 6px; font-size: .78rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
     color: var(--ion-color-medium); }
-.aty-tiles { padding: 0; --ion-grid-column-padding: 6px; }
-.aty-tile { position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 104px; margin: 0;
-    padding: 14px; border-radius: 16px; background: var(--ion-item-background, var(--ion-background-color));
-    color: var(--ion-text-color); text-decoration: none;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 8px 18px -12px rgba(0, 0, 0, .35); }
-.aty-tile-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; font-size: 20px;
-    background: rgba(var(--ion-color-primary-rgb), .12); color: var(--primary); }
-.aty-tile-label { font-weight: 700; line-height: 1.25; }
-.aty-tile-out { position: absolute; top: 12px; right: 12px; font-size: 12px; color: var(--ion-color-medium); }
-:root.dark .aty-tile, :root .dark .aty-tile { box-shadow: none; outline: 1px solid rgba(255, 255, 255, .08); }
-.aty-greeting { margin: 2px 4px 12px; font-size: 1.05rem; font-weight: 700; color: var(--ion-text-color); }
-.aty-course-card { position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end;
-    min-height: 104px; margin: 0; padding: 14px; border-radius: 16px; text-decoration: none; color: var(--primary-contrast);
-    box-shadow: 0 8px 18px -12px rgba(0, 0, 0, .4); }
-.aty-course-card::before { content: ''; position: absolute; inset: 0; z-index: 0;
-    background: linear-gradient(135deg, var(--primary), var(--primary-shade)); filter: hue-rotate(var(--aty-hue, 0deg)); }
-.aty-course-initial { position: relative; z-index: 1; font-size: 2rem; font-weight: 800; line-height: 1; opacity: .85; }
-.aty-course-name { position: relative; z-index: 1; margin-top: 8px; font-size: .95rem; font-weight: 700; line-height: 1.25; }
 .aty-agenda { display: flex; flex-direction: column; gap: 8px; }
 .aty-event { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px;
     background: var(--ion-item-background, var(--ion-background-color)); color: var(--ion-text-color);
-    text-decoration: none; box-shadow: 0 1px 2px rgba(0, 0, 0, .06), 0 8px 18px -12px rgba(0, 0, 0, .35); }
+    text-decoration: none; box-shadow: var(--aty-card-shadow); }
 :root.dark .aty-event, :root .dark .aty-event { box-shadow: none; outline: 1px solid rgba(255, 255, 255, .08); }
 .aty-event-date { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;
     width: 46px; height: 46px; border-radius: 12px; background: rgba(var(--ion-color-primary-rgb), .12);
@@ -219,6 +192,70 @@ button.aty-event { width: 100%; border: 0; font: inherit; text-align: start; }
 .aty-event-name { font-weight: 700; line-height: 1.25; }
 .aty-event-context { font-size: .8rem; color: var(--ion-color-medium); }
 .aty-event-time { flex: 0 0 auto; font-size: .82rem; font-weight: 700; color: var(--ion-color-medium); }
+
+/* The band of the brand: the greeting and the day in a line, the logo small. Low, so that "Today" is on the first screen. */
+.aty-franja { display: flex; align-items: center; gap: 12px; margin: 0 0 6px; padding: 12px 14px; border-radius: 16px;
+    background: var(--primary); color: var(--primary-contrast); }
+.aty-franja-logo { flex: 0 0 auto; display: block; width: auto; height: 30px; }
+.aty-franja-texto { min-width: 0; }
+.aty-franja-hola { margin: 0; font-size: 1.05rem; font-weight: 800; line-height: 1.2; }
+.aty-franja-dia { margin: 2px 0 0; font-size: .85rem; line-height: 1.3; opacity: .9; }
+/* In dark the brand does not shout: a tint of it on the dark canvas, its colour as an edge, the ink of the app. */
+:root.dark .aty-franja, :root .dark .aty-franja { background: rgba(var(--ion-color-primary-rgb), .16);
+    color: var(--ion-text-color); box-shadow: inset 4px 0 0 var(--primary); }
+:root.dark .aty-franja-logo, :root .dark .aty-franja-logo { filter: brightness(0) invert(1); opacity: .85; }
+
+/* The children of a family: small pills under the band, one tap each. */
+.aty-hijos { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; }
+.aty-hijo { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 4px 14px 4px 4px;
+    border: 0; border-radius: 999px; background: var(--ion-item-background, var(--ion-background-color));
+    color: var(--ion-text-color); font: inherit; font-weight: 700; box-shadow: var(--aty-card-shadow); }
+.aty-hijo-inicial { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
+    background: rgba(var(--ion-color-primary-rgb), .14); color: var(--primary); font-weight: 800; }
+.aty-hijo-mas { padding-left: 14px; color: var(--primary); }
+
+/* Today: the hour big where the date was (it is today); what is about to start, with "Join". */
+.aty-event-hora { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-width: 54px; height: 46px; padding: 0 6px; border-radius: 12px; background: rgba(var(--ion-color-primary-rgb), .12);
+    color: var(--primary); line-height: 1; }
+.aty-event-hora b { font-size: 1.05rem; font-weight: 800; }
+.aty-event-hora small { margin-top: 3px; font-size: .62rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.aty-ahora { flex-wrap: wrap; box-shadow: 0 0 0 2px var(--primary), var(--aty-card-shadow); }
+.aty-ahora .aty-event-body { flex: 1 1 0; }
+.aty-ahora .aty-event-hora { background: var(--primary); color: var(--primary-contrast); }
+/* "Join", under the class and as wide as the card: the one thing to do, for a thumb. */
+.aty-entrar { flex: 1 1 100%; display: flex; align-items: center; justify-content: center; min-height: 48px;
+    border-radius: 999px; background: var(--primary); color: var(--primary-contrast); font-size: 1.05rem; font-weight: 800;
+    text-decoration: none; }
+/* A deadline of today: its hour where the date was, with what it is under it, in the colour of what is due. */
+.aty-hora-plazo { background: rgba(var(--ion-color-danger-rgb), .12); color: var(--ion-color-danger); }
+
+/* A deadline says what it is: "Due" or "Closes", over its hour; a class keeps its bare hour. */
+.aty-plazo { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; line-height: 1.1;
+    color: var(--ion-color-medium); }
+.aty-plazo small { font-size: .62rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.aty-plazo b { font-size: .9rem; font-weight: 800; color: var(--ion-text-color); }
+
+/* A row of another plugin with something to do: its button at hand (sign, answer). */
+.aty-hacer { flex: 0 0 auto; display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px;
+    border: 2px solid var(--primary); border-radius: 999px; color: var(--primary); font-weight: 800; text-decoration: none; }
+button.aty-hacer { background: transparent; font-family: inherit; font-size: inherit; }
+.aty-urgent .aty-hacer { border-color: var(--ion-color-danger); color: var(--ion-color-danger); }
+
+/* A card of another plugin: two rows on the home, and its own "See all". */
+.aty-seccion-cab { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 22px 4px 6px; }
+.aty-seccion-cab .aty-section { margin: 0; }
+.aty-ver { flex: 0 0 auto; color: var(--primary); font-size: .85rem; font-weight: 700; text-decoration: none; }
+button.aty-ver { padding: 0; border: 0; background: transparent; font-family: inherit; }
+
+/* What the tab bar does not have: chips, small, in one or two rows. */
+.aty-atajos { display: flex; flex-wrap: wrap; gap: 8px; }
+.aty-atajo { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px 0 10px;
+    border-radius: 999px; background: var(--ion-item-background, var(--ion-background-color)); color: var(--ion-text-color);
+    font-weight: 700; text-decoration: none; box-shadow: var(--aty-card-shadow); }
+button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
+.aty-atajo .aty-atajo-icono { color: var(--primary); font-size: 18px; }
+.aty-atajo .aty-atajo-fuera { color: var(--ion-color-medium); font-size: 12px; }
 CSS;
     }
 

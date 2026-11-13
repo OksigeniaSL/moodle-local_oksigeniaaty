@@ -17,77 +17,102 @@
 {{!
     @template local_oksigeniaaty/mobile_home
 
-    The per-site home tab shown in the app: a brand hero and the shortcuts in a two-column mosaic.
-    Design: the common per-client template (agents/arte/docs/aty-app-plantilla.md).
+    The per-site home tab shown in the app, from top to bottom: a low band of the brand with the greeting and a line that
+    says the day; the children of an adult of a family; "Today", first what is about to start (with "Join"), then what
+    there is to do and what is left of today; what waits for a grade; what other plugins add, two rows each with their
+    own "See all"; what comes next; and the shortcuts the tab bar does not have. No JavaScript: the server decides what is
+    starting, and the app asks for the home again when it opens and when it is refreshed.
+    Design: the home of 13 November 2026, on the common per-client template (agents/arte/docs/aty-app-plantilla.md).
 
     Classes required for JS:
     * none
 
     Context variables required for this template:
-    * logourl - A white logo shown over the brand hero (may be empty).
-    * pictureurl - A photo or an illustration that fills the hero (may be empty).
-    * greeting - A personal greeting with the user's first name (may be empty).
-    * heading - The site heading shown in the hero.
-    * intro - A short welcome under the heading (may be empty).
-    * hasfamily, familyheading, children, familyaddname - For an adult of a family: their children (id, name, initial,
-      argsjson) and the way to add another with their code.
-    * todayheading, hastoday, today - What is left of today, like the events below.
+    * logourl - The brand's white logo, small, in the band (may be empty).
+    * greeting - "Hi, Lucía", or "Hi" when there is no first name worth saying.
+    * dayline - What matters most of the day, in a line (may be empty).
+    * hasfamily, familyheading, children, familyaddname - For an adult of a family: their children as pills (id, name,
+      label, initial, argsjson) and the way to add another with their code.
+    * todayheading, hastoday - "Today".
+    * starting, joinlabel - What is about to start: { name, timestamp, time, context, when, joinurl }.
+    * todo - The rows of other plugins with something to do (mobile_home_row), with their button.
+    * today - What is left of today: { name, timestamp, day, month, time, context, viewurl, kind, kindlabel }.
     * hasunread, unread, unreadlabel, messagesname, messagesurl - The unread conversations, among today's things.
-    * eventsheading - The label above the upcoming events.
-    * hasevents - Whether there is at least one upcoming event.
-    * events - A list of { name, day, month, time, context, viewurl }.
-    * shortcutsheading - The label above the shortcuts.
-    * hasshortcuts - Whether there is at least one shortcut.
-    * shortcuts - A list of { label, url, icon, external }.
-    * coursesheading - The label above the course cards.
-    * hascourses - Whether there is at least one course to show.
-    * courses - A list of { name, initial, hue, viewurl }.
-    * opensoutside - Accessible label for the "opens outside the app" marker.
     * gradingheading, grading, hasgrading - For teachers: the assignments waiting for a grade (name, context, count,
       countlabel, viewurl).
-    * cards - Sections other plugins add for this user: { heading, items }. An item has title, detail, urgent, its chip
-      (hasdate, timestamp, day, month; or hascount, count, countlabel) and where it opens (ispage, component, method,
-      pagetitle, argsjson; or url). Their tiles come among the shortcuts, with the same fields for where they open.
+    * cards - Sections other plugins add for this user: { heading, items (mobile_home_row), seeall }. Their "See all" has
+      label and where it opens (ispage, component, method, pagetitle, argsjson; or url and browser).
+    * eventsheading, hasevents, events - What comes next, like today's.
+    * shortcutsheading, hasshortcuts, shortcuts - The shortcuts that are not in the tab bar, and the plugins' tiles:
+      { label, icon, external; and url, or ispage, component, method, pagetitle, argsjson }.
+    * opensoutside - Accessible label for the "opens outside the app" marker.
 
     Example context (json):
     {
         "logourl": "",
-        "heading": "Centro Ejemplo",
-        "intro": "Bienvenido a tu plataforma de formación.",
-        "shortcutsheading": "Accesos",
-        "hasshortcuts": true,
-        "shortcuts": [
-            { "label": "Matrícula", "url": "https://ejemplo.oksigenia.com/matricula", "icon": "fas-calendar", "external": true }
-        ],
-        "opensoutside": "Opens outside the app"
+        "greeting": "Hola, Lucía",
+        "dayline": "Hoy tienes una clase en directo y una entrega."
     }
 }}
 <div class="aty-home">
-    {{#greeting}}<p class="aty-greeting">{{greeting}}</p>{{/greeting}}
-    <section class="aty-hero{{#pictureurl}} aty-hero-pictured{{/pictureurl}}">
-        {{#pictureurl}}<img class="aty-hero-picture" src="{{pictureurl}}" alt="">{{/pictureurl}}
-        {{#logourl}}<img class="aty-hero-logo" src="{{logourl}}" alt="">{{/logourl}}
-        <h1 class="aty-hero-title">{{heading}}</h1>
-        {{#intro}}<p class="aty-hero-intro">{{intro}}</p>{{/intro}}
+    <section class="aty-franja">
+        {{#logourl}}<img class="aty-franja-logo" src="{{logourl}}" alt="">{{/logourl}}
+        <div class="aty-franja-texto">
+            <p class="aty-franja-hola">{{greeting}}</p>
+            {{#dayline}}<p class="aty-franja-dia">{{dayline}}</p>{{/dayline}}
+        </div>
     </section>
     {{#hasfamily}}
-    <h2 class="aty-section">{{familyheading}}</h2>
-    <div class="aty-agenda">
+    <div class="aty-hijos" role="group" aria-label="{{familyheading}}">
         {{#children}}
-        <button type="button" class="aty-event" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_child" title="{{name}}" [args]="{{argsjson}}">
-            <span class="aty-event-date"><span class="aty-event-day">{{initial}}</span></span>
-            <span class="aty-event-body"><span class="aty-event-name">{{name}}</span></span>
+        <button type="button" class="aty-hijo" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_child" title="{{name}}" [args]="{{argsjson}}">
+            <span class="aty-hijo-inicial" aria-hidden="true">{{initial}}</span>{{label}}
         </button>
         {{/children}}
-        <button type="button" class="aty-event" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_family_add" title="{{familyaddname}}">
-            <span class="aty-event-date"><span class="aty-event-day">+</span></span>
-            <span class="aty-event-body"><span class="aty-event-name">{{familyaddname}}</span></span>
+        <button type="button" class="aty-hijo aty-hijo-mas" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_family_add" title="{{familyaddname}}">
+            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>{{familyaddname}}
         </button>
     </div>
     {{/hasfamily}}
     {{#hastoday}}
     <h2 class="aty-section">{{todayheading}}</h2>
     <div class="aty-agenda">
+        {{#starting}}
+        <div class="aty-event aty-ahora">
+            <span class="aty-event-hora">
+                <b [textContent]="{{timestamp}} | coreFormatDate:'strftimetime'">{{time}}</b>
+                <small>{{when}}</small>
+            </span>
+            <span class="aty-event-body">
+                <span class="aty-event-name">{{name}}</span>
+                {{#context}}<span class="aty-event-context">{{context}}</span>{{/context}}
+            </span>
+            <a class="aty-entrar" core-link href="{{joinurl}}" capture="false">{{joinlabel}}</a>
+        </div>
+        {{/starting}}
+        {{#todo}}
+        {{> local_oksigeniaaty/mobile_home_row }}
+        {{/todo}}
+        {{#today}}
+        <a class="aty-event" core-link href="{{viewurl}}" capture="true">
+            {{#time}}
+            <span class="aty-event-hora{{#kind}} aty-hora-plazo{{/kind}}">
+                <b [textContent]="{{timestamp}} | coreFormatDate:'strftimetime'">{{time}}</b>
+                {{#kindlabel}}<small>{{kindlabel}}</small>{{/kindlabel}}
+            </span>
+            {{/time}}
+            {{^time}}
+            <span class="aty-event-date">
+                <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
+                <span class="aty-event-month" [textContent]="({{timestamp}} | coreFormatDate:'%b').replace('.', '')">{{month}}</span>
+            </span>
+            {{/time}}
+            <span class="aty-event-body">
+                <span class="aty-event-name">{{name}}</span>
+                {{#context}}<span class="aty-event-context">{{context}}</span>{{/context}}
+            </span>
+        </a>
+        {{/today}}
         {{#hasunread}}
         <a class="aty-event aty-grading" core-link href="{{messagesurl}}" capture="true">
             <span class="aty-event-date">
@@ -99,19 +124,6 @@
             </span>
         </a>
         {{/hasunread}}
-        {{#today}}
-        <a class="aty-event" core-link href="{{viewurl}}" capture="true">
-            <span class="aty-event-date">
-                <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
-                <span class="aty-event-month" [textContent]="({{timestamp}} | coreFormatDate:'%b').replace('.', '')">{{month}}</span>
-            </span>
-            <span class="aty-event-body">
-                <span class="aty-event-name">{{name}}</span>
-                {{#context}}<span class="aty-event-context">{{context}}</span>{{/context}}
-            </span>
-            {{#time}}<span class="aty-event-time" [textContent]="{{timestamp}} | coreFormatDate:'strftimetime'">{{time}}</span>{{/time}}
-        </a>
-        {{/today}}
     </div>
     {{/hastoday}}
     {{#hasgrading}}
@@ -132,29 +144,16 @@
     </div>
     {{/hasgrading}}
     {{#cards}}
-    <h2 class="aty-section">{{heading}}</h2>
+    <div class="aty-seccion-cab">
+        <h2 class="aty-section">{{heading}}</h2>
+        {{#seeall}}
+        {{#ispage}}<button type="button" class="aty-ver" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{label}}</button>{{/ispage}}
+        {{^ispage}}<a class="aty-ver" core-link href="{{url}}" capture="{{^browser}}true{{/browser}}{{#browser}}false{{/browser}}"{{^browser}} inApp="true"{{/browser}}>{{label}}</a>{{/ispage}}
+        {{/seeall}}
+    </div>
     <div class="aty-agenda">
         {{#items}}
-        {{#ispage}}<button type="button" class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}
-        {{^ispage}}<a class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="{{^browser}}true{{/browser}}{{#browser}}false{{/browser}}"{{^browser}} inApp="true"{{/browser}}>{{/ispage}}
-            {{#hasdate}}
-            <span class="aty-event-date">
-                <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
-                <span class="aty-event-month" [textContent]="({{timestamp}} | coreFormatDate:'%b').replace('.', '')">{{month}}</span>
-            </span>
-            {{/hasdate}}
-            {{#hascount}}
-            <span class="aty-event-date">
-                <span class="aty-event-day">{{count}}</span>
-                <span class="aty-event-month">{{countlabel}}</span>
-            </span>
-            {{/hascount}}
-            <span class="aty-event-body">
-                <span class="aty-event-name">{{title}}</span>
-                {{#detail}}<span class="aty-event-context">{{detail}}</span>{{/detail}}
-            </span>
-        {{#ispage}}</button>{{/ispage}}
-        {{^ispage}}</a>{{/ispage}}
+        {{> local_oksigeniaaty/mobile_home_row }}
         {{/items}}
     </div>
     {{/cards}}
@@ -171,37 +170,23 @@
                 <span class="aty-event-name">{{name}}</span>
                 {{#context}}<span class="aty-event-context">{{context}}</span>{{/context}}
             </span>
-            {{#time}}<span class="aty-event-time" [textContent]="{{timestamp}} | coreFormatDate:'strftimetime'">{{time}}</span>{{/time}}
+            {{#kindlabel}}<span class="aty-plazo"><small>{{kindlabel}}</small><b [textContent]="{{timestamp}} | coreFormatDate:'strftimetime'">{{time}}</b></span>{{/kindlabel}}
+            {{^kindlabel}}{{#time}}<span class="aty-event-time" [textContent]="{{timestamp}} | coreFormatDate:'strftimetime'">{{time}}</span>{{/time}}{{/kindlabel}}
         </a>
         {{/events}}
     </div>
     {{/hasevents}}
     {{#hasshortcuts}}
     <h2 class="aty-section">{{shortcutsheading}}</h2>
-    <ion-grid class="aty-tiles"><ion-row>
+    <div class="aty-atajos">
         {{#shortcuts}}
-        <ion-col size="6">
-            {{#ispage}}<ion-card class="aty-tile" button="true" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}
-            {{^ispage}}<ion-card class="aty-tile" button="true" core-link href="{{url}}" capture="{{^external}}true{{/external}}{{#external}}false{{/external}}"{{^external}} inApp="true"{{/external}}>{{/ispage}}
-                <span class="aty-tile-icon"><ion-icon name="{{icon}}" aria-hidden="true"></ion-icon></span>
-                <span class="aty-tile-label">{{label}}</span>
-                {{#external}}<ion-icon class="aty-tile-out" name="fas-arrow-up-right-from-square" aria-label="{{opensoutside}}"></ion-icon>{{/external}}
-            </ion-card>
-        </ion-col>
+        {{#ispage}}<button type="button" class="aty-atajo" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}
+        {{^ispage}}<a class="aty-atajo" core-link href="{{url}}" capture="{{^external}}true{{/external}}{{#external}}false{{/external}}"{{^external}} inApp="true"{{/external}}>{{/ispage}}
+            <ion-icon class="aty-atajo-icono" name="{{icon}}" aria-hidden="true"></ion-icon>{{label}}
+            {{#external}}<ion-icon class="aty-atajo-fuera" name="fas-arrow-up-right-from-square" aria-label="{{opensoutside}}"></ion-icon>{{/external}}
+        {{#ispage}}</button>{{/ispage}}
+        {{^ispage}}</a>{{/ispage}}
         {{/shortcuts}}
-    </ion-row></ion-grid>
+    </div>
     {{/hasshortcuts}}
-    {{#hascourses}}
-    <h2 class="aty-section">{{coursesheading}}</h2>
-    <ion-grid class="aty-tiles"><ion-row>
-        {{#courses}}
-        <ion-col size="6">
-            <a class="aty-course-card" core-link href="{{viewurl}}" capture="true" style="--aty-hue: {{hue}}deg">
-                <span class="aty-course-initial" aria-hidden="true">{{initial}}</span>
-                <span class="aty-course-name">{{name}}</span>
-            </a>
-        </ion-col>
-        {{/courses}}
-    </ion-row></ion-grid>
-    {{/hascourses}}
 </div>

@@ -32,11 +32,16 @@ use local_oksigeniaaty\local\template;
  * Builds what the app shows: for now, the per-site home tab.
  */
 class mobile {
+    /** @var int How long before a class it shows as about to start, with its way in. */
+    private const SOON = 30 * MINSECS;
+
     /**
-     * The home tab of the site, rendered from the plugin settings.
+     * The home tab of the site: a low band of the brand with the greeting and a line that says the day, the children of an
+     * adult of a family, "Today" first (what is about to start, with "Join"; what there is to do; what is left of today),
+     * what other plugins add, what comes next and the shortcuts the tab bar does not have.
      *
-     * The real home (cards, shortcuts and the site CSS) is built from these settings in a later version; this skeleton
-     * shows the configured heading and welcome so the handler can be wired and tried in the app.
+     * The server decides what is starting when it draws the home; the app asks for it again when it opens and when the
+     * home is refreshed, so no JavaScript is needed in the app.
      *
      * @param array $args The arguments the app sends (site URL, user id, language...).
      * @return array The template, javascript and data the app expects.
@@ -63,41 +68,40 @@ class mobile {
             ];
         }
 
-        $config = get_config('local_oksigeniaaty');
-        $heading = !empty($config->homeheading) ? $config->homeheading : format_string(get_site()->fullname);
-        $intro = !empty($config->homeintro) ? $config->homeintro : '';
-        $logourl = !empty($config->homelogourl) ? $config->homelogourl : '';
-        $pictureurl = '';
+        // The brand's logo, small, in the band; the centre's name is already in the header above it.
+        $logourl = (string) get_config('local_oksigeniaaty', 'homelogourl');
         // In a site shared by several schools or libraries, the home is the user's own one's.
         $brand = \local_oksigeniaaty\local\brand::for_user((int) $USER->id);
         if ($brand !== null) {
-            $heading = format_string($brand['name']);
-            $intro = format_string($brand['tagline']);
             $logourl = \local_oksigeniaaty\local\brand::logo_for_app($brand['logo'], (int) $USER->id);
-            $pictureurl = \local_oksigeniaaty\local\brand::logo_for_app($brand['picture'], (int) $USER->id);
         }
-        $shortcuts = local_oksigeniaaty_get_shortcuts();
-        $courses = self::courses();
-        [$today, $upcoming] = self::split_events(self::events());
+        $now = time();
+        $events = self::events($now);
+        $starting = self::starting_now($now);
+        [$today, $upcoming] = self::split_events($events, array_column($starting, 'id'));
         $grading = self::grading();
         $unread = self::unread();
         $children = self::children();
+        // What other plugins add for this user, each of their texts already inert; what asks for something to do goes to
+        // "Today".
+        $cards = homecards::for_user((int) $USER->id);
+        [$shown, $todo] = homecards::on_home($cards, $now);
+        $name = self::greeting_name($USER);
 
         $data = template::inert([
             'logourl' => $logourl,
-            'pictureurl' => $pictureurl,
-            'greeting' => trim($USER->firstname) !== ''
-                ? get_string('home:greeting', 'local_oksigeniaaty', format_string($USER->firstname))
-                : '',
-            'heading' => $heading,
-            'intro' => $intro,
+            'greeting' => $name !== ''
+                ? get_string('home:greeting', 'local_oksigeniaaty', $name)
+                : get_string('home:hello', 'local_oksigeniaaty'),
             'familyheading' => get_string('family:heading', 'local_oksigeniaaty'),
             'hasfamily' => $children !== null,
             'children' => $children ?? [],
             'familyaddname' => get_string('family:add', 'local_oksigeniaaty'),
             'todayheading' => get_string('home:today', 'local_oksigeniaaty'),
+            'starting' => $starting,
+            'joinlabel' => get_string('home:join', 'local_oksigeniaaty'),
             'today' => $today,
-            'hastoday' => !empty($today) || $unread > 0,
+            'hastoday' => $starting || $todo || $today || $unread > 0,
             'hasunread' => $unread > 0,
             'unread' => $unread,
             'unreadlabel' => get_string('home:unread', 'local_oksigeniaaty'),
@@ -110,33 +114,28 @@ class mobile {
             'events' => $upcoming,
             'hasevents' => !empty($upcoming),
             'shortcutsheading' => get_string('home:shortcuts', 'local_oksigeniaaty'),
-            'shortcuts' => $shortcuts,
-            'hasshortcuts' => !empty($shortcuts),
-            'coursesheading' => get_string('home:mycourses', 'local_oksigeniaaty'),
-            'courses' => $courses,
-            'hascourses' => !empty($courses),
             'opensoutside' => get_string('home:opensoutside', 'local_oksigeniaaty'),
         ]);
+        $data['dayline'] = template::inert(self::day_line($todo, $starting, $today, $unread, $grading, $events, $now));
+        $data['todo'] = $todo;
+        $data['cards'] = $shown;
 
         // Never through inert(): its braces are the object the template binds.
         foreach ($data['children'] as $index => $child) {
             $data['children'][$index]['argsjson'] = json_encode(['childid' => $child['id']]);
         }
 
-        // What other plugins add for this user; each of their texts already inert.
-        $cards = homecards::for_user((int) $USER->id);
-        $data['cards'] = array_values(array_filter($cards, fn($card) => $card['hasitems']));
+        // The shortcuts the tab bar does not have already, the plugins' tiles and writing to a course.
+        $shortcuts = template::inert(self::off_the_tabs(local_oksigeniaaty_get_shortcuts()));
         foreach ($cards as $card) {
             if ($card['tile'] !== null) {
-                $data['shortcuts'][] = $card['tile'];
-                $data['hasshortcuts'] = true;
+                $shortcuts[] = $card['tile'];
             }
         }
-
         // Whoever may post in a course's announcements, whatever their role is called.
         if (self::writable_classes(1)) {
             $label = get_string('compose:title', 'local_oksigeniaaty');
-            $data['shortcuts'][] = template::inert(['label' => $label, 'icon' => 'fas-pen-to-square']) + [
+            $shortcuts[] = template::inert(['label' => $label, 'icon' => 'fas-pen-to-square']) + [
                 'ispage' => true,
                 'component' => 'local_oksigeniaaty',
                 'method' => 'mobile_compose',
@@ -144,8 +143,9 @@ class mobile {
                 // Never through inert(): its braces are the object the template binds.
                 'argsjson' => '{}',
             ];
-            $data['hasshortcuts'] = true;
         }
+        $data['shortcuts'] = $shortcuts;
+        $data['hasshortcuts'] = !empty($shortcuts);
 
         return [
             'templates' => [
@@ -368,7 +368,7 @@ class mobile {
     /**
      * The user's children, for an adult of a family; null for anyone who is not one.
      *
-     * @return array|null A list of { id, name, initial }.
+     * @return array|null A list of { id, name, label, initial }: the label, the first name, short for a pill.
      */
     private static function children(): ?array {
         global $DB, $USER;
@@ -385,11 +385,20 @@ class mobile {
             $user = \core_user::get_user((int) $childid);
             if ($user && !$user->deleted) {
                 $name = fullname($user);
+                $first = trim(format_string($user->firstname));
                 $children[] = [
                     'id' => (int) $user->id,
                     'name' => $name,
+                    'label' => $first !== '' ? $first : $name,
                     'initial' => \core_text::strtoupper(\core_text::substr(trim($name), 0, 1)),
                 ];
+            }
+        }
+        // Two children with the same first name are told apart by their full names.
+        $labels = array_count_values(array_map(fn($child) => \core_text::strtolower($child['label']), $children));
+        foreach ($children as $index => $child) {
+            if ($labels[\core_text::strtolower($child['label'])] > 1) {
+                $children[$index]['label'] = $child['name'];
             }
         }
 
@@ -553,46 +562,267 @@ class mobile {
      * An agenda in two: what is left of today, and what comes after it.
      *
      * @param array $events From events().
+     * @param array $starting The ids of what is starting now, which "Today" shows apart.
      * @return array [today, upcoming], at most five each.
      */
-    private static function split_events(array $events): array {
+    private static function split_events(array $events, array $starting = []): array {
         $istoday = fn($event) => usergetmidnight((int) ($event['timestamp'] / 1000)) === usergetmidnight(time());
-        $today = array_values(array_filter($events, $istoday));
+        $today = array_values(array_filter(
+            $events,
+            fn($event) => $istoday($event) && !in_array($event['id'], $starting, true)
+        ));
         $upcoming = array_values(array_filter($events, fn($event) => !$istoday($event)));
 
         return [array_slice($today, 0, 5), array_slice($upcoming, 0, 5)];
     }
 
     /**
-     * The user's courses for the home panel: branded cards (gradient + initial) that open in the app.
+     * What is about to start and can be joined from the phone: a class in the 30 minutes before it starts, and while it
+     * lasts when its end is known. Only what has a way in that can be known: a BigBlueButton room the user can join, or an
+     * event whose location is an address (a Zoom, Meet or Teams link put there by whoever made it). Without a known end, it
+     * shows until it starts.
      *
-     * @return array A list of { name, initial, hue, viewurl }, at most eight.
+     * @param int $now The time it is.
+     * @return array A list of { id, name, timestamp, time, context, when, joinurl }, soonest first.
      */
-    private static function courses(): array {
-        $mycourses = enrol_get_my_courses(['id', 'fullname'], 'visible DESC, sortorder ASC');
+    private static function starting_now(int $now): array {
+        global $CFG;
 
-        $courses = [];
-        foreach ($mycourses as $course) {
-            if ($course->id == SITEID) {
+        require_once($CFG->dirroot . '/calendar/lib.php');
+
+        $courses = calendar_get_default_courses();
+        [$courseids, $groupids, $userids] = calendar_set_filters($courses);
+        // From the start of today: what started earlier and has not ended is still on.
+        $events = calendar_get_legacy_events(
+            usergetmidnight($now),
+            $now + self::SOON,
+            $userids,
+            $groupids,
+            $courseids,
+            true,
+            true
+        );
+        \core_collator::asort_objects_by_property($events, 'timestart', \core_collator::SORT_NUMERIC);
+
+        $shortnames = self::shortnames($courses);
+        $starting = [];
+        foreach ($events as $event) {
+            $join = self::join_link($event);
+            $start = (int) $event->timestart;
+            if ($join === null || $now < $start - self::SOON) {
                 continue;
             }
-
-            $name = format_string($course->fullname);
-            $initial = \core_text::strtoupper(\core_text::substr(trim($name), 0, 1));
-            $courses[] = [
-                'name' => $name,
-                'initial' => $initial !== '' ? $initial : '#',
-                // A small per-course hue shift (-30 to +30 degrees) so the brand cards are not all identical.
-                'hue' => ($course->id * 37) % 61 - 30,
-                'viewurl' => (new \moodle_url('/course/view.php', ['id' => $course->id]))->out(false),
+            // While it lasts when its end is known; until it starts when it is not.
+            $on = $join['end'] > $start ? $now < $join['end'] : $now <= $start;
+            if (!$on) {
+                continue;
+            }
+            $minutes = (int) ceil(($start - $now) / MINSECS);
+            $item = self::agenda_item($event, $shortnames);
+            $starting[] = [
+                'id' => $item['id'],
+                'name' => $item['name'],
+                'timestamp' => $item['timestamp'],
+                'time' => userdate($start, get_string('strftimetime', 'langconfig')),
+                'context' => $item['context'],
+                'when' => $minutes > 0
+                    ? get_string('home:inminutes', 'local_oksigeniaaty', $minutes)
+                    : get_string('home:now', 'local_oksigeniaaty'),
+                'joinurl' => $join['url'],
             ];
+        }
 
-            if (count($courses) >= 8) {
-                break;
+        return $starting;
+    }
+
+    /**
+     * The way into a live class from its calendar event, or null when there is none that can be known.
+     *
+     * @param \stdClass $event A legacy calendar event.
+     * @return array|null [url, end]: the address to join it and when it ends (0 when that is not known).
+     */
+    private static function join_link(\stdClass $event): ?array {
+        $start = (int) $event->timestart;
+        $duration = (int) $event->timeduration;
+
+        // BigBlueButton: its own way in, the one of its page, for whoever may join, in their group.
+        if (($event->modulename ?? '') === 'bigbluebuttonbn' && ($event->eventtype ?? '') === 'meeting_start'
+                && !empty($event->instance) && class_exists(\mod_bigbluebuttonbn\instance::class)) {
+            try {
+                $instance = \mod_bigbluebuttonbn\instance::get_from_instanceid((int) $event->instance);
+                if ($instance === null || !$instance->get_cm()->uservisible) {
+                    return null;
+                }
+                $group = groups_get_activity_group($instance->get_cm());
+                if ($group) {
+                    $instance->set_group_id((int) $group);
+                }
+                if (!$instance->can_join()) {
+                    return null;
+                }
+                return [
+                    'url' => $instance->get_join_url()->out(false),
+                    'end' => (int) $instance->get_instance_var('closingtime'),
+                ];
+            } catch (\Throwable $e) {
+                debugging('Joining a BigBlueButton room from the home: ' . $e->getMessage(), DEBUG_DEVELOPER);
+                return null;
             }
         }
 
-        return $courses;
+        // Any other event whose location is just an address.
+        $location = trim((string) ($event->location ?? ''));
+        if (preg_match('#^https?://\S+$#i', $location) && clean_param($location, PARAM_URL) === $location) {
+            return ['url' => $location, 'end' => $duration > 0 ? $start + $duration : 0];
+        }
+
+        return null;
+    }
+
+    /**
+     * The first name to greet the user by, or '' when there is none worth saying: an empty one, or a word that stands for
+     * a role or a test account ("Student", the site's names of its roles, the username) rather than a person.
+     *
+     * @param \stdClass $user The user.
+     * @return string
+     */
+    private static function greeting_name(\stdClass $user): string {
+        $name = trim(format_string((string) $user->firstname));
+        if ($name === '') {
+            return '';
+        }
+        $words = [\core_text::strtolower(trim((string) $user->username))];
+        foreach ([current_language(), 'en'] as $lang) {
+            $list = get_string_manager()->get_string('home:placeholdernames', 'local_oksigeniaaty', null, $lang);
+            $words = array_merge($words, array_map('trim', explode(',', \core_text::strtolower($list))));
+        }
+        foreach (role_fix_names(get_all_roles(), \context_system::instance(), ROLENAME_ORIGINAL) as $role) {
+            $words[] = \core_text::strtolower(trim(strip_tags((string) $role->localname)));
+            $words[] = \core_text::strtolower((string) $role->shortname);
+        }
+
+        return in_array(\core_text::strtolower($name), $words, true) ? '' : $name;
+    }
+
+    /**
+     * The line under the greeting: what matters most of the day, in a few words. First what there is to do, then what
+     * there is today, then what is waiting for a grade; with nothing, what comes next.
+     *
+     * @param array $todo The rows of other plugins with something to do.
+     * @param array $starting What is starting now.
+     * @param array $today What is left of today, apart from that.
+     * @param int $unread The unread conversations.
+     * @param array $grading The assignments waiting for a grade.
+     * @param array $events The agenda of the coming days, for what comes next.
+     * @param int $now The time it is.
+     * @return string
+     */
+    private static function day_line(
+        array $todo,
+        array $starting,
+        array $today,
+        int $unread,
+        array $grading,
+        array $events,
+        int $now
+    ): string {
+        $say = fn(string $id, $a = null) => get_string('home:day:' . $id, 'local_oksigeniaaty', $a);
+        $some = fn(string $id, int $count) => $count === 1 ? $say($id . '1') : $say($id, $count);
+
+        if ($todo) {
+            $titles = array_column($todo, 'title');
+            if (count($titles) === 1) {
+                return $say('todo1', $titles[0]);
+            }
+            return count($titles) === 2 ? $say('todo', self::listed($titles)) : $say('todomany', count($titles));
+        }
+
+        $live = count($starting);
+        $due = $close = $other = 0;
+        foreach ($today as $event) {
+            if ($event['live']) {
+                $live++;
+            } else if ($event['kind'] === 'due') {
+                $due++;
+            } else if ($event['kind'] === 'close') {
+                $close++;
+            } else {
+                $other++;
+            }
+        }
+        $parts = [];
+        foreach (['live' => $live, 'due' => $due, 'close' => $close, 'event' => $other, 'unread' => $unread] as $id => $count) {
+            if ($count > 0) {
+                $parts[] = $some($id, $count);
+            }
+        }
+        if ($parts) {
+            return $say('today', self::listed($parts));
+        }
+
+        $submissions = array_sum(array_column($grading, 'count'));
+        if ($submissions > 0) {
+            return $some('grading', $submissions);
+        }
+
+        $tomorrow = usergetmidnight($now) + DAYSECS;
+        foreach ($events as $event) {
+            $start = (int) ($event['timestamp'] / 1000);
+            if ($start >= $tomorrow) {
+                return usergetmidnight($start) === $tomorrow
+                    ? $say('nexttomorrow')
+                    : $say('next', trim(userdate($start, $say('dateformat'))));
+            }
+        }
+
+        return $say('nothing');
+    }
+
+    /**
+     * Some texts said as a list: "a, b and c".
+     *
+     * @param string[] $parts The texts.
+     * @return string
+     */
+    private static function listed(array $parts): string {
+        $last = array_pop($parts);
+        if (!$parts) {
+            return $last;
+        }
+
+        return get_string('home:day:and', 'local_oksigeniaaty', (object) ['first' => implode(', ', $parts), 'last' => $last]);
+    }
+
+    /**
+     * The shortcuts without those the app already has in its tab bar: my courses, the calendar, the notices and the
+     * messages, unless the site has turned that part of the app off.
+     *
+     * @param array $shortcuts From local_oksigeniaaty_get_shortcuts().
+     * @return array
+     */
+    private static function off_the_tabs(array $shortcuts): array {
+        global $CFG;
+
+        $disabled = array_map('trim', explode(',', (string) get_config('tool_mobile', 'disabledfeatures')));
+        $tabs = [
+            '/my/courses.php' => 'CoreMainMenuDelegate_CoreCourses',
+            '/calendar/view.php' => 'CoreMainMenuDelegate_AddonCalendar',
+            '/message/output/popup/notifications.php' => 'CoreMainMenuDelegate_AddonNotifications',
+        ];
+        if (!empty($CFG->messaging)) {
+            $tabs['/message/index.php'] = 'CoreMainMenuDelegate_AddonMessages';
+        }
+        $tabs = array_diff($tabs, $disabled);
+
+        return array_values(array_filter($shortcuts, function (array $shortcut) use ($tabs, $CFG): bool {
+            $url = (string) $shortcut['url'];
+            if (strpos($url, $CFG->wwwroot . '/') !== 0) {
+                return true;
+            }
+            $path = strtok(substr($url, strlen($CFG->wwwroot)), '?#');
+
+            return !isset($tabs[$path]);
+        }));
     }
 
     /**
@@ -670,9 +900,10 @@ class mobile {
      * Built from the same filters as the site calendar (the user's courses, their groups and their own events), so the
      * app agenda matches what the user sees on the web.
      *
-     * @return array A list of { name, timestamp, day, month, time, context, viewurl }, soonest first, at most ten.
+     * @param int $now The time it is.
+     * @return array A list of agenda_item()s, soonest first, at most ten.
      */
-    private static function events(): array {
+    private static function events(int $now): array {
         global $CFG;
 
         require_once($CFG->dirroot . '/calendar/lib.php');
@@ -681,7 +912,6 @@ class mobile {
         // The calendar's own filters: course ids, group ids and the user id (or false for each when not applicable).
         [$courseids, $groupids, $userids] = calendar_set_filters($courses);
 
-        $now = time();
         $events = calendar_get_legacy_events($now, $now + 7 * DAYSECS, $userids, $groupids, $courseids, true, true);
         if (empty($events)) {
             return [];
@@ -690,46 +920,81 @@ class mobile {
         // Soonest first, so the agenda reads top to bottom in time.
         \core_collator::asort_objects_by_property($events, 'timestart', \core_collator::SORT_NUMERIC);
 
-        // A course id to short name map, to label each event with its course.
-        $shortnames = [];
-        foreach ($courses as $course) {
-            $shortnames[$course->id] = format_string($course->shortname);
-        }
-
+        $shortnames = self::shortnames($courses);
         $agenda = [];
         foreach ($events as $event) {
-            // All-day events (a day or longer) show just the date; timed ones also show the start time.
-            $isallday = (int) $event->timeduration >= DAYSECS;
-            $labels = [];
-            if (!empty($event->courseid) && $event->courseid != SITEID && isset($shortnames[$event->courseid])) {
-                $labels[] = $shortnames[$event->courseid];
-            }
-            // An activity's dates are named by Moodle like "Assignment is due": show the activity's own name and say
-            // what the date is next to the course ("Customer care · Due").
-            $name = format_string($event->name);
-            $activity = self::activityname($event);
-            $kind = 'home:event:' . $event->eventtype;
-            if ($activity !== null && get_string_manager()->string_exists($kind, 'local_oksigeniaaty')) {
-                $name = $activity;
-                $labels[] = get_string($kind, 'local_oksigeniaaty');
-            }
-            $agenda[] = [
-                'name' => $name,
-                // The app redraws the date and time from this in the phone's own time zone, as its calendar does; the
-                // server's text (in the user's Moodle time zone) is only what shows before that.
-                'timestamp' => (int) $event->timestart * 1000,
-                'day' => ltrim(userdate($event->timestart, '%e')),
-                'month' => \core_text::strtoupper(trim(userdate($event->timestart, '%b'))),
-                'time' => $isallday ? '' : userdate($event->timestart, get_string('strftimetime', 'langconfig')),
-                'context' => implode(' · ', $labels),
-                'viewurl' => (new \moodle_url('/calendar/view.php', ['view' => 'day', 'time' => $event->timestart]))->out(false),
-            ];
+            $agenda[] = self::agenda_item($event, $shortnames);
             if (count($agenda) >= 10) {
                 break;
             }
         }
 
         return $agenda;
+    }
+
+    /**
+     * A course id to short name map, to label each event with its course.
+     *
+     * @param array $courses The user's courses.
+     * @return array
+     */
+    private static function shortnames(array $courses): array {
+        $shortnames = [];
+        foreach ($courses as $course) {
+            $shortnames[$course->id] = format_string($course->shortname);
+        }
+
+        return $shortnames;
+    }
+
+    /**
+     * An event of the agenda, ready for the template.
+     *
+     * @param \stdClass $event A legacy calendar event.
+     * @param array $shortnames The courses' short names, by id.
+     * @return array { id, name, timestamp, day, month, time, context, viewurl, kind, kindlabel, live }.
+     */
+    private static function agenda_item(\stdClass $event, array $shortnames): array {
+        // All-day events (a day or longer) show just the date; timed ones also show the start time.
+        $isallday = (int) $event->timeduration >= DAYSECS;
+        $labels = [];
+        if (!empty($event->courseid) && $event->courseid != SITEID && isset($shortnames[$event->courseid])) {
+            $labels[] = $shortnames[$event->courseid];
+        }
+        // An activity's dates are named by Moodle like "Assignment is due": show the activity's own name and say what the
+        // date is, next to the hour for a deadline ("Due 23:59") and next to the course for the rest ("Customer care ·
+        // Opens"). A live room's start is the activity itself.
+        $name = format_string($event->name);
+        $activity = self::activityname($event);
+        $kind = in_array($event->eventtype, ['due', 'close'], true) ? $event->eventtype : '';
+        $label = 'home:event:' . $event->eventtype;
+        if ($activity !== null && $kind !== '') {
+            $name = $activity;
+        } else if ($activity !== null && $event->eventtype === 'meeting_start') {
+            $name = $activity;
+        } else if ($activity !== null && get_string_manager()->string_exists($label, 'local_oksigeniaaty')) {
+            $name = $activity;
+            $labels[] = get_string($label, 'local_oksigeniaaty');
+        }
+        if ($activity === null) {
+            $kind = '';
+        }
+
+        return [
+            'id' => (int) $event->id,
+            'name' => $name,
+            // The app redraws the date and time from this in the phone's own time zone, as its calendar does; the
+            // server's text (in the user's Moodle time zone) is only what shows before that.
+            'timestamp' => (int) $event->timestart * 1000,
+            'day' => ltrim(userdate($event->timestart, '%e')),
+            'month' => \core_text::strtoupper(trim(userdate($event->timestart, '%b'))),
+            'time' => $isallday ? '' : userdate($event->timestart, get_string('strftimetime', 'langconfig')),
+            'context' => implode(' · ', $labels),
+            'viewurl' => (new \moodle_url('/calendar/view.php', ['view' => 'day', 'time' => $event->timestart]))->out(false),
+            'kind' => $kind,
+            'kindlabel' => $kind !== '' ? get_string('home:kind:' . $kind, 'local_oksigeniaaty') : '',
+            'live' => self::join_link($event) !== null,
+        ];
     }
 
     /**

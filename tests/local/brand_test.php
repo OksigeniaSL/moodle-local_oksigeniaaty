@@ -50,7 +50,7 @@ final class brand_test extends \advanced_testcase {
         $css = appcss::brandvars('#8e2a3c');
         $this->assertStringContainsString('--primary: #8e2a3c;', $css);
         $this->assertStringContainsString(':root.dark', $css);
-        $this->assertStringNotContainsString('.aty-hero', $css);
+        $this->assertStringNotContainsString('.aty-franja', $css);
         $this->assertSame('', appcss::brandvars('not a colour'));
     }
 
@@ -62,12 +62,12 @@ final class brand_test extends \advanced_testcase {
         $this->assertStringContainsString('.aty-home {', $css);
         $this->assertStringContainsString('--primary: #8e2a3c;', $css);
         $this->assertStringContainsString(':root.dark .aty-home', $css);
-        $this->assertStringContainsString('.aty-hero', $css);
+        $this->assertStringContainsString('.aty-franja', $css);
         $this->assertStringNotContainsString(':root {', $css);
         $this->assertStringNotContainsString('--aty-canvas', $css);
         $this->assertStringNotContainsString(":root.dark,", $css);
 
-        $this->assertStringContainsString('.aty-hero', appcss::homesheet('not a colour'));
+        $this->assertStringContainsString('.aty-franja', appcss::homesheet('not a colour'));
     }
 
     /**

@@ -48,11 +48,27 @@ final class appcss_test extends \basic_testcase {
         $this->assertStringContainsString(':root.dark', $css);
         $this->assertMatchesRegularExpression('/:root\.dark,\s*\n:root \.dark \{/', $css);
 
-        // The home layout CSS ships with the sheet.
-        $this->assertStringContainsString('.aty-hero', $css);
-        // The white hero logo turns dark on the light dark-mode hero.
-        $this->assertStringContainsString(':root.dark .aty-hero-logo', $css);
-        $this->assertStringContainsString('.aty-tile', $css);
+        // The home layout CSS ships with the sheet: the band of the brand, quiet in dark with its logo white, and the
+        // shortcuts as chips.
+        $this->assertStringContainsString('.aty-franja', $css);
+        $this->assertStringContainsString(':root.dark .aty-franja-logo', $css);
+        $this->assertStringContainsString('.aty-atajo', $css);
+    }
+
+    /**
+     * The home's layout is the same for every centre: its colours come from the brand's variables and the app's, never
+     * written in, and no text is narrowed to a measure of its own.
+     */
+    public function test_home_reads_only_variables(): void {
+        // Without a valid colour the sheet is only the layout.
+        $css = appcss::homesheet('');
+        $this->assertStringContainsString('.aty-entrar', $css);
+        $this->assertStringContainsString('var(--primary)', $css);
+        $this->assertStringContainsString('var(--ion-color-danger)', $css);
+        $this->assertDoesNotMatchRegularExpression('/#[0-9a-f]{3,8}\b/i', $css);
+        $this->assertStringNotContainsString('max-width', $css);
+        // The cards' shadow is the home's own too: the official app does not load the sheet that sets it at the root.
+        $this->assertStringContainsString('.aty-home { padding: 12px 16px 24px;' . "\n" . '    --aty-card-shadow:', $css);
     }
 
     /**

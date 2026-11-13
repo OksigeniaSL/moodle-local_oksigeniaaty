@@ -225,6 +225,148 @@ final class homecards_test extends \advanced_testcase {
     }
 
     /**
+     * The new fields of a card, all optional: a row's button, what its deadline is and whether its hour matters, and the
+     * card's own "See all". Without them a row is as it was.
+     */
+    public function test_new_fields(): void {
+        $this->resetAfterTest();
+        $date = 1800000000;
+
+        $card = homecards::clean([
+            'heading' => 'Permissions',
+            'items' => [
+                ['title' => 'Museum trip', 'date' => $date, 'actionlabel' => '{{ Sign }}', 'kind' => 'due',
+                    'method' => 'mobile_consent_view', 'args' => ['id' => 4]],
+                ['title' => 'Tutorial', 'date' => $date, 'time' => true, 'kind' => 'later', 'url' => 'https://example.org/t'],
+                ['title' => 'Menu', 'date' => $date, 'url' => 'https://example.org/m'],
+                ['title' => 'No date', 'kind' => 'close', 'time' => true, 'url' => 'https://example.org/n'],
+            ],
+            'seeall' => ['label' => 'All the permissions', 'method' => 'mobile_consents'],
+        ], 'local_x');
+
+        [$sign, $tutorial, $menu, $nodate] = $card['items'];
+        $hour = userdate($date, get_string('strftimetime', 'langconfig'));
+        $this->assertSame('｛｛ Sign ｝｝', $sign['actionlabel']);
+        $this->assertSame('due', $sign['kind']);
+        $this->assertSame(get_string('home:kind:due', 'local_oksigeniaaty'), $sign['kindlabel']);
+        $this->assertSame($hour, $sign['hour']);
+        $this->assertSame('', $tutorial['kind']);
+        $this->assertSame($hour, $tutorial['hour']);
+        // Without the new fields, as before: no button, no kind, no hour.
+        $this->assertSame(['', '', ''], [$menu['actionlabel'], $menu['kind'], $menu['hour']]);
+        $this->assertSame(['', ''], [$nodate['kind'], $nodate['hour']]);
+
+        $this->assertSame('All the permissions', $card['seeall']['label']);
+        $this->assertTrue($card['seeall']['ispage']);
+        $this->assertSame('mobile_consents', $card['seeall']['method']);
+        $this->assertSame('Permissions', $card['seeall']['pagetitle']);
+
+        // A "See all" with no label says so; one that opens nothing is none.
+        $card = homecards::clean(['heading' => 'Books', 'items' => [['title' => 'A', 'url' => 'https://example.org/a']],
+            'seeall' => ['url' => 'https://example.org/all']], 'local_x');
+        $this->assertSame(get_string('home:seeall', 'local_oksigeniaaty'), $card['seeall']['label']);
+        $this->assertSame('https://example.org/all', $card['seeall']['url']);
+        $card = homecards::clean(['heading' => 'Books', 'items' => [['title' => 'A', 'url' => 'https://example.org/a']],
+            'seeall' => ['label' => 'All', 'url' => 'javascript:alert(1)']], 'local_x');
+        $this->assertNull($card['seeall']);
+    }
+
+    /**
+     * On the home a card shows two rows at most; a row with something to do goes to "Today", and a card with no row left
+     * is not shown. Its "See all" stays, or its tile takes its place when rows were left out.
+     */
+    public function test_on_home(): void {
+        $this->resetAfterTest();
+        $this->setUser($this->getDataGenerator()->create_user());
+        $now = time();
+        $today = usergetmidnight($now) + 12 * HOURSECS;
+        $rows = fn(int $count) => array_map(
+            fn($i) => ['title' => 'Row ' . $i, 'url' => 'https://example.org/' . $i],
+            range(1, $count)
+        );
+
+        $permissions = homecards::clean([
+            'heading' => 'Permissions',
+            'items' => [
+                ['title' => 'Class photo', 'date' => $today, 'time' => true, 'url' => 'https://example.org/photo'],
+                ['title' => 'Museum trip', 'actionlabel' => 'Sign', 'url' => 'https://example.org/trip'],
+                ['title' => 'Third', 'url' => 'https://example.org/third'],
+            ],
+            'seeall' => ['label' => 'All of them', 'url' => 'https://example.org/all'],
+        ], 'local_x');
+        $canteen = homecards::clean([
+            'heading' => 'Canteen',
+            'items' => $rows(3),
+            'tile' => ['label' => 'Canteen', 'icon' => 'fas-utensils', 'url' => 'https://example.org/canteen'],
+        ], 'local_y');
+        $books = homecards::clean(['heading' => 'Books', 'items' => $rows(3)], 'local_z');
+        $todoonly = homecards::clean([
+            'heading' => 'To sign',
+            'items' => [['title' => 'Swimming', 'actionlabel' => 'Sign', 'url' => 'https://example.org/swim']],
+        ], 'local_x');
+        $tileonly = homecards::clean(['tile' => ['label' => 'Library', 'url' => 'https://example.org/library']], 'local_z');
+
+        [$shown, $todo] = homecards::on_home([$permissions, $canteen, $books, $todoonly, $tileonly], $now);
+
+        $this->assertSame(['Museum trip', 'Swimming'], array_column($todo, 'title'));
+        $this->assertSame(['Permissions', 'Canteen', 'Books'], array_column($shown, 'heading'));
+        $this->assertSame(['Class photo'], array_column($shown[0]['items'], 'title'));
+        $this->assertTrue($shown[0]['items'][0]['hashour']);
+        $this->assertSame('All of them', $shown[0]['seeall']['label']);
+        $this->assertSame(['Row 1', 'Row 2'], array_column($shown[1]['items'], 'title'));
+        $this->assertSame(get_string('home:seeall', 'local_oksigeniaaty'), $shown[1]['seeall']['label']);
+        $this->assertSame('https://example.org/canteen', $shown[1]['seeall']['url']);
+        $this->assertFalse($shown[1]['items'][0]['hashour']);
+        // Rows left out and nothing to see them with: two rows, never "and 1 more".
+        $this->assertCount(2, $shown[2]['items']);
+        $this->assertNull($shown[2]['seeall']);
+    }
+
+    /**
+     * What the app receives of the new fields: the row with something to do keeps still and its button opens it; a
+     * deadline says what it is over its hour; a card's "See all" sits by its heading.
+     */
+    public function test_template_new_fields(): void {
+        global $OUTPUT;
+        $this->resetAfterTest();
+        $this->setUser($this->getDataGenerator()->create_user());
+
+        $card = homecards::clean([
+            'heading' => 'Permissions',
+            'items' => [
+                ['title' => 'Museum trip', 'actionlabel' => 'Sign', 'urgent' => true, 'method' => 'mobile_consent_view',
+                    'args' => ['id' => 4]],
+                ['title' => 'Map of the islands', 'date' => time() + 3 * DAYSECS, 'kind' => 'due',
+                    'url' => 'https://example.org/map'],
+                ['title' => 'Old row', 'date' => time() + 3 * DAYSECS, 'url' => 'https://example.org/old'],
+            ],
+            'seeall' => ['label' => 'All of them', 'url' => 'https://example.org/all'],
+        ], 'local_x');
+        [$shown, $todo] = homecards::on_home([$card], time());
+        $html = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_home', [
+            'hastoday' => true, 'todo' => $todo, 'cards' => $shown,
+        ]);
+
+        $this->assertStringContainsString('<div class="aty-event aty-urgent">', $html);
+        $this->assertStringContainsString('<button type="button" class="aty-hacer" core-site-plugins-new-content '
+            . 'component="local_x" method="mobile_consent_view" title="Museum trip" '
+            . '[args]="{&quot;id&quot;:4}">Sign</button>', $html);
+        $this->assertStringContainsString('<small>Due</small>', $html);
+        $this->assertStringContainsString('class="aty-plazo"', $html);
+        $this->assertStringContainsString('<a class="aty-ver" core-link href="https://example.org/all" capture="true" '
+            . 'inApp="true">All of them</a>', $html);
+        $this->assertStringNotContainsString('Old row', $html);
+        // A row without the new fields opens whole, as before.
+        $html = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_home', ['cards' => [homecards::clean([
+            'heading' => 'Books',
+            'items' => [['title' => 'A book', 'date' => 1800000000, 'url' => 'https://example.org/b']],
+        ], 'local_x')]]);
+        $this->assertStringContainsString('<a class="aty-event" core-link href="https://example.org/b"', $html);
+        $this->assertStringNotContainsString('aty-hacer', $html);
+        $this->assertStringNotContainsString('aty-plazo', $html);
+    }
+
+    /**
      * A row that opens nothing: on a child's page, for what the adult may know exists but not see; never on the home.
      */
     public function test_plain_rows(): void {

@@ -22,8 +22,15 @@ namespace local_oksigeniaaty\local;
  *
  * It returns a list of cards, each with any of:
  * - heading (string) and items (list), the section. An item has title, detail, urgent (bool), its chip (date, a unix
- *   time; or count and countlabel) and where it opens.
- * - tile (array): label, icon (fas-*) and where it opens, next to the home's shortcuts.
+ *   time; or count and countlabel) and where it opens. And, optionally:
+ *   - actionlabel (string): a button on the row ("Sign", "Answer") that opens the same as the row. A row with one is
+ *     something to do: the home lifts it to "Today" and names it in the line under the greeting.
+ *   - kind ('due' or 'close'): the date is a deadline, and the row says so next to its hour ("Due 23:59").
+ *   - time (bool): the date has an hour that matters (a class at 16:30), not only a day. On the home, a row of today
+ *     then shows its hour big in place of the date.
+ * - seeall (array, optional): label and where it opens, the card's own "See all". The home shows two rows of a card at
+ *   most, and this link under its heading; without it, the card's tile takes its place, with "See all".
+ * - tile (array): label, icon (fas-*) and where it opens, among the home's shortcuts.
  *
  * Where it opens: method and args, a page of the plugin's own in the app, with title for its header; or url.
  *
@@ -37,6 +44,12 @@ class homecards {
 
     /** @var int The most rows a card shows. */
     private const MAX_ITEMS = 5;
+
+    /** @var int The most rows a card shows on the home, where "See all" leads to the rest. */
+    private const HOME_ITEMS = 2;
+
+    /** @var string[] What a deadline can be. */
+    private const KINDS = ['due', 'close'];
 
     /**
      * The cards of all the plugins for a user. One plugin that fails does not take the home down.
@@ -172,13 +185,58 @@ class homecards {
         if (!$items && $tile === null) {
             return null;
         }
+        $seeall = is_array($card['seeall'] ?? null) ? self::seeall($card['seeall'], $component, $heading) : null;
 
         return [
             'heading' => template::inert($heading),
             'hasitems' => (bool) $items,
             'items' => $items,
             'tile' => $tile,
+            'seeall' => $items ? $seeall : null,
         ];
+    }
+
+    /**
+     * The cards as the home shows them: two rows each at most, with the card's "See all" when there is more to see, and
+     * the rows with something to do taken out for "Today".
+     *
+     * @param array $cards From for_user().
+     * @param int $now The time it is.
+     * @return array [cards, todo]: the cards with rows left, and the rows with something to do, in the cards' order.
+     */
+    public static function on_home(array $cards, int $now): array {
+        $today = usergetmidnight($now);
+        $shown = [];
+        $todo = [];
+        foreach ($cards as $card) {
+            if (!$card['hasitems']) {
+                continue;
+            }
+            $items = array_slice($card['items'], 0, self::HOME_ITEMS);
+            $rest = [];
+            foreach ($items as $item) {
+                // Today's hour, big, where the date was: today is known.
+                $item['hashour'] = $item['hasdate'] && $item['hour'] !== ''
+                    && usergetmidnight((int) ($item['timestamp'] / 1000)) === $today;
+                if ($item['actionlabel'] !== '') {
+                    $todo[] = $item;
+                } else {
+                    $rest[] = $item;
+                }
+            }
+            if (!$rest) {
+                continue;
+            }
+            $seeall = $card['seeall'];
+            if ($seeall === null && count($card['items']) > count($items) && $card['tile'] !== null) {
+                $seeall = ['label' => get_string('home:seeall', 'local_oksigeniaaty')] + $card['tile'];
+            }
+            $card['items'] = $rest;
+            $card['seeall'] = $seeall;
+            $shown[] = $card;
+        }
+
+        return [$shown, $todo];
     }
 
     /**
@@ -200,6 +258,11 @@ class homecards {
 
         $date = (int) ($item['date'] ?? 0);
         $count = (string) ($item['count'] ?? '');
+        $kind = $date > 0 && in_array($item['kind'] ?? '', self::KINDS, true) ? $item['kind'] : '';
+        // A deadline has its hour; anything else, only when the plugin says the hour matters.
+        $hour = $date > 0 && ($kind !== '' || !empty($item['time']))
+            ? userdate($date, get_string('strftimetime', 'langconfig'))
+            : '';
 
         return template::inert([
             'title' => $title,
@@ -210,10 +273,33 @@ class homecards {
             'timestamp' => $date * 1000,
             'day' => $date > 0 ? ltrim(userdate($date, '%e')) : '',
             'month' => $date > 0 ? \core_text::strtoupper(trim(userdate($date, '%b'))) : '',
+            'hour' => $hour,
+            'hashour' => false,
+            'kind' => $kind,
+            'kindlabel' => $kind !== '' ? get_string('home:kind:' . $kind, 'local_oksigeniaaty') : '',
+            'actionlabel' => is_scalar($item['actionlabel'] ?? null) ? trim((string) $item['actionlabel']) : '',
             'hascount' => $date <= 0 && $count !== '',
             'count' => $count,
             'countlabel' => (string) ($item['countlabel'] ?? ''),
         ]) + $target;
+    }
+
+    /**
+     * A card's own "See all".
+     *
+     * @param array $seeall What the plugin returned.
+     * @param string $component The plugin.
+     * @param string $heading The card's heading, for the header of its page when none is given.
+     * @return array|null
+     */
+    private static function seeall(array $seeall, string $component, string $heading): ?array {
+        $target = self::target($seeall, $component, $heading);
+        if ($target === null) {
+            return null;
+        }
+        $label = is_scalar($seeall['label'] ?? null) ? trim((string) $seeall['label']) : '';
+
+        return ['label' => template::inert($label !== '' ? $label : get_string('home:seeall', 'local_oksigeniaaty'))] + $target;
     }
 
     /**
