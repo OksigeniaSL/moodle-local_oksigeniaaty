@@ -5,6 +5,19 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.63-dev)
+
+- «Send the app», redone (Jujol). One search for a course, a person or a cohort takes the place of the tabs and the
+  form. The courses under way that the person may see come as cards, those with most people still without the app
+  first, with how many are missing. Once one is chosen: a phone for each person (a bar past 60), «Send to the 6 still
+  waiting» with its question in place (no page apart, no JavaScript), and the people in columns by how they stand, those
+  already in the app folded. A long list shows its first 48 people and a link to the whole list, in place of the pages.
+  «Clear the PIN» stays, small under the name.
+- The rights do not change: the whole site's people only for who may see them, by e-mail or username only for who may
+  see those, a course's people for who may see its participants, and cohorts for who may see them. The cards are only
+  of those courses, chosen before they are counted, so that how many there are says nothing of the others.
+- What sends or clears takes a POST with the session key; the same in an address does nothing.
+
 ### Changed (0.5.62-dev)
 
 - Managers (who may log in as anyone or assign roles across the site) get no private token with a passwordless link,

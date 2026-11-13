@@ -1,0 +1,51 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_oksigeniaaty/sendapp_course
+
+    A course as a card to touch: how many still have to get the app, as the big number of the app's own tiles, its name,
+    and a thin bar of how its people stand. The link is the name, stretched over the whole card (Bootstrap's
+    stretched-link), so that only the name is underlined where the theme underlines links.
+
+    Context variables required for this template:
+    * id - The course's id, for the ids of its parts.
+    * url - The course chosen in this page.
+    * name, detail - Its name, and its area, how many people and how many in the app.
+    * waiting, badge - How many have no link and are not in the app, and the word under the number.
+    * alldone - Nobody is waiting, and someone is in the app or has a link on its way.
+    * bar - The bar: state and count, in the order inapp, sent, waiting, blocked.
+
+    Example context (json):
+    {
+        "id": 3,
+        "url": "#",
+        "name": "English B1 · Afternoon",
+        "detail": "English · 21 people · 15 in the app",
+        "waiting": 6,
+        "badge": "to go",
+        "alldone": false,
+        "bar": [{"state": "inapp", "count": 15}, {"state": "waiting", "count": 6}]
+    }
+}}
+<li>
+    <div class="local-oksigeniaaty-send-course">
+        {{^alldone}}<span class="local-oksigeniaaty-send-badge" data-state="waiting" id="local-oksigeniaaty-send-c{{id}}-badge"><b>{{waiting}}</b> <small>{{badge}}</small></span>{{/alldone}}
+        {{#alldone}}<span class="local-oksigeniaaty-send-badge" data-state="inapp" id="local-oksigeniaaty-send-c{{id}}-badge"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg> <small>{{#str}} sendapp:badgedone, local_oksigeniaaty {{/str}}</small></span>{{/alldone}}
+        <span class="local-oksigeniaaty-send-course-text"><a class="stretched-link" href="{{url}}" aria-describedby="local-oksigeniaaty-send-c{{id}}-badge local-oksigeniaaty-send-c{{id}}-detail">{{name}}</a> <span id="local-oksigeniaaty-send-c{{id}}-detail">{{detail}}</span></span>
+        <span class="local-oksigeniaaty-send-bar" aria-hidden="true">{{#bar}}<i data-state="{{state}}" style="flex-grow: {{count}}"></i>{{/bar}}</span>
+    </div>
+</li>

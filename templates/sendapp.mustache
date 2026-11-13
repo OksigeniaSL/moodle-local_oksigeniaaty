@@ -17,94 +17,167 @@
 {{!
     @template local_oksigeniaaty/sendapp
 
-    "Send the app": how many people have entered, the button for those still waiting, and the list.
+    "Send the app": one search for a course, a person or a cohort; the courses under way as cards, those with the most
+    people still without the app first; and, once one is chosen, a phone for each person, the button for those still
+    waiting (it asks before sending, without JavaScript) and the people by how they stand.
 
     Context variables required for this template:
-    * chosen - Whether someone has been chosen yet.
-    * hasrows, rows - The list: picture, name, state, label, cansend, sendurl, sendto, sendtext, haspin, sesskey.
-    * inapp, sent, waiting, blocked, hasblocked - How many in each state.
-    * cansendall, sendallurl, sendalltext - The button for everyone waiting.
-    * alldone - Everyone listed has entered or has a link.
-    * truncated, max - The list stopped at the most it can hold.
-    * canmobile - Whether the site has the app on.
+    * searchurl, q, searchhint - Where the search goes, what was looked for, and what it can find for this person. Once
+      something is chosen, the search is not shown: «Choose another» goes back to it.
+    * home - Nothing chosen and nothing looked for: the courses under way and the cohorts.
+    * courses, hascourses - Cards: id, url, name, detail, waiting, badge, alldone, bar (state, count).
+    * cohorts, hascohorts - Chips: url, name, total.
+    * results - Something was looked for: resultstitle, rescourses, hasrescourses, rescohorts, hasrescohorts, respeople,
+      hasrespeople, respeoplemore, respeoplemoreurl, respeoplemoretext (the people a search found, up to the most a list
+      shows), noresults, noresultstext, truncated, max.
+    * chosen - The course, group or cohort chosen: backurl, name, detail, groups (url, name, current), hasgroups, empty
+      (nobody in it), hasphones (60 people or fewer), phones (state), bar (state, count), legend (state, count, label),
+      cansendall, sendalltext, confirmtext, yestext, sendallurl, sesskey, alldone, lists (state, title, count, open,
+      expanded, rows, more, moreurl, moretext), truncated, max.
+    * canmobile, sesskey - Whether the site has the app on, and the session key of what sends or clears.
 
     Example context (json):
     {
-        "chosen": true,
-        "hasrows": true,
-        "canmobile": true,
-        "rows": [{"picture": "", "name": "Ana Ejemplo", "state": "waiting", "label": "No link yet", "cansend": true,
-            "sendurl": "#", "sendto": 2, "sendtext": "Send", "sesskey": "abc"}],
-        "inapp": 3,
-        "sent": 1,
-        "waiting": 1,
-        "blocked": 0,
-        "cansendall": true,
-        "sendallurl": "#",
-        "sendalltext": "Send to the 1 still waiting"
+        "searchurl": "https://example.com/local/oksigeniaaty/sendapp.php",
+        "q": "",
+        "searchhint": "A course, a person or a cohort: part of the name is enough.",
+        "home": true,
+        "hascourses": true,
+        "courses": [{"id": 3, "url": "#", "name": "English B1 · Afternoon", "detail": "English · 24 people · 15 in the app",
+            "waiting": 6, "badge": "to go", "alldone": false, "bar": [{"state": "inapp", "count": 15},
+            {"state": "sent", "count": 2}, {"state": "waiting", "count": 6}, {"state": "blocked", "count": 1}]}],
+        "hascohorts": false,
+        "canmobile": true
     }
 }}
 <div class="local-oksigeniaaty-send">
-{{^chosen}}
-    <p class="local-oksigeniaaty-send-empty">{{#str}} sendapp:start, local_oksigeniaaty {{/str}}</p>
-{{/chosen}}
-{{#chosen}}
-{{^hasrows}}
-    <p class="local-oksigeniaaty-send-empty">{{#str}} sendapp:nobody, local_oksigeniaaty {{/str}}</p>
-{{/hasrows}}
-{{#hasrows}}
-    <div class="local-oksigeniaaty-send-counts">
-        <div class="local-oksigeniaaty-send-count" data-state="inapp">
-            <span class="local-oksigeniaaty-send-number">{{inapp}}</span>
-            <span>{{#str}} sendapp:countinapp, local_oksigeniaaty {{/str}}</span>
+    {{^chosen}}
+    <form class="local-oksigeniaaty-send-search" method="get" action="{{searchurl}}" role="search">
+        <label class="local-oksigeniaaty-send-ask" for="local-oksigeniaaty-send-q">{{#str}} sendapp:ask, local_oksigeniaaty {{/str}}</label>
+        <p class="local-oksigeniaaty-send-lead" id="local-oksigeniaaty-send-qhint">{{searchhint}}</p>
+        <div class="local-oksigeniaaty-send-field">
+            <svg class="local-oksigeniaaty-send-lupa" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg>
+            <input type="search" id="local-oksigeniaaty-send-q" name="q" value="{{q}}" aria-describedby="local-oksigeniaaty-send-qhint" autocomplete="off">
+            <button type="submit" class="btn btn-primary">{{#str}} search, core {{/str}}</button>
         </div>
-        <div class="local-oksigeniaaty-send-count" data-state="sent">
-            <span class="local-oksigeniaaty-send-number">{{sent}}</span>
-            <span>{{#str}} sendapp:countsent, local_oksigeniaaty {{/str}}</span>
+    </form>
+    {{/chosen}}
+
+    {{#home}}
+    {{#hascourses}}
+    <section class="local-oksigeniaaty-send-block" aria-labelledby="local-oksigeniaaty-send-running">
+        <h2 class="local-oksigeniaaty-send-title" id="local-oksigeniaaty-send-running">{{#str}} sendapp:running, local_oksigeniaaty {{/str}}</h2>
+        <p class="local-oksigeniaaty-send-lead">{{#str}} sendapp:runninghint, local_oksigeniaaty {{/str}}</p>
+        <ul class="local-oksigeniaaty-send-courses">
+            {{#courses}}{{> local_oksigeniaaty/sendapp_course}}{{/courses}}
+        </ul>
+    </section>
+    {{/hascourses}}
+    {{#hascohorts}}
+    <section class="local-oksigeniaaty-send-block" aria-labelledby="local-oksigeniaaty-send-cohorts">
+        <h2 class="local-oksigeniaaty-send-title" id="local-oksigeniaaty-send-cohorts">{{#str}} sendapp:cohorts, local_oksigeniaaty {{/str}}</h2>
+        <ul class="local-oksigeniaaty-send-chips">
+            {{#cohorts}}<li><a class="btn local-oksigeniaaty-send-chip" href="{{url}}">{{name}} <span>{{total}}</span></a></li>{{/cohorts}}
+        </ul>
+    </section>
+    {{/hascohorts}}
+    {{/home}}
+
+    {{#results}}
+    <section class="local-oksigeniaaty-send-block" aria-labelledby="local-oksigeniaaty-send-results">
+        <h2 class="local-oksigeniaaty-send-title" id="local-oksigeniaaty-send-results">{{resultstitle}}</h2>
+        {{#hasrescourses}}
+        <h3 class="local-oksigeniaaty-send-subtitle">{{#str}} sendapp:courses, local_oksigeniaaty {{/str}}</h3>
+        <ul class="local-oksigeniaaty-send-courses">
+            {{#rescourses}}{{> local_oksigeniaaty/sendapp_course}}{{/rescourses}}
+        </ul>
+        {{/hasrescourses}}
+        {{#hasrescohorts}}
+        <h3 class="local-oksigeniaaty-send-subtitle">{{#str}} sendapp:cohorts, local_oksigeniaaty {{/str}}</h3>
+        <ul class="local-oksigeniaaty-send-chips">
+            {{#rescohorts}}<li><a class="btn local-oksigeniaaty-send-chip" href="{{url}}">{{name}} <span>{{total}}</span></a></li>{{/rescohorts}}
+        </ul>
+        {{/hasrescohorts}}
+        {{#hasrespeople}}
+        <h3 class="local-oksigeniaaty-send-subtitle" id="local-oksigeniaaty-send-people">{{#str}} sendapp:people, local_oksigeniaaty {{/str}}</h3>
+        <ul class="local-oksigeniaaty-send-list">
+            {{#respeople}}{{> local_oksigeniaaty/sendapp_row}}{{/respeople}}
+        </ul>
+        {{#respeoplemore}}
+        <p class="local-oksigeniaaty-send-more"><a href="{{respeoplemoreurl}}">{{respeoplemoretext}}</a></p>
+        {{/respeoplemore}}
+        {{/hasrespeople}}
+        {{#truncated}}
+        <p class="local-oksigeniaaty-send-lead">{{#str}} sendapp:truncated, local_oksigeniaaty, {{max}} {{/str}}</p>
+        {{/truncated}}
+        {{#noresults}}
+        <p class="local-oksigeniaaty-send-empty">{{noresultstext}}</p>
+        {{/noresults}}
+    </section>
+    {{/results}}
+
+    {{#chosen}}
+    <section class="local-oksigeniaaty-send-block" aria-labelledby="local-oksigeniaaty-send-chosen">
+        <p class="local-oksigeniaaty-send-back"><a href="{{backurl}}"><span aria-hidden="true">←</span> {{#str}} sendapp:other, local_oksigeniaaty {{/str}}</a></p>
+        <div class="local-oksigeniaaty-send-panel">
+            <h2 class="local-oksigeniaaty-send-name" id="local-oksigeniaaty-send-chosen">{{name}}</h2>
+            <p class="local-oksigeniaaty-send-detail">{{detail}}</p>
+            {{#hasgroups}}
+            <nav class="local-oksigeniaaty-send-chips" aria-label="{{#str}} sendapp:group, local_oksigeniaaty {{/str}}">
+                {{#groups}}<a class="btn local-oksigeniaaty-send-chip" href="{{url}}"{{#current}} aria-current="page"{{/current}}>{{name}}</a>{{/groups}}
+            </nav>
+            {{/hasgroups}}
+            {{#empty}}
+            <p class="local-oksigeniaaty-send-empty">{{#str}} sendapp:nobody, local_oksigeniaaty {{/str}}</p>
+            {{/empty}}
+            {{^empty}}
+            {{#hasphones}}
+            <ul class="local-oksigeniaaty-send-phones" aria-hidden="true">{{#phones}}<li data-state="{{state}}"></li>{{/phones}}</ul>
+            {{/hasphones}}
+            {{^hasphones}}
+            <span class="local-oksigeniaaty-send-bar local-oksigeniaaty-send-bar-big" aria-hidden="true">{{#bar}}<i data-state="{{state}}" style="flex-grow: {{count}}"></i>{{/bar}}</span>
+            {{/hasphones}}
+            <ul class="local-oksigeniaaty-send-legend">
+                {{#legend}}<li data-state="{{state}}"><b>{{count}}</b> {{label}}</li>{{/legend}}
+            </ul>
+            {{#cansendall}}
+            <details class="local-oksigeniaaty-send-all">
+                <summary class="btn btn-primary btn-lg"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7 8.5 6.5L20.5 7"/></svg> {{sendalltext}}</summary>
+                <div class="local-oksigeniaaty-send-confirm">
+                    <p>{{confirmtext}}</p>
+                    <form method="post" action="{{sendallurl}}">
+                        <input type="hidden" name="sendall" value="1">
+                        <input type="hidden" name="confirm" value="1">
+                        <input type="hidden" name="sesskey" value="{{sesskey}}">
+                        <button type="submit" class="btn btn-primary">{{yestext}}</button>
+                    </form>
+                </div>
+            </details>
+            {{/cansendall}}
+            {{#alldone}}
+            <p class="local-oksigeniaaty-send-done"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg> {{#str}} sendapp:alldone, local_oksigeniaaty {{/str}}</p>
+            {{/alldone}}
+            {{/empty}}
         </div>
-        <div class="local-oksigeniaaty-send-count" data-state="waiting">
-            <span class="local-oksigeniaaty-send-number">{{waiting}}</span>
-            <span>{{#str}} sendapp:countwaiting, local_oksigeniaaty {{/str}}</span>
-        </div>
-        {{#hasblocked}}
-        <div class="local-oksigeniaaty-send-count" data-state="blocked">
-            <span class="local-oksigeniaaty-send-number">{{blocked}}</span>
-            <span>{{#str}} sendapp:countblocked, local_oksigeniaaty {{/str}}</span>
-        </div>
-        {{/hasblocked}}
-    </div>
-    {{#cansendall}}
-    <p><a class="btn btn-primary" href="{{sendallurl}}">{{sendalltext}}</a></p>
-    {{/cansendall}}
-    {{#alldone}}
-    <p class="local-oksigeniaaty-send-done">{{#str}} sendapp:alldone, local_oksigeniaaty {{/str}}</p>
-    {{/alldone}}
-    {{#truncated}}
-    <p class="text-muted">{{#str}} sendapp:truncated, local_oksigeniaaty, {{max}} {{/str}}</p>
-    {{/truncated}}
-    <ul class="local-oksigeniaaty-send-list">
-        {{#rows}}
-        <li class="local-oksigeniaaty-send-row">
-            {{{picture}}}
-            <span class="local-oksigeniaaty-send-name">{{name}}</span>
-            <span class="local-oksigeniaaty-send-state" data-state="{{state}}">{{label}}</span>
-            {{#cansend}}
-            <form method="post" action="{{sendurl}}">
-                <input type="hidden" name="sendto" value="{{sendto}}">
-                <input type="hidden" name="sesskey" value="{{sesskey}}">
-                <button type="submit" class="btn btn-sm btn-secondary">{{sendtext}}</button>
-            </form>
-            {{/cansend}}
-            {{#haspin}}
-            <form method="post" action="{{sendurl}}">
-                <input type="hidden" name="resetpin" value="{{sendto}}">
-                <input type="hidden" name="sesskey" value="{{sesskey}}">
-                <button type="submit" class="btn btn-sm btn-link">{{#str}} sendapp:clearpin, local_oksigeniaaty {{/str}}</button>
-            </form>
-            {{/haspin}}
-        </li>
-        {{/rows}}
-    </ul>
-{{/hasrows}}
-{{/chosen}}
+        {{#truncated}}
+        <p class="local-oksigeniaaty-send-lead">{{#str}} sendapp:truncated, local_oksigeniaaty, {{max}} {{/str}}</p>
+        {{/truncated}}
+        {{#lists}}
+        {{#open}}
+        <section class="local-oksigeniaaty-send-group" data-state="{{state}}" id="local-oksigeniaaty-send-{{state}}">
+            <h3 class="local-oksigeniaaty-send-subtitle"><i aria-hidden="true"></i> {{title}} <span>{{count}}</span></h3>
+            <ul class="local-oksigeniaaty-send-list">{{#rows}}{{> local_oksigeniaaty/sendapp_row}}{{/rows}}</ul>
+            {{#more}}<p class="local-oksigeniaaty-send-more"><a href="{{moreurl}}">{{moretext}}</a></p>{{/more}}
+        </section>
+        {{/open}}
+        {{^open}}
+        <details class="local-oksigeniaaty-send-group" data-state="{{state}}" id="local-oksigeniaaty-send-{{state}}"{{#expanded}} open{{/expanded}}>
+            <summary><h3 class="local-oksigeniaaty-send-subtitle"><i aria-hidden="true"></i> {{title}} <span>{{count}}</span></h3></summary>
+            <ul class="local-oksigeniaaty-send-list">{{#rows}}{{> local_oksigeniaaty/sendapp_row}}{{/rows}}</ul>
+            {{#more}}<p class="local-oksigeniaaty-send-more"><a href="{{moreurl}}">{{moretext}}</a></p>{{/more}}
+        </details>
+        {{/open}}
+        {{/lists}}
+    </section>
+    {{/chosen}}
 </div>
