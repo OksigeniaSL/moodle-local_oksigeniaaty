@@ -41,11 +41,9 @@
         "bar": [{"state": "inapp", "count": 15}, {"state": "waiting", "count": 6}]
     }
 }}
-<li>
     <div class="local-oksigeniaaty-send-course">
         {{^alldone}}<span class="local-oksigeniaaty-send-badge" data-state="waiting" id="local-oksigeniaaty-send-c{{id}}-badge"><b>{{waiting}}</b> <small>{{badge}}</small></span>{{/alldone}}
         {{#alldone}}<span class="local-oksigeniaaty-send-badge" data-state="inapp" id="local-oksigeniaaty-send-c{{id}}-badge"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg> <small>{{#str}} sendapp:badgedone, local_oksigeniaaty {{/str}}</small></span>{{/alldone}}
         <span class="local-oksigeniaaty-send-course-text"><a class="stretched-link" href="{{url}}" aria-describedby="local-oksigeniaaty-send-c{{id}}-badge local-oksigeniaaty-send-c{{id}}-detail">{{name}}</a> <span id="local-oksigeniaaty-send-c{{id}}-detail">{{detail}}</span></span>
         <span class="local-oksigeniaaty-send-bar" aria-hidden="true">{{#bar}}<i data-state="{{state}}" style="flex-grow: {{count}}"></i>{{/bar}}</span>
     </div>
-</li>

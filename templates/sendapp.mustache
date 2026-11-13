@@ -69,7 +69,7 @@
         <h2 class="local-oksigeniaaty-send-title" id="local-oksigeniaaty-send-running">{{#str}} sendapp:running, local_oksigeniaaty {{/str}}</h2>
         <p class="local-oksigeniaaty-send-lead">{{#str}} sendapp:runninghint, local_oksigeniaaty {{/str}}</p>
         <ul class="local-oksigeniaaty-send-courses">
-            {{#courses}}{{> local_oksigeniaaty/sendapp_course}}{{/courses}}
+            {{#courses}}<li>{{> local_oksigeniaaty/sendapp_course}}</li>{{/courses}}
         </ul>
     </section>
     {{/hascourses}}
@@ -89,7 +89,7 @@
         {{#hasrescourses}}
         <h3 class="local-oksigeniaaty-send-subtitle">{{#str}} sendapp:courses, local_oksigeniaaty {{/str}}</h3>
         <ul class="local-oksigeniaaty-send-courses">
-            {{#rescourses}}{{> local_oksigeniaaty/sendapp_course}}{{/rescourses}}
+            {{#rescourses}}<li>{{> local_oksigeniaaty/sendapp_course}}</li>{{/rescourses}}
         </ul>
         {{/hasrescourses}}
         {{#hasrescohorts}}
@@ -101,7 +101,7 @@
         {{#hasrespeople}}
         <h3 class="local-oksigeniaaty-send-subtitle" id="local-oksigeniaaty-send-people">{{#str}} sendapp:people, local_oksigeniaaty {{/str}}</h3>
         <ul class="local-oksigeniaaty-send-list">
-            {{#respeople}}{{> local_oksigeniaaty/sendapp_row}}{{/respeople}}
+            {{#respeople}}<li class="local-oksigeniaaty-send-row" data-state="{{state}}">{{> local_oksigeniaaty/sendapp_row}}</li>{{/respeople}}
         </ul>
         {{#respeoplemore}}
         <p class="local-oksigeniaaty-send-more"><a href="{{respeoplemoreurl}}">{{respeoplemoretext}}</a></p>
@@ -166,14 +166,14 @@
         {{#open}}
         <section class="local-oksigeniaaty-send-group" data-state="{{state}}" id="local-oksigeniaaty-send-{{state}}">
             <h3 class="local-oksigeniaaty-send-subtitle"><i aria-hidden="true"></i> {{title}} <span>{{count}}</span></h3>
-            <ul class="local-oksigeniaaty-send-list">{{#rows}}{{> local_oksigeniaaty/sendapp_row}}{{/rows}}</ul>
+            <ul class="local-oksigeniaaty-send-list">{{#rows}}<li class="local-oksigeniaaty-send-row" data-state="{{state}}">{{> local_oksigeniaaty/sendapp_row}}</li>{{/rows}}</ul>
             {{#more}}<p class="local-oksigeniaaty-send-more"><a href="{{moreurl}}">{{moretext}}</a></p>{{/more}}
         </section>
         {{/open}}
         {{^open}}
         <details class="local-oksigeniaaty-send-group" data-state="{{state}}" id="local-oksigeniaaty-send-{{state}}"{{#expanded}} open{{/expanded}}>
             <summary><h3 class="local-oksigeniaaty-send-subtitle"><i aria-hidden="true"></i> {{title}} <span>{{count}}</span></h3></summary>
-            <ul class="local-oksigeniaaty-send-list">{{#rows}}{{> local_oksigeniaaty/sendapp_row}}{{/rows}}</ul>
+            <ul class="local-oksigeniaaty-send-list">{{#rows}}<li class="local-oksigeniaaty-send-row" data-state="{{state}}">{{> local_oksigeniaaty/sendapp_row}}</li>{{/rows}}</ul>
             {{#more}}<p class="local-oksigeniaaty-send-more"><a href="{{moreurl}}">{{moretext}}</a></p>{{/more}}
         </details>
         {{/open}}
