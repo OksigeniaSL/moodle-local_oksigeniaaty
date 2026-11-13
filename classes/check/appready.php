@@ -110,7 +110,7 @@ class appready extends check {
         } else if ($listed === null) {
             $warnings[] = 'listunknown';
         }
-        if (empty($CFG->enablewebservices) || empty($CFG->enablemobilewebservice)) {
+        if (!self::mobile_service_works()) {
             $missing[] = 'mobileservice';
         }
         if (get_config('tool_mobile', 'forcedurlscheme') !== self::SCHEME) {
@@ -147,6 +147,26 @@ class appready extends check {
         }
 
         return [$missing, $warnings];
+    }
+
+    /**
+     * Whether the app can really use the mobile service, as Moodle's own settings page tells it: the switch can be on
+     * (set in config.php or from the command line) with the service off, without REST, or without the right to use REST,
+     * and then the app cannot sign in.
+     *
+     * @return bool
+     */
+    public static function mobile_service_works(): bool {
+        global $CFG;
+
+        if (empty($CFG->enablewebservices) || empty($CFG->enablemobilewebservice)) {
+            return false;
+        }
+        require_once($CFG->libdir . '/adminlib.php');
+        $setting = new \admin_setting_enablemobileservice('enablemobilewebservice', '', '', 0);
+        $protocols = empty($CFG->webserviceprotocols) ? [] : explode(',', $CFG->webserviceprotocols);
+
+        return (string) $setting->get_setting() === '1' && in_array('rest', $protocols, true);
     }
 
     /**

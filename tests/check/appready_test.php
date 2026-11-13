@@ -33,8 +33,10 @@ final class appready_test extends \advanced_testcase {
         global $CFG;
         $this->resetAfterTest();
 
+        require_once($CFG->libdir . '/adminlib.php');
         set_config('enablewebservices', 1);
-        set_config('enablemobilewebservice', 1);
+        // As Moodle's page turns it on: the service, REST and the right to use it.
+        (new \admin_setting_enablemobileservice('enablemobilewebservice', '', '', 0))->write_setting(1);
         set_config('forcedurlscheme', appready::SCHEME, 'tool_mobile');
         set_config('androidappid', appready::APPID, 'tool_mobile');
         set_config('typeoflogin', 1, 'tool_mobile');
@@ -63,6 +65,11 @@ final class appready_test extends \advanced_testcase {
         $this->assertSame(['scheme', 'typeoflogin', 'pushapp'], appready::problems(true)[0]);
         set_config('airnotifieraccesskey', '');
         $this->assertContains('push', appready::problems(true)[0]);
+
+        // The switch on, but REST gone: the app cannot sign in, and it says so.
+        $this->assertTrue(appready::mobile_service_works());
+        set_config('webserviceprotocols', '');
+        $this->assertContains('mobileservice', appready::problems(true)[0]);
         set_config('enablemobilewebservice', 0);
         $this->assertContains('mobileservice', appready::problems(true)[0]);
     }
