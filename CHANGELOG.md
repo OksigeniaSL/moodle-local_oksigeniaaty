@@ -5,6 +5,15 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- A status check «Aty app» (0.5.61-dev), in the site's status checks: what has to be set outside the plugin for the app
+  to open the site, sign people in without a password and bring them notices. Missing (the app does not work): not on
+  Oksigenia's list of sites, mobile web services off, the URL scheme or the Android identifier not Aty's, a type of
+  login other than «Via the app», the push bridge unset or set for another app. Quiet failures: more than 10 seconds
+  between automatic sign-ins, an app CSS other than this plugin's, the family app on without what it needs, families
+  without a parent role. A site that uses Moodle's own app has nothing to check. No secret is shown.
+
 ### Security
 
 - From the first full review of Aty (0.5.59-dev). Changing the app's PIN takes the current one: whoever held the token

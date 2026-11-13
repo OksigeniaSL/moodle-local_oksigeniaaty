@@ -32,4 +32,11 @@ $definitions = [
         'simpledata' => true,
         'ttl' => 60,
     ],
+    // The list of the sites the app opens, for the status check «Aty app»: an hour.
+    'sitelist' => [
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true,
+        'simpledata' => true,
+        'ttl' => 3600,
+    ],
 ];
