@@ -52,6 +52,13 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Added
 
+- A status check «Aty app» (0.5.60-dev), in the site's status checks: what has to be set outside the plugin for the app
+  to open the site, sign people in without a password and bring them notices. Missing (the app does not work): not on
+  Oksigenia's list of sites, mobile web services off, the URL scheme or the Android identifier not Aty's, a type of
+  login other than «Via the app», the push bridge unset or set for another app. Quiet failures: more than 10 seconds
+  between automatic sign-ins, an app CSS other than this plugin's, the family app on without what it needs, families
+  without a parent role. A site that uses Moodle's own app has nothing to check. No secret is shown.
+
 - New optional fields for the cards of `<component>_oksigeniaaty_home_cards()` (0.5.60-dev), documented in
   `classes/local/homecards.php`; without them a card shows as before. On a row, `actionlabel` (a button that opens the
   same as the row: the row goes to «Today»), `kind` (`due` or `close`, said next to its hour) and `time` (the date has

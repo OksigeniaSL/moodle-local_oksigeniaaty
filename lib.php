@@ -334,5 +334,5 @@ function local_oksigeniaaty_h5pinapp_changed(): void {
  * @return \core\check\check[]
  */
 function local_oksigeniaaty_status_checks(): array {
-    return [new \local_oksigeniaaty\check\loginform()];
+    return [new \local_oksigeniaaty\check\appready(), new \local_oksigeniaaty\check\loginform()];
 }
