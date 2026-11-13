@@ -646,8 +646,10 @@ class mobile {
         $duration = (int) $event->timeduration;
 
         // BigBlueButton: its own way in, the one of its page, for whoever may join, in their group.
-        if (($event->modulename ?? '') === 'bigbluebuttonbn' && ($event->eventtype ?? '') === 'meeting_start'
-                && !empty($event->instance) && class_exists(\mod_bigbluebuttonbn\instance::class)) {
+        if (
+            ($event->modulename ?? '') === 'bigbluebuttonbn' && ($event->eventtype ?? '') === 'meeting_start'
+            && !empty($event->instance) && class_exists(\mod_bigbluebuttonbn\instance::class)
+        ) {
             try {
                 $instance = \mod_bigbluebuttonbn\instance::get_from_instanceid((int) $event->instance);
                 if ($instance === null || !$instance->get_cm()->uservisible) {

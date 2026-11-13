@@ -203,8 +203,8 @@ final class mobile_test extends \advanced_testcase {
         $this->assertStringNotContainsString('Your week at a glance', $html);
 
         $hello = '>' . get_string('home:hello', 'local_oksigeniaaty') . '<';
-        foreach ([['firstname' => 'Student'], ['firstname' => 'Teacher'], ['firstname' => 'app.alumno', 'username' => 'app.alumno']]
-                as $fields) {
+        $placeholders = [['firstname' => 'Student'], ['firstname' => 'Teacher'], ['firstname' => 'app.alumno', 'username' => 'app.alumno']];
+        foreach ($placeholders as $fields) {
             $this->setUser($generator->create_user($fields));
             $html = self::home();
             $this->assertStringContainsString($hello, $html);
