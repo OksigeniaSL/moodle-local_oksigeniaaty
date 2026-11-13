@@ -5,6 +5,11 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- The status check «Aty app» (0.5.61-dev) loads Moodle's file library before reading the list of sites: on a site's
+  status page it stopped at «Class "curl" not found».
+
 ### Security
 
 - From the first full review of Aty (0.5.59-dev). Changing the app's PIN takes the current one: whoever held the token

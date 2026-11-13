@@ -164,6 +164,7 @@ class appready extends check {
         $cache = \cache::make('local_oksigeniaaty', 'sitelist');
         $sites = $cache->get('sites');
         if ($sites === false) {
+            require_once($CFG->libdir . '/filelib.php');
             $curl = new \curl();
             $json = $curl->get(self::LIST_URL, [], ['CURLOPT_TIMEOUT' => 5, 'CURLOPT_CONNECTTIMEOUT' => 3]);
             $list = $curl->get_errno() ? null : json_decode((string) $json, true);
