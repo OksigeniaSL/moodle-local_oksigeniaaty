@@ -5,6 +5,13 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed (0.5.66-dev)
+
+- «H5P plays in the app» can be undone: turned off, download goes off again on the H5P content and activities where it
+  turned it on, unless a teacher has shown the action bar since. What it changes is kept in a table of its own. On the
+  upgrade, everything with the bar hidden and download on is taken as its own, since before this version it kept no
+  list (without the bar, download shows nowhere on the web, so an author's own choice looks the same).
+
 ### Fixed (0.5.65-dev)
 
 - A site with «My courses» off, or whose «My courses» page has no block, had no list of courses in the app: the app

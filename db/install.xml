@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="local/oksigeniaaty/db" VERSION="20261025" COMMENT="XMLDB file for Moodle local/oksigeniaaty"
+<XMLDB PATH="local/oksigeniaaty/db" VERSION="20261114" COMMENT="XMLDB file for Moodle local/oksigeniaaty"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -17,6 +17,20 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="userid" TYPE="foreign-unique" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
       </KEYS>
+    </TABLE>
+    <TABLE NAME="local_oksigeniaaty_h5pdl" COMMENT="H5P content and activities whose download this plugin turned on, to turn it off again if the site turns the setting off.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="tablename" TYPE="char" LENGTH="20" NOTNULL="true" SEQUENCE="false" COMMENT="h5p or h5pactivity."/>
+        <FIELD NAME="itemid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="The id in that table."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="tableitem" UNIQUE="true" FIELDS="tablename, itemid"/>
+      </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>

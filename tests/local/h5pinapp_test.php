@@ -86,6 +86,61 @@ final class h5pinapp_test extends \advanced_testcase {
     }
 
     /**
+     * Turned off, download goes off again where it was turned on, unless a teacher has shown the bar since; content it
+     * did not change stays as it is.
+     */
+    public function test_undo(): void {
+        global $CFG, $DB;
+        $this->resetAfterTest();
+        require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
+
+        $ids = $this->contents([15, 3, 14, 13]);
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $activity = $this->getDataGenerator()->create_module('h5pactivity', ['course' => $course->id, 'displayoptions' => 15]);
+
+        $this->assertSame(2, h5pinapp::apply());
+        $this->assertSame(0, h5pinapp::apply());
+        $this->assertSame(3, $DB->count_records('local_oksigeniaaty_h5pdl'));
+        // Since then, a teacher shows the bar of the second one.
+        $DB->set_field('h5p', 'displayoptions', 0, ['id' => $ids[3]]);
+
+        set_config('h5pinapp', '0', 'local_oksigeniaaty');
+        local_oksigeniaaty_h5pinapp_changed();
+        $this->assertEquals(15, $DB->get_field('h5p', 'displayoptions', ['id' => $ids[15]]));
+        $this->assertEquals(0, $DB->get_field('h5p', 'displayoptions', ['id' => $ids[3]]));
+        $this->assertEquals(14, $DB->get_field('h5p', 'displayoptions', ['id' => $ids[14]]));
+        $this->assertEquals(13, $DB->get_field('h5p', 'displayoptions', ['id' => $ids[13]]));
+        $this->assertEquals(15, $DB->get_field('h5pactivity', 'displayoptions', ['id' => $activity->id]));
+        $this->assertSame(0, $DB->count_records('local_oksigeniaaty_h5pdl'));
+
+        // On again, the same as the first time.
+        set_config('h5pinapp', '1', 'local_oksigeniaaty');
+        local_oksigeniaaty_h5pinapp_changed();
+        $this->assertEquals(13, $DB->get_field('h5p', 'displayoptions', ['id' => $ids[15]]));
+        $this->assertEquals(13, $DB->get_field('h5pactivity', 'displayoptions', ['id' => $activity->id]));
+    }
+
+    /**
+     * On a site where it ran before it kept what it changed, everything with the bar hidden and download on is taken as
+     * its own, and undone with the rest.
+     */
+    public function test_adopt(): void {
+        global $DB;
+        $this->resetAfterTest();
+
+        $ids = $this->contents([13, 1, 15, 12]);
+        h5pinapp::adopt();
+        h5pinapp::adopt();
+        $this->assertSame(2, $DB->count_records('local_oksigeniaaty_h5pdl'));
+        $this->assertSame(2, h5pinapp::undo());
+        $this->assertEquals(15, $DB->get_field('h5p', 'displayoptions', ['id' => $ids[13]]));
+        $this->assertEquals(3, $DB->get_field('h5p', 'displayoptions', ['id' => $ids[1]]));
+        $this->assertEquals(15, $DB->get_field('h5p', 'displayoptions', ['id' => $ids[15]]));
+        $this->assertEquals(12, $DB->get_field('h5p', 'displayoptions', ['id' => $ids[12]]));
+    }
+
+    /**
      * After a library update Moodle empties the content's filtered parameters, and the exported package, made with the
      * old library, goes: the app then asks for a new one. Content whose parameters are filtered keeps its package.
      */

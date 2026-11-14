@@ -46,9 +46,12 @@ class h5pinapp {
         return (string) get_config('local_oksigeniaaty', 'h5pinapp') !== '0';
     }
 
+    /** @var string The table of what apply() changed. */
+    private const CHANGED = 'local_oksigeniaaty_h5pdl';
+
     /**
      * Turn download on for every H5P with its action bar hidden: the deployed content, and the H5P activities, whose own
-     * setting Moodle copies onto the content when a teacher opens it.
+     * setting Moodle copies onto the content when a teacher opens it. What it changes is kept, for undo().
      *
      * @return int How many deployed contents changed.
      */
@@ -58,15 +61,88 @@ class h5pinapp {
         $both = self::HIDE_BAR | self::NO_DOWNLOAD;
         $where = $DB->sql_bitand('displayoptions', $both) . ' = :both';
 
-        $changed = $DB->count_records_select('h5p', $where, ['both' => $both]);
+        $changed = 0;
         foreach (['h5p', 'h5pactivity'] as $table) {
-            $DB->execute(
-                "UPDATE {{$table}} SET displayoptions = displayoptions - :download WHERE $where",
-                ['download' => self::NO_DOWNLOAD, 'both' => $both]
-            );
+            $ids = $DB->get_fieldset_select($table, 'id', $where, ['both' => $both]);
+            foreach (array_chunk($ids, 1000) as $chunk) {
+                [$in, $params] = $DB->get_in_or_equal($chunk, SQL_PARAMS_NAMED);
+                $params += ['download' => self::NO_DOWNLOAD, 'both' => $both];
+                $DB->execute("UPDATE {{$table}} SET displayoptions = displayoptions - :download WHERE id $in AND $where", $params);
+
+                $known = $DB->get_fieldset_select(
+                    self::CHANGED,
+                    'itemid',
+                    "tablename = :tablename AND itemid $in",
+                    $params + ['tablename' => $table]
+                );
+                $now = time();
+                $new = array_map(
+                    fn($id) => ['tablename' => $table, 'itemid' => (int) $id, 'timecreated' => $now],
+                    array_diff($chunk, $known)
+                );
+                if ($new) {
+                    $DB->insert_records(self::CHANGED, $new);
+                }
+            }
+            if ($table === 'h5p') {
+                $changed = count($ids);
+            }
         }
 
         return $changed;
+    }
+
+    /**
+     * Take as changed by apply() every H5P with its action bar hidden and download on, for the sites where it ran before
+     * it kept what it changed. Without the bar, download shows nowhere on the web, so an author's own choice looks the
+     * same, and turning it off again changes nothing they see.
+     *
+     * @return void
+     */
+    public static function adopt(): void {
+        global $DB;
+
+        $where = $DB->sql_bitand('displayoptions', self::HIDE_BAR | self::NO_DOWNLOAD) . ' = :hidden';
+        $now = time();
+        foreach (['h5p', 'h5pactivity'] as $table) {
+            $ids = $DB->get_fieldset_select($table, 'id', $where, ['hidden' => self::HIDE_BAR]);
+            $known = $DB->get_fieldset_select(self::CHANGED, 'itemid', 'tablename = :tablename', ['tablename' => $table]);
+            $new = array_map(
+                fn($id) => ['tablename' => $table, 'itemid' => (int) $id, 'timecreated' => $now],
+                array_diff($ids, $known)
+            );
+            if ($new) {
+                $DB->insert_records(self::CHANGED, $new);
+            }
+        }
+    }
+
+    /**
+     * Turn download off again where apply() turned it on, for a site that turns the setting off: only where the action
+     * bar is still hidden and download still on, as apply() left it. What a teacher has changed since stays.
+     *
+     * @return int How many deployed contents changed.
+     */
+    public static function undo(): int {
+        global $DB;
+
+        $mask = self::HIDE_BAR | self::NO_DOWNLOAD;
+        $restored = 0;
+        foreach (['h5p', 'h5pactivity'] as $table) {
+            $ids = $DB->get_fieldset_select(self::CHANGED, 'itemid', 'tablename = :tablename', ['tablename' => $table]);
+            foreach (array_chunk($ids, 1000) as $chunk) {
+                [$in, $params] = $DB->get_in_or_equal($chunk, SQL_PARAMS_NAMED);
+                $where = "id $in AND " . $DB->sql_bitand('displayoptions', $mask) . ' = :hidden';
+                $params += ['hidden' => self::HIDE_BAR, 'download' => self::NO_DOWNLOAD];
+                if ($table === 'h5p') {
+                    $restored += $DB->count_records_select($table, $where, $params);
+                }
+                $DB->execute("UPDATE {{$table}} SET displayoptions = displayoptions + :download WHERE $where", $params);
+            }
+        }
+        $DB->delete_records(self::CHANGED);
+
+        return $restored;
     }
 
     /**
