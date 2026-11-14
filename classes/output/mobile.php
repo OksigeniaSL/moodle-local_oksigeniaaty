@@ -35,6 +35,9 @@ class mobile {
     /** @var int How long before a class it shows as about to start, with its way in. */
     private const SOON = 30 * MINSECS;
 
+    /** @var int The most courses the home lists when the app has no tab "My courses"; "See all" leads to the rest. */
+    private const HOME_COURSES = 8;
+
     /**
      * The home tab of the site: a low band of the brand with the greeting and a line that says the day, the children of an
      * adult of a family, "Today" first (what is about to start, with "Join"; what there is to do; what is left of today),
@@ -120,6 +123,13 @@ class mobile {
         $data['dayline'] = template::inert(self::day_line($todo, $starting, $today, $unread, $grading, $events, $now));
         $data['todo'] = $todo;
         $data['cards'] = $shown;
+        // The course cards left the home for the tab "My courses"; where the app has no such tab, they come back.
+        if (!self::app_has_my_courses()) {
+            $courses = self::courses_card();
+            if ($courses !== null) {
+                array_unshift($data['cards'], $courses);
+            }
+        }
 
         // Never through inert(): its braces are the object the template binds.
         foreach ($data['children'] as $index => $child) {
@@ -802,8 +812,97 @@ class mobile {
     }
 
     /**
+     * Whether the app shows its tab "My courses" on this site, decided as the app decides it: "My courses" on, that part
+     * of the app not turned off, and a block on the site's courses page (Moodle's course overview, which the app draws).
+     * A site that took the block away has no list of courses in the app.
+     *
+     * @return bool
+     */
+    public static function app_has_my_courses(): bool {
+        global $CFG, $DB;
+
+        if (isset($CFG->enablemycourses) && empty($CFG->enablemycourses)) {
+            return false;
+        }
+        $disabled = array_map('trim', explode(',', (string) get_config('tool_mobile', 'disabledfeatures')));
+        if (in_array('CoreMainMenuDelegate_CoreCourses', $disabled, true)) {
+            return false;
+        }
+
+        require_once($CFG->dirroot . '/my/lib.php');
+        $page = my_get_page(null, MY_PAGE_PUBLIC, MY_PAGE_COURSES);
+        if (!$page) {
+            return false;
+        }
+
+        return $DB->record_exists_select(
+            'block_instances',
+            'pagetypepattern = :type AND subpagepattern = :page',
+            ['type' => 'my-index', 'page' => (string) $page->id]
+        );
+    }
+
+    /**
+     * The user's courses as a card of the home, for a site where the app has no tab "My courses": each row opens its
+     * course in the app, and "See all" the site's page of courses, in the phone's browser.
+     *
+     * @return array|null The card, as homecards::on_home() leaves one; null without courses.
+     */
+    private static function courses_card(): ?array {
+        $mycourses = enrol_get_my_courses(['id', 'fullname'], 'visible DESC, sortorder ASC');
+        unset($mycourses[SITEID]);
+        if (!$mycourses) {
+            return null;
+        }
+
+        $items = [];
+        foreach (array_slice($mycourses, 0, self::HOME_COURSES) as $course) {
+            $items[] = template::inert([
+                'title' => format_string($course->fullname, true, ['context' => \context_course::instance($course->id)]),
+                'detail' => '',
+                'urgent' => false,
+                'hasdate' => false,
+                'timestamp' => 0,
+                'day' => '',
+                'month' => '',
+                'hour' => '',
+                'hashour' => false,
+                'kind' => '',
+                'kindlabel' => '',
+                'actionlabel' => '',
+                'hascount' => false,
+                'count' => '',
+                'countlabel' => '',
+            ]) + [
+                'ispage' => false,
+                'url' => template::inert((new \moodle_url('/course/view.php', ['id' => $course->id]))->out(false), true),
+                'browser' => false,
+                'external' => false,
+            ];
+        }
+        $seeall = null;
+        if (count($mycourses) > count($items)) {
+            $seeall = template::inert(['label' => get_string('home:seeall', 'local_oksigeniaaty')]) + [
+                'ispage' => false,
+                'url' => template::inert((new \moodle_url('/my/courses.php'))->out(false), true),
+                'browser' => true,
+                'external' => true,
+            ];
+        }
+
+        return [
+            'heading' => template::inert(get_string('home:mycourses', 'local_oksigeniaaty')),
+            'hasitems' => true,
+            'items' => $items,
+            'tile' => null,
+            'seeall' => $seeall,
+        ];
+    }
+
+    /**
      * The shortcuts without those the app already has in its tab bar: my courses, the calendar, the notices and the
-     * messages, unless the site has turned that part of the app off.
+     * messages, unless the site has turned that part of the app off. My courses stays off the shortcuts also where the app
+     * has no tab for it: the home lists the courses then.
      *
      * @param array $shortcuts From local_oksigeniaaty_get_shortcuts().
      * @return array

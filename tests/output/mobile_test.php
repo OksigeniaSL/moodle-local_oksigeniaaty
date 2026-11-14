@@ -436,6 +436,43 @@ final class mobile_test extends \advanced_testcase {
     }
 
     /**
+     * Where the app has no tab "My courses" (nothing on the site's courses page), the home lists the courses itself, eight
+     * at most, with "See all" to the site's page in the phone's browser.
+     */
+    public function test_courses_without_the_tab(): void {
+        global $CFG, $DB;
+        $this->resetAfterTest();
+        require_once($CFG->dirroot . '/my/lib.php');
+
+        $generator = $this->getDataGenerator();
+        $student = $generator->create_user();
+        $course = $generator->create_course(['fullname' => 'Natural sciences']);
+        $generator->enrol_user($student->id, $course->id, 'student');
+        $this->setUser($student);
+        $heading = '>' . get_string('home:mycourses', 'local_oksigeniaaty') . '<';
+
+        // The tab is there: the home has no list of courses.
+        $html = self::home();
+        $this->assertStringNotContainsString($heading, $html);
+        $this->assertStringNotContainsString('Natural sciences', $html);
+
+        $page = my_get_page(null, MY_PAGE_PUBLIC, MY_PAGE_COURSES);
+        $DB->delete_records('block_instances', ['pagetypepattern' => 'my-index', 'subpagepattern' => (string) $page->id]);
+        $html = self::home();
+        $this->assertStringContainsString($heading, $html);
+        $this->assertStringContainsString('Natural sciences', $html);
+        $this->assertStringContainsString('/course/view.php?id=' . $course->id, $html);
+        $this->assertStringNotContainsString('/my/courses.php', $html);
+
+        for ($i = 1; $i <= 8; $i++) {
+            $generator->enrol_user($student->id, $generator->create_course()->id, 'student');
+        }
+        $html = self::home();
+        $this->assertSame(8, substr_count($html, '/course/view.php?id='));
+        $this->assertStringContainsString('/my/courses.php', $html);
+    }
+
+    /**
      * The home's HTML for the current user.
      *
      * @return string

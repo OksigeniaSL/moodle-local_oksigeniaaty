@@ -135,6 +135,18 @@ class appready extends check {
         if (strpos((string) get_config('core', 'mobilecssurl'), '/local/oksigeniaaty/styles_app.php') === false) {
             $warnings[] = 'css';
         }
+        // "My courses" on and not turned off in the app, but nothing on its page: the app has no tab for the courses.
+        if (
+            !\local_oksigeniaaty\output\mobile::app_has_my_courses()
+            && (!isset($CFG->enablemycourses) || !empty($CFG->enablemycourses))
+            && !in_array(
+                'CoreMainMenuDelegate_CoreCourses',
+                array_map('trim', explode(',', (string) get_config('tool_mobile', 'disabledfeatures'))),
+                true
+            )
+        ) {
+            $warnings[] = 'mycourses';
+        }
         if (get_config('local_oksigeniaaty', 'familyapp') && !\local_oksigeniaaty\local\familyaccount::available()) {
             $warnings[] = 'familyapp';
         }

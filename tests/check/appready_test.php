@@ -75,6 +75,30 @@ final class appready_test extends \advanced_testcase {
     }
 
     /**
+     * "My courses" with nothing on its page: the app has no tab for the courses, and the check says how to bring it back;
+     * not when the site turned "My courses" off on purpose.
+     */
+    public function test_my_courses(): void {
+        global $CFG, $DB;
+        $this->resetAfterTest();
+        require_once($CFG->dirroot . '/my/lib.php');
+
+        $this->assertTrue(\local_oksigeniaaty\output\mobile::app_has_my_courses());
+        $this->assertNotContains('mycourses', appready::problems(true)[1]);
+
+        $page = my_get_page(null, MY_PAGE_PUBLIC, MY_PAGE_COURSES);
+        $DB->delete_records('block_instances', ['pagetypepattern' => 'my-index', 'subpagepattern' => (string) $page->id]);
+        $this->assertFalse(\local_oksigeniaaty\output\mobile::app_has_my_courses());
+        $this->assertContains('mycourses', appready::problems(true)[1]);
+
+        set_config('enablemycourses', 0);
+        $this->assertNotContains('mycourses', appready::problems(true)[1]);
+        set_config('enablemycourses', 1);
+        set_config('disabledfeatures', 'CoreMainMenuDelegate_CoreCourses', 'tool_mobile');
+        $this->assertNotContains('mycourses', appready::problems(true)[1]);
+    }
+
+    /**
      * The site's status checks include it.
      */
     public function test_registered(): void {

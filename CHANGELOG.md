@@ -5,6 +5,15 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed (0.5.65-dev)
+
+- A site whose «My courses» page has no block had no list of courses in the app: the app shows its tab «My courses»
+  only when that page has a block it can draw (Moodle's course overview), and since 0.5.60 the home left the courses to
+  that tab. Now the home checks it as the app does («My courses» on, not turned off in the app, a block on the page) and,
+  without the tab, lists «Your courses» itself: eight at most, each opening its course in the app, and «See all» to the
+  site's page in the phone's browser. Seen on campus.oksigenia.com.
+- The status check «Aty app» warns of it and says how to put the block back.
+
 ### Fixed (0.5.64-dev)
 
 - The day's line of the home no longer ends «…2027-28?.» when the thing to do is a question: a title that already ends a
