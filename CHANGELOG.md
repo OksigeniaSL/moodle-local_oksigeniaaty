@@ -5,6 +5,14 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.67-dev)
+
+- The exchange of a sign-in key for the app's token moves from token.php to `local\tokenexchange`, which returns the
+  answer instead of printing it and stopping, so that it has tests: the token once, what stops it (the mobile service
+  off, not a POST over HTTPS, an unknown key, the browser sign-in the site asks for, a suspended account), the
+  administrator, the PIN with its lock and the key of «Forgot the PIN». token.php reads the request and prints what the
+  class answers; the app sees the same.
+
 ### Fixed (0.5.66-dev)
 
 - «H5P plays in the app» can be undone: turned off, download goes off again on the H5P content and activities where it
