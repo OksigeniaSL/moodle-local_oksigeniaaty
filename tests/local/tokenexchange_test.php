@@ -79,7 +79,10 @@ final class tokenexchange_test extends \advanced_testcase {
         $user = $this->getDataGenerator()->create_user();
         $key = loginkey::create((int) $user->id);
 
+        // The mobile service is on by default on a new site: off, nothing.
+        set_config('enablemobilewebservice', 0);
         $this->assertSame(self::failed(), tokenexchange::respond($key, '', true));
+        $this->assertTrue(loginkey::is_live($key));
         $this->open_site();
         $this->assertSame(self::failed(), tokenexchange::respond($key, '', false));
         $this->assertTrue(loginkey::is_live($key));
