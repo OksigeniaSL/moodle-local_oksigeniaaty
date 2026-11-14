@@ -82,6 +82,8 @@ final class appready_test extends \advanced_testcase {
         global $CFG, $DB;
         $this->resetAfterTest();
         require_once($CFG->dirroot . '/my/lib.php');
+        // Off by default on a new site since Moodle 5.2; on in the sites upgraded from before.
+        set_config('enablemycourses', 1);
 
         $this->assertTrue(\local_oksigeniaaty\output\mobile::app_has_my_courses());
         $this->assertNotContains('mycourses', appready::problems(true)[1]);

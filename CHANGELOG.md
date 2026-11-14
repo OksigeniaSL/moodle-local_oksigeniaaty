@@ -7,12 +7,12 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Fixed (0.5.65-dev)
 
-- A site whose «My courses» page has no block had no list of courses in the app: the app shows its tab «My courses»
-  only when that page has a block it can draw (Moodle's course overview), and since 0.5.60 the home left the courses to
-  that tab. Now the home checks it as the app does («My courses» on, not turned off in the app, a block on the page) and,
+- A site with «My courses» off, or whose «My courses» page has no block, had no list of courses in the app: the app
+  shows its tab «My courses» only with the setting on and a block it can draw on that page (Moodle's course overview),
+  and since 0.5.60 the home left the courses to that tab. «My courses» is off by default on a new site since Moodle 5.2. Now the home checks it as the app does («My courses» on, not turned off in the app, a block on the page) and,
   without the tab, lists «Your courses» itself: eight at most, each opening its course in the app, and «See all» to the
   site's page in the phone's browser. Seen on campus.oksigenia.com.
-- The status check «Aty app» warns of it and says how to put the block back.
+- The status check «Aty app» warns of a page without the block (Moodle does not let anyone add one there from the web).
 
 ### Fixed (0.5.64-dev)
 

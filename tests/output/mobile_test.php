@@ -383,6 +383,9 @@ final class mobile_test extends \advanced_testcase {
         global $CFG;
         $this->resetAfterTest();
 
+        // The app has its tab "My courses" (off by default on a new site since Moodle 5.2).
+        set_config('enablemycourses', 1);
+
         $generator = $this->getDataGenerator();
         $course = $generator->create_course(['fullname' => 'Natural sciences']);
         $student = $generator->create_and_enrol($course, 'student');
@@ -436,13 +439,14 @@ final class mobile_test extends \advanced_testcase {
     }
 
     /**
-     * Where the app has no tab "My courses" (nothing on the site's courses page), the home lists the courses itself, eight
-     * at most, with "See all" to the site's page in the phone's browser.
+     * Where the app has no tab "My courses" ("My courses" off, or nothing on its page), the home lists the courses itself,
+     * eight at most, with "See all" to the site's page in the phone's browser.
      */
     public function test_courses_without_the_tab(): void {
         global $CFG, $DB;
         $this->resetAfterTest();
         require_once($CFG->dirroot . '/my/lib.php');
+        set_config('enablemycourses', 1);
 
         $generator = $this->getDataGenerator();
         $student = $generator->create_user();
@@ -456,6 +460,12 @@ final class mobile_test extends \advanced_testcase {
         $this->assertStringNotContainsString($heading, $html);
         $this->assertStringNotContainsString('Natural sciences', $html);
 
+        // "My courses" off, as on a new site since Moodle 5.2: no tab, so the home lists them.
+        set_config('enablemycourses', 0);
+        $this->assertStringContainsString('Natural sciences', self::home());
+        set_config('enablemycourses', 1);
+
+        // On, with nothing on its page.
         $page = my_get_page(null, MY_PAGE_PUBLIC, MY_PAGE_COURSES);
         $DB->delete_records('block_instances', ['pagetypepattern' => 'my-index', 'subpagepattern' => (string) $page->id]);
         $html = self::home();
