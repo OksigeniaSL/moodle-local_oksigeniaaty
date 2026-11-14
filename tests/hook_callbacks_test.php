@@ -78,7 +78,7 @@ final class hook_callbacks_test extends \advanced_testcase {
     }
 
     /**
-     * On an iPhone with no app in the App Store, nothing offers one; when the site has its address, it is offered.
+     * On an iPhone, the app is offered when the site has its App Store address (out of the box), and nothing is without it.
      */
     public function test_no_app_offered_on_iphone(): void {
         global $CFG;
@@ -87,6 +87,10 @@ final class hook_callbacks_test extends \advanced_testcase {
         $iphone = 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1';
 
         \core_useragent::instance(true, $iphone);
+        // Out of the box, the site offers the app in the App Store.
+        $this->assertSame('https://apps.apple.com/app/oksigenia-aty/id6833200207', get_config('local_oksigeniaaty', 'iosstoreurl'));
+        $this->assertFalse(local_oksigeniaaty_is_ios_without_app());
+
         set_config('iosstoreurl', '', 'local_oksigeniaaty');
         $this->assertTrue(local_oksigeniaaty_is_ios_without_app());
 

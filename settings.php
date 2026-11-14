@@ -182,7 +182,7 @@ if ($hassiteconfig) {
             'local_oksigeniaaty/iosstoreurl',
             new lang_string('settings:iosstoreurl', 'local_oksigeniaaty'),
             new lang_string('settings:iosstoreurl_desc', 'local_oksigeniaaty'),
-            '',
+            'https://apps.apple.com/app/oksigenia-aty/id6833200207',
             PARAM_URL
         ));
 

@@ -5,6 +5,12 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.68-dev)
+
+- The App Store link comes set, like Google Play's: Aty is in the App Store since 14 November 2026. On the upgrade, a
+  site with it empty gets it, and one with its own address keeps it. iPhones and iPads now get what Android phones
+  already had: the App Store on the sign-in bridge and «Open in the Aty app» in the user menu.
+
 ### Changed (0.5.67-dev)
 
 - The exchange of a sign-in key for the app's token moves from token.php to `local\tokenexchange`, which returns the

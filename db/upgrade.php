@@ -114,6 +114,15 @@ function xmldb_local_oksigeniaaty_upgrade($oldversion): bool {
         upgrade_plugin_savepoint(true, 2026111401, 'local', 'oksigeniaaty');
     }
 
+    if ($oldversion < 2026111403) {
+        // Aty is in the App Store since 14 November 2026: its address comes with the plugin, like Google Play's. A site
+        // with it empty had no app to offer on iPhones; one that set its own keeps it.
+        if (trim((string) get_config('local_oksigeniaaty', 'iosstoreurl')) === '') {
+            set_config('iosstoreurl', 'https://apps.apple.com/app/oksigenia-aty/id6833200207', 'local_oksigeniaaty');
+        }
+        upgrade_plugin_savepoint(true, 2026111403, 'local', 'oksigeniaaty');
+    }
+
     // Any release may change the generated CSS: always point mobilecssurl at the new version, so the app and the CDN
     // refetch the stylesheet. (Campus found 0.5.21 left the 0.5.20 URL in place.)
     local_oksigeniaaty_refresh_appcss();
