@@ -288,7 +288,7 @@ button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
 .aty-faceta-urgente b { color: var(--ion-color-danger); }
 /* The letter of the canteen's menu, in its colour (the plugin sends it): never the colour alone, the letter is there. */
 .aty-faceta-menu { display: inline-grid; place-items: center; min-width: 22px; height: 22px; margin-right: 4px;
-    padding: 0 5px; border-radius: 6px; background: var(--aty-faceta-color, var(--primary)); color: #fff;
+    padding: 0 5px; border-radius: 6px; background: var(--aty-faceta-color, var(--primary)); color: white;
     font-size: .8rem; font-weight: 800; vertical-align: 1px; }
 
 /* --- A family's greeting: a line, low; what is to do goes right under it, in «To do». ------------------------- */

@@ -479,4 +479,3 @@ final class homecards_test extends \advanced_testcase {
         $this->assertStringContainsString('aty-libro aty-libro-fila', $html);
     }
 }
-
