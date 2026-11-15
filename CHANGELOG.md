@@ -20,7 +20,7 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
   - `facet`, the child's line of today, with the canteen's menu letter and colour;
   - `block`, a plugin's own body for its block, rendered on the server; Aty takes away the braces and the at signs the
     app would run;
-  - a row's `cover`, a book's cover as a data: URL.
+  - a row's `cover`, a book's cover as a data: URL, and the card's `layout` 'shelf' for plain spines.
 
 ### Changed (0.5.76-dev)
 

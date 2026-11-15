@@ -39,7 +39,8 @@ namespace local_oksigeniaaty\local;
  * - block (array): the plugin's own block on the child's page, which Aty frames with its title and its way to all of it:
  *   html (the block's body, already rendered by the plugin from inert data: norm 9), title, icon (fas-*), open (where
  *   its foot leads, as any other target) and openlabel. Without a block, the card's rows go in a frame of the same look.
- * - A row may carry cover: a data: URL of an image (a book's cover), for the library's shelf.
+ * - A row may carry cover: a data: URL of an image (a book's cover), for the library's shelf; and the card, layout
+ *   'shelf', for a shelf of plain spines when no book has a cover.
  *
  * Where it opens: method and args, a page of the plugin's own in the app, with title for its header; or url.
  *
@@ -207,7 +208,8 @@ class homecards {
             'facet' => $facet,
             'block' => $block,
             'hasblock' => $block !== null,
-            'hascovers' => (bool) array_filter($items, fn($item) => $item['hascover']),
+            // A shelf of books: with a cover on any row, or when the plugin asks (an older reader's plain spines).
+            'hascovers' => ($card['layout'] ?? '') === 'shelf' || array_filter($items, fn($item) => $item['hascover']),
         ];
     }
 
