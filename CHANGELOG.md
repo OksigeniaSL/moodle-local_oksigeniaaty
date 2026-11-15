@@ -5,6 +5,10 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.83-dev)
+
+- An older reader's spines, one per line, have a thin line between books and none under them (Jujol).
+
 ### Fixed (0.5.82-dev)
 
 - Seen on the phone with Ayvurenda 1.0.3:
