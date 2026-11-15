@@ -38,7 +38,7 @@
     {}
 }}
 {{#title}}
-{{#actionlabel}}<div class="aty-event{{#urgent}} aty-urgent{{/urgent}}">{{/actionlabel}}
+{{#actionlabel}}<div class="aty-event aty-por-hacer{{#urgent}} aty-urgent{{/urgent}}">{{/actionlabel}}
 {{^actionlabel}}
 {{#ispage}}<button type="button" class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}
 {{^ispage}}<a class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="{{^browser}}true{{/browser}}{{#browser}}false{{/browser}}"{{^browser}} inApp="true"{{/browser}}>{{/ispage}}
@@ -64,6 +64,7 @@
     {{/hascount}}
     {{/hashour}}
     <span class="aty-event-body">
+        {{#actionlabel}}{{#mark}}<span class="aty-por-hacer-marca">{{mark}}</span>{{/mark}}{{/actionlabel}}
         <span class="aty-event-name">{{title}}</span>
         {{#detail}}<span class="aty-event-context">{{detail}}</span>{{/detail}}
     </span>

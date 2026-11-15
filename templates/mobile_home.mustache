@@ -32,7 +32,10 @@
     * greeting - "Hi, Lucía", or "Hi" when there is no first name worth saying.
     * dayline - What matters most of the day, in a line (may be empty).
     * haschildren - Whether there are children yet: then the pill to add another is a round «+» at the end of their row.
-    * hasfamily, familyheading, children, familyaddname - For an adult of a family: their children as pills (id, name,
+    * familyonly, saludo - A family's own account: a greeting in a line instead of the band, and «To do» before the
+      children.
+    * childrenheading - The heading of the children's cards (see local_oksigeniaaty/mobile_home_children).
+    * hasfamily, familyheading, children, familyaddname - For an adult of a family: their children as cards (id, name,
       label, initial, argsjson) and the way to add another with their code.
     * todayheading, hastoday - "Today".
     * starting, joinlabel - What is about to start: { name, timestamp, time, context, when, joinurl }.
@@ -55,7 +58,9 @@
         "dayline": "Hoy tienes una clase en directo y una entrega."
     }
 }}
-<div class="aty-home">
+<div class="aty-home{{#familyonly}} aty-familia{{/familyonly}}">
+    {{#familyonly}}<p class="aty-saludo">{{saludo}}</p>{{/familyonly}}
+    {{^familyonly}}
     <section class="aty-franja">
         {{#logourl}}<img class="aty-franja-logo" src="{{logourl}}" alt="">{{/logourl}}
         <div class="aty-franja-texto">
@@ -63,25 +68,8 @@
             {{#dayline}}<p class="aty-franja-dia">{{dayline}}</p>{{/dayline}}
         </div>
     </section>
-    {{#hasfamily}}
-    <div class="aty-hijos" role="group" aria-label="{{familyheading}}">
-        {{#children}}
-        <button type="button" class="aty-hijo" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_child" title="{{name}}" [args]="{{argsjson}}">
-            <span class="aty-hijo-inicial" aria-hidden="true">{{initial}}</span>{{label}}
-        </button>
-        {{/children}}
-        {{#haschildren}}
-        <button type="button" class="aty-hijo aty-hijo-mas aty-hijo-solo" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_family_add" title="{{familyaddname}}" aria-label="{{familyaddname}}">
-            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>
-        </button>
-        {{/haschildren}}
-        {{^haschildren}}
-        <button type="button" class="aty-hijo aty-hijo-mas" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_family_add" title="{{familyaddname}}">
-            <ion-icon name="fas-plus" aria-hidden="true"></ion-icon>{{familyaddname}}
-        </button>
-        {{/haschildren}}
-    </div>
-    {{/hasfamily}}
+    {{/familyonly}}
+    {{^familyonly}}{{> local_oksigeniaaty/mobile_home_children }}{{/familyonly}}
     {{#hastoday}}
     <h2 class="aty-section">{{todayheading}}</h2>
     <div class="aty-agenda">
@@ -134,6 +122,7 @@
         {{/hasunread}}
     </div>
     {{/hastoday}}
+    {{#familyonly}}{{> local_oksigeniaaty/mobile_home_children }}{{/familyonly}}
     {{#hasgrading}}
     <h2 class="aty-section">{{gradingheading}}</h2>
     <div class="aty-agenda">

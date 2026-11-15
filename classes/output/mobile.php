@@ -90,6 +90,8 @@ class mobile {
         $cards = homecards::for_user((int) $USER->id);
         [$shown, $todo] = homecards::on_home($cards, $now);
         $name = self::greeting_name($USER);
+        // A family's account greets in a line, low, with the day: what it has to do comes right under it (design by Jujol).
+        $familyonly = $children !== null && \local_oksigeniaaty\local\familyaccount::is_own($USER);
 
         $data = template::inert([
             'logourl' => $logourl,
@@ -97,11 +99,18 @@ class mobile {
                 ? get_string('home:greeting', 'local_oksigeniaaty', $name)
                 : get_string('home:hello', 'local_oksigeniaaty'),
             'familyheading' => get_string('family:heading', 'local_oksigeniaaty'),
+            'familyonly' => $familyonly,
+            'saludo' => get_string('family:saludo', 'local_oksigeniaaty', (object) [
+                'hello' => $name !== '' ? get_string('home:greeting', 'local_oksigeniaaty', $name)
+                    : get_string('home:hello', 'local_oksigeniaaty'),
+                'day' => trim(userdate(time(), get_string('family:saludoday', 'local_oksigeniaaty'))),
+            ]),
+            'childrenheading' => get_string('family:children', 'local_oksigeniaaty'),
             'hasfamily' => $children !== null,
             'children' => $children ?? [],
             'haschildren' => !empty($children),
             'familyaddname' => get_string('family:add', 'local_oksigeniaaty'),
-            'todayheading' => get_string('home:today', 'local_oksigeniaaty'),
+            'todayheading' => get_string($familyonly ? 'family:todo' : 'home:today', 'local_oksigeniaaty'),
             'starting' => $starting,
             'joinlabel' => get_string('home:join', 'local_oksigeniaaty'),
             'today' => $today,
@@ -322,18 +331,65 @@ class mobile {
         }
         $events = get_config($component, 'familyagenda') === '0' ? [] : self::child_events($childid);
         $grades = get_config($component, 'familygrades') ? self::child_grades($childid) : [];
+        $user = \core_user::get_user($childid, '*', MUST_EXIST);
+        $name = self::child_name($user);
+        $group = self::child_group((int) $USER->id, $childid);
+        $brand = \local_oksigeniaaty\local\brand::for_user($childid);
+        $centre = $brand !== null ? (string) $brand['name'] : format_string(get_site()->fullname);
+
+        // The plugins' blocks (the canteen, the library…), each in the frame of the family's app (design by Jujol). What
+        // asks for something to do goes to the top, with its own mark.
+        $todo = [];
+        $blocks = [];
+        foreach (homecards::for_child((int) $USER->id, $childid) as $card) {
+            $rows = [];
+            foreach ($card['items'] as $item) {
+                if ($item['actionlabel'] !== '') {
+                    $todo[] = $item;
+                } else {
+                    $rows[] = $item;
+                }
+            }
+            $block = $card['block'];
+            if ($block === null && !$rows) {
+                continue;
+            }
+            $blocks[] = [
+                'title' => $block['title'] ?? $card['heading'],
+                'icon' => $block['icon'] ?? ($card['hascovers'] ? 'fas-book' : 'fas-shapes'),
+                'hashtml' => $block !== null,
+                'html' => $block['html'] ?? '',
+                'hasshelf' => $block === null && $card['hascovers'],
+                'hasrows' => $block === null && !$card['hascovers'],
+                'items' => $rows,
+                'open' => $block['open'] ?? ($card['seeall'] ?? null),
+                'isagenda' => false,
+            ];
+        }
+        if ($events) {
+            $blocks[] = [
+                'title' => template::inert(get_string('family:agenda', $component)),
+                'icon' => 'fas-calendar-days',
+                'isagenda' => true,
+                'week' => template::inert(self::week_strip($events, time())),
+                'events' => template::inert(array_slice($events, 0, 4)),
+            ];
+        }
         $data = template::inert([
+            'name' => $name,
+            'initial' => \core_text::strtoupper(\core_text::substr($name, 0, 1)),
+            'grouping' => implode(' · ', array_filter([$group, $centre])),
             'nothing' => get_string('family:nothing', $component),
-            'eventsheading' => get_string('home:upcoming', $component),
-            'events' => $events,
-            'hasevents' => !empty($events),
+            'todoheading' => get_string('family:todo', $component),
             'gradesheading' => get_string('family:grades', $component),
             'grades' => $grades,
             'hasgrades' => !empty($grades),
         ]);
-        // Each of their texts already inert.
-        $data['cards'] = homecards::for_child((int) $USER->id, $childid);
-        $data['empty'] = !$events && !$grades && !$data['cards'];
+        // Each of their texts already inert; a block's body is its plugin's own markup.
+        $data['todo'] = $todo;
+        $data['hastodo'] = !empty($todo);
+        $data['blocks'] = $blocks;
+        $data['empty'] = !$todo && !$blocks && !$grades;
 
         return [
             'templates' => [
@@ -345,6 +401,134 @@ class mobile {
             'javascript' => '',
             'otherdata' => [],
         ];
+    }
+
+    /**
+     * A child's lines of today on the family's home: one for each plugin with something today (its facet), then what
+     * comes next in their agenda. Nothing for what has nothing.
+     *
+     * @param int $adultuserid The adult.
+     * @param int $childid The child.
+     * @return array Lines: text, icon, urgent, hasmenu, menu and menucolor.
+     */
+    private static function child_facets(int $adultuserid, int $childid): array {
+        $facets = [];
+        foreach (homecards::for_child($adultuserid, $childid) as $card) {
+            if ($card['facet'] !== null) {
+                $facets[] = $card['facet'];
+            }
+        }
+        if (get_config('local_oksigeniaaty', 'familyagenda') !== '0') {
+            $next = self::child_events($childid)[0] ?? null;
+            if ($next !== null) {
+                $facets[] = template::inert([
+                    'text' => get_string('family:next', 'local_oksigeniaaty', (object) [
+                        'when' => self::day_word((int) ($next['timestamp'] / 1000), time()),
+                        'what' => $next['name'],
+                    ]),
+                    'icon' => 'fas-calendar-days',
+                    'urgent' => !empty($next['due']) && $next['timestamp'] / 1000 < time() + DAYSECS,
+                    'hasmenu' => false,
+                    'menu' => '',
+                ]) + ['menucolor' => ''];
+            }
+        }
+
+        return array_slice($facets, 0, 4);
+    }
+
+    /**
+     * A day as a family says it: today, tomorrow, «on Thursday» within the week, or its date.
+     *
+     * @param int $time The time.
+     * @param int $now The time it is.
+     * @return string
+     */
+    private static function day_word(int $time, int $now): string {
+        $days = (int) round((usergetmidnight($time) - usergetmidnight($now)) / DAYSECS);
+        if ($days <= 0) {
+            return get_string('family:today', 'local_oksigeniaaty');
+        }
+        if ($days === 1) {
+            return get_string('family:tomorrow', 'local_oksigeniaaty');
+        }
+        if ($days < 7) {
+            return get_string('family:onday', 'local_oksigeniaaty', \core_text::strtolower(userdate($time, '%A')));
+        }
+
+        return trim(userdate($time, get_string('strftimedateshort', 'langconfig')));
+    }
+
+    /**
+     * What a family calls a child: first name and surnames, whatever order the site uses for its lists.
+     *
+     * @param \stdClass $user The child.
+     * @return string
+     */
+    private static function child_name(\stdClass $user): string {
+        $first = trim(format_string($user->firstname));
+        $name = trim($first . ' ' . trim(format_string($user->lastname)));
+
+        return $name !== '' ? $name : fullname($user);
+    }
+
+    /**
+     * A child's group this school year, as the school's data gives it to the family records, if it does.
+     *
+     * @param int $adultuserid The adult who looks.
+     * @param int $childid The child.
+     * @return string
+     */
+    private static function child_group(int $adultuserid, int $childid): string {
+        global $DB;
+
+        $group = $DB->get_field_sql(
+            "SELECT c.groupname
+               FROM {local_oksigeniafamily_child} c
+               JOIN {local_oksigeniafamily_adult} a ON a.familyid = c.familyid AND a.userid = :adult AND a.status = :aactive
+              WHERE c.userid = :child AND c.status = :cactive AND c.groupname IS NOT NULL",
+            ['adult' => $adultuserid, 'aactive' => 'active', 'child' => $childid, 'cactive' => 'active'],
+            IGNORE_MULTIPLE
+        );
+
+        return trim(format_string((string) $group));
+    }
+
+    /**
+     * The school week of a child's agenda, as a strip of five days: the days with something have their dot, red when
+     * something is due. On a weekend, the week to come.
+     *
+     * @param array $events From child_events().
+     * @param int $now The time it is.
+     * @return array Days, each with letter, number, today, has and due.
+     */
+    private static function week_strip(array $events, int $now): array {
+        $letters = explode(',', get_string('family:weekdays', 'local_oksigeniaaty'));
+        $day = usergetmidnight($now);
+        $weekday = (int) userdate($day, '%u');
+        $monday = $weekday >= 6 ? $day + (8 - $weekday) * DAYSECS : $day - ($weekday - 1) * DAYSECS;
+        $marks = [];
+        foreach ($events as $event) {
+            $start = usergetmidnight((int) ($event['timestamp'] / 1000));
+            $marks[$start]['has'] = true;
+            if (!empty($event['due'])) {
+                $marks[$start]['due'] = true;
+            }
+        }
+        $strip = [];
+        for ($i = 0; $i < 5; $i++) {
+            // Days are counted by midnight, so that a change of summer time does not move them.
+            $date = usergetmidnight($monday + $i * DAYSECS + 2 * HOURSECS);
+            $strip[] = [
+                'letter' => trim($letters[$i] ?? ''),
+                'number' => ltrim(userdate($date, '%e')),
+                'today' => $date === $day,
+                'has' => !empty($marks[$date]['has']),
+                'due' => !empty($marks[$date]['due']),
+            ];
+        }
+
+        return $strip;
     }
 
     /**
@@ -397,13 +581,16 @@ class mobile {
             if ($user && !$user->deleted) {
                 // First name and surnames, as a family says it, whatever order the site uses for its lists.
                 $first = trim(format_string($user->firstname));
-                $name = trim($first . ' ' . trim(format_string($user->lastname))) ?: fullname($user);
+                $name = self::child_name($user);
                 $children[] = [
                     'id' => (int) $user->id,
                     'name' => $name,
                     'label' => $first !== '' ? $first : $name,
                     'initial' => \core_text::strtoupper(\core_text::substr(trim($name), 0, 1)),
+                    'group' => self::child_group((int) $USER->id, (int) $user->id),
+                    'facets' => self::child_facets((int) $USER->id, (int) $user->id),
                 ];
+                $children[count($children) - 1]['hasfacets'] = !empty($children[count($children) - 1]['facets']);
             }
         }
         // Two children with the same first name are told apart by their full names.
@@ -481,6 +668,8 @@ class mobile {
                 'time' => (int) $event->timeduration >= DAYSECS ? ''
                     : userdate($event->timestart, get_string('strftimetime', 'langconfig')),
                 'context' => implode(' · ', $labels),
+                // A deadline: red in the week's strip.
+                'due' => in_array((string) $event->eventtype, ['due', 'close', 'expectcompletionon'], true),
             ];
             if (count($list) >= 8) {
                 break;

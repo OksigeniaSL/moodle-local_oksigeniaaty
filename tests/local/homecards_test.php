@@ -347,7 +347,7 @@ final class homecards_test extends \advanced_testcase {
             'hastoday' => true, 'todo' => $todo, 'cards' => $shown,
         ]);
 
-        $this->assertStringContainsString('<div class="aty-event aty-urgent">', $html);
+        $this->assertStringContainsString('<div class="aty-event aty-por-hacer aty-urgent">', $html);
         $this->assertStringContainsString('<button type="button" class="aty-hacer" core-site-plugins-new-content '
             . 'component="local_x" method="mobile_consent_view" title="Museum trip" '
             . '[args]="{&quot;id&quot;:4}">Sign</button>', $html);
@@ -385,7 +385,9 @@ final class homecards_test extends \advanced_testcase {
         $this->assertFalse($card['items'][0]['ispage']);
         $this->assertArrayNotHasKey('method', $card['items'][0]);
 
-        $html = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_child', ['cards' => [$card]]);
+        $html = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_child', ['blocks' => [
+            ['title' => 'In the library', 'icon' => 'fas-book', 'hasrows' => true, 'items' => $card['items']],
+        ]]);
         $this->assertStringContainsString('<div class="aty-event">', $html);
         $this->assertStringContainsString('A book', $html);
         $this->assertStringNotContainsString('<button', $html);
@@ -416,4 +418,62 @@ final class homecards_test extends \advanced_testcase {
         set_config('disabledfeatures', 'CoreMainMenuDelegate_AddonMessages', 'tool_mobile');
         $this->assertArrayNotHasKey('local_oksigeniaaty', homecards::off_in_app());
     }
+
+    /**
+     * For the family's app: a child's line of today, a plugin's own block (its body without what the app would run) and
+     * a book's cover on a row, all checked; a shelf on the child's page for the covers.
+     */
+    public function test_family_pieces(): void {
+        global $OUTPUT;
+        $this->resetAfterTest();
+
+        $cover = 'data:image/jpeg;base64,' . base64_encode('not really a jpeg');
+        $card = homecards::clean([
+            'heading' => 'Library',
+            'facet' => ['text' => 'A book is due {{ on Friday }}', 'icon' => 'fas-book', 'urgent' => true, 'menu' => 'a',
+                'menucolor' => '#2563a8'],
+            'items' => [
+                ['title' => 'The garden', 'detail' => 'until Friday', 'date' => 1800000000, 'plain' => true, 'cover' => $cover],
+                ['title' => 'A book', 'detail' => 'until Monday', 'plain' => true, 'cover' => 'javascript:alert(1)'],
+            ],
+        ], 'local_x', true);
+        $this->assertSame('fas-book', $card['facet']['icon']);
+        $this->assertTrue($card['facet']['urgent']);
+        $this->assertSame('A', $card['facet']['menu']);
+        $this->assertSame('#2563a8', $card['facet']['menucolor']);
+        $this->assertStringNotContainsString('{{', $card['facet']['text']);
+        $this->assertTrue($card['items'][0]['hascover']);
+        $this->assertSame($cover, $card['items'][0]['cover']);
+        $this->assertFalse($card['items'][1]['hascover']);
+        $this->assertTrue($card['hascovers']);
+
+        $block = homecards::clean([
+            'heading' => 'Canteen',
+            'block' => [
+                'html' => '<div class="x">Menu A {{ evil }} &#123;&#123; evil &#125;&#125; @if (x) {}</div>',
+                'title' => 'Canteen', 'icon' => 'fas-utensils',
+                'open' => ['method' => 'mobile_canteen', 'args' => ['childid' => 5]], 'openlabel' => 'All of the canteen',
+            ],
+        ], 'local_x', true);
+        $this->assertTrue($block['hasblock']);
+        $this->assertStringNotContainsString('{', $block['block']['html']);
+        $this->assertStringNotContainsString('&#123;', $block['block']['html']);
+        $this->assertStringNotContainsString('@if', $block['block']['html']);
+        $this->assertSame('mobile_canteen', $block['block']['open']['method']);
+
+        $html = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_child', [
+            'name' => 'Leo Ruiz', 'initial' => 'L',
+            'blocks' => [
+                ['title' => 'Canteen', 'icon' => 'fas-utensils', 'hashtml' => true, 'html' => $block['block']['html'],
+                    'open' => $block['block']['open']],
+                ['title' => 'Library', 'icon' => 'fas-book', 'hasshelf' => true, 'items' => $card['items']],
+            ],
+        ]);
+        $this->assertStringContainsString('<div class="x">Menu A', $html);
+        $this->assertStringContainsString('method="mobile_canteen"', $html);
+        $this->assertStringContainsString('All of the canteen', $html);
+        $this->assertStringContainsString('<span class="aty-libro-tapa"><img src="' . $cover . '" alt=""></span>', $html);
+        $this->assertStringContainsString('aty-libro aty-libro-fila', $html);
+    }
 }
+

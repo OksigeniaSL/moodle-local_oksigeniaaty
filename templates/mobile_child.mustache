@@ -17,91 +17,137 @@
 {{!
     @template local_oksigeniaaty/mobile_child
 
-    A child in the app of an adult of their family: what comes next, the latest grades, and what other plugins add.
+    A child in the app of an adult of their family (design by Jujol, 15 November 2026): their head, what asks for
+    something to do, and a block for each thing (the canteen, the library…, then the agenda), each in the same frame with
+    its way to all of it. The body of a plugin's block is its own, rendered on the server.
 
     Context variables required for this template:
-    * nothing - What shows when there is nothing yet.
-    * hasevents, eventsheading, events - What comes next: name, day, month, time, timestamp, context.
+    * name, initial, grouping - The head: the child's name, its initial and their group with the centre.
+    * hastodo, todoheading, todo - What asks for something to do (see local_oksigeniaaty/mobile_home_row).
+    * blocks - title, icon, and one body: hashtml with html (the plugin's own), hasshelf with items (books: title, detail,
+      urgent, hascover, cover), hasrows with items (rows), or isagenda with week (letter, number, today, has, due) and
+      events (name, day, month, time, timestamp, context). And open: label and where it leads.
     * hasgrades, gradesheading, grades - The latest grades: grade, name, context.
-    * cards - What other plugins add: heading, items, each of which opens a page, a link or, when plain, nothing, and
-      seeall, the card's own «See all», as on the home.
-    * empty - Whether there is nothing to show.
+    * empty, nothing - Whether there is nothing to show, and what to say then.
 
     Example context (json):
     {
-        "nothing": "Nothing to show yet.",
-        "hasgrades": true,
-        "gradesheading": "Latest grades",
-        "grades": [{"grade": "8", "name": "Essay", "context": "English"}]
+        "name": "Leo Ruiz", "initial": "L", "grouping": "3.º B · Colegio de ejemplo",
+        "blocks": [{"title": "Agenda", "icon": "fas-calendar-days", "isagenda": true,
+            "week": [{"letter": "L", "number": "16", "today": true, "has": true, "due": false}],
+            "events": [{"name": "Salida al museo", "day": "17", "month": "NOV", "time": "", "timestamp": 0, "context": ""}]}]
     }
 }}
-<div class="aty-home">
+<div class="aty-home aty-familia">
+    <div class="aty-ficha-cab">
+        <span class="aty-hijo-foto" aria-hidden="true">{{initial}}</span>
+        <div>
+            <h1 class="aty-ficha-nombre">{{name}}</h1>
+            {{#grouping}}<p class="aty-ficha-grupo">{{grouping}}</p>{{/grouping}}
+        </div>
+    </div>
     {{#empty}}<p>{{nothing}}</p>{{/empty}}
+    {{#hastodo}}
+    <h2 class="aty-section">{{todoheading}}</h2>
+    <div class="aty-agenda aty-ficha-hacer">
+        {{#todo}}
+        {{> local_oksigeniaaty/mobile_home_row }}
+        {{/todo}}
+    </div>
+    {{/hastodo}}
+    {{#blocks}}
+    <section class="aty-bloque">
+        <h2 class="aty-bloque-cab"><ion-icon name="{{icon}}" aria-hidden="true"></ion-icon>{{title}}</h2>
+        {{#hashtml}}<div class="aty-bloque-cuerpo">{{{html}}}</div>{{/hashtml}}
+        {{#hasshelf}}
+        <div class="aty-bloque-cuerpo">
+            <ul class="aty-estante">
+                {{#items}}
+                <li class="aty-libro{{^hascover}} aty-libro-fila{{/hascover}}{{#urgent}} aty-libro-urgente{{/urgent}}">
+                    {{#hascover}}<span class="aty-libro-tapa"><img src="{{cover}}" alt=""></span>{{/hascover}}
+                    {{^hascover}}<span class="aty-libro-lomo" aria-hidden="true"></span>{{/hascover}}
+                    <span class="aty-libro-plazo"><b>{{title}}</b>{{detail}}</span>
+                </li>
+                {{/items}}
+            </ul>
+        </div>
+        {{/hasshelf}}
+        {{#hasrows}}
+        <div class="aty-bloque-cuerpo">
+            <div class="aty-agenda aty-agenda-hijo">
+                {{#items}}
+                {{#ispage}}<button type="button" class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}
+                {{#isplain}}<div class="aty-event{{#urgent}} aty-urgent{{/urgent}}">{{/isplain}}
+                {{^ispage}}{{^isplain}}<a class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="{{^browser}}true{{/browser}}{{#browser}}false{{/browser}}"{{^browser}} inApp="true"{{/browser}}>{{/isplain}}{{/ispage}}
+                    {{#hasdate}}
+                    <span class="aty-event-date">
+                        <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
+                        <span class="aty-event-month" [textContent]="({{timestamp}} | coreFormatDate:'%b').replace('.', '')">{{month}}</span>
+                    </span>
+                    {{/hasdate}}
+                    {{#hascount}}
+                    <span class="aty-event-date">
+                        <span class="aty-event-day">{{count}}</span>
+                        <span class="aty-event-month">{{countlabel}}</span>
+                    </span>
+                    {{/hascount}}
+                    <span class="aty-event-body">
+                        <span class="aty-event-name">{{title}}</span>
+                        {{#detail}}<span class="aty-event-context">{{detail}}</span>{{/detail}}
+                    </span>
+                {{#ispage}}</button>{{/ispage}}
+                {{#isplain}}</div>{{/isplain}}
+                {{^ispage}}{{^isplain}}</a>{{/isplain}}{{/ispage}}
+                {{/items}}
+            </div>
+        </div>
+        {{/hasrows}}
+        {{#isagenda}}
+        <div class="aty-bloque-cuerpo">
+            <ul class="aty-semana">
+                {{#week}}
+                <li class="aty-dia{{#today}} aty-dia-hoy{{/today}}{{#has}} aty-dia-con{{/has}}{{#due}} aty-dia-plazo{{/due}}">{{letter}}<b>{{number}}</b><span class="aty-dia-punto"></span></li>
+                {{/week}}
+            </ul>
+            <div class="aty-agenda aty-agenda-hijo">
+                {{#events}}
+                <div class="aty-event">
+                    <span class="aty-event-date">
+                        <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
+                        <span class="aty-event-month" [textContent]="({{timestamp}} | coreFormatDate:'%b').replace('.', '')">{{month}}</span>
+                    </span>
+                    <span class="aty-event-body">
+                        <span class="aty-event-name">{{name}}</span>
+                        {{#context}}<span class="aty-event-context">{{context}}</span>{{/context}}
+                    </span>
+                    {{#time}}<span class="aty-event-time" [textContent]="{{timestamp}} | coreFormatDate:'strftimetime'">{{time}}</span>{{/time}}
+                </div>
+                {{/events}}
+            </div>
+        </div>
+        {{/isagenda}}
+        {{#open}}
+        {{#ispage}}<button type="button" class="aty-bloque-pie" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{label}}<ion-icon name="fas-chevron-right" aria-hidden="true"></ion-icon></button>{{/ispage}}
+        {{^ispage}}<a class="aty-bloque-pie" core-link href="{{url}}" capture="{{^browser}}true{{/browser}}{{#browser}}false{{/browser}}"{{^browser}} inApp="true"{{/browser}}>{{label}}<ion-icon name="fas-chevron-right" aria-hidden="true"></ion-icon></a>{{/ispage}}
+        {{/open}}
+    </section>
+    {{/blocks}}
     {{#hasgrades}}
-    <h2 class="aty-section">{{gradesheading}}</h2>
-    <div class="aty-agenda">
-        {{#grades}}
-        <div class="aty-event aty-grading">
-            <span class="aty-event-date"><span class="aty-event-day">{{grade}}</span></span>
-            <span class="aty-event-body">
-                <span class="aty-event-name">{{name}}</span>
-                <span class="aty-event-context">{{context}}</span>
-            </span>
+    <section class="aty-bloque">
+        <h2 class="aty-bloque-cab"><ion-icon name="fas-star" aria-hidden="true"></ion-icon>{{gradesheading}}</h2>
+        <div class="aty-bloque-cuerpo">
+            <div class="aty-agenda aty-agenda-hijo">
+                {{#grades}}
+                <div class="aty-event aty-grading">
+                    <span class="aty-event-date"><span class="aty-event-day">{{grade}}</span></span>
+                    <span class="aty-event-body">
+                        <span class="aty-event-name">{{name}}</span>
+                        <span class="aty-event-context">{{context}}</span>
+                    </span>
+                </div>
+                {{/grades}}
+            </div>
         </div>
-        {{/grades}}
-    </div>
+    </section>
     {{/hasgrades}}
-    {{#cards}}
-    <div class="aty-seccion-cab">
-        <h2 class="aty-section">{{heading}}</h2>
-        {{#seeall}}
-        {{#ispage}}<button type="button" class="aty-ver" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{label}}</button>{{/ispage}}
-        {{^ispage}}<a class="aty-ver" core-link href="{{url}}" capture="{{^browser}}true{{/browser}}{{#browser}}false{{/browser}}"{{^browser}} inApp="true"{{/browser}}>{{label}}</a>{{/ispage}}
-        {{/seeall}}
-    </div>
-    <div class="aty-agenda">
-        {{#items}}
-        {{#ispage}}<button type="button" class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}
-        {{#isplain}}<div class="aty-event{{#urgent}} aty-urgent{{/urgent}}">{{/isplain}}
-        {{^ispage}}{{^isplain}}<a class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="{{^browser}}true{{/browser}}{{#browser}}false{{/browser}}"{{^browser}} inApp="true"{{/browser}}>{{/isplain}}{{/ispage}}
-            {{#hasdate}}
-            <span class="aty-event-date">
-                <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
-                <span class="aty-event-month" [textContent]="({{timestamp}} | coreFormatDate:'%b').replace('.', '')">{{month}}</span>
-            </span>
-            {{/hasdate}}
-            {{#hascount}}
-            <span class="aty-event-date">
-                <span class="aty-event-day">{{count}}</span>
-                <span class="aty-event-month">{{countlabel}}</span>
-            </span>
-            {{/hascount}}
-            <span class="aty-event-body">
-                <span class="aty-event-name">{{title}}</span>
-                {{#detail}}<span class="aty-event-context">{{detail}}</span>{{/detail}}
-            </span>
-        {{#ispage}}</button>{{/ispage}}
-        {{#isplain}}</div>{{/isplain}}
-        {{^ispage}}{{^isplain}}</a>{{/isplain}}{{/ispage}}
-        {{/items}}
-    </div>
-    {{/cards}}
-    {{#hasevents}}
-    <h2 class="aty-section">{{eventsheading}}</h2>
-    <div class="aty-agenda">
-        {{#events}}
-        <div class="aty-event">
-            <span class="aty-event-date">
-                <span class="aty-event-day" [textContent]="{{timestamp}} | coreFormatDate:'%e'">{{day}}</span>
-                <span class="aty-event-month" [textContent]="({{timestamp}} | coreFormatDate:'%b').replace('.', '')">{{month}}</span>
-            </span>
-            <span class="aty-event-body">
-                <span class="aty-event-name">{{name}}</span>
-                {{#context}}<span class="aty-event-context">{{context}}</span>{{/context}}
-            </span>
-            {{#time}}<span class="aty-event-time" [textContent]="{{timestamp}} | coreFormatDate:'strftimetime'">{{time}}</span>{{/time}}
-        </div>
-        {{/events}}
-    </div>
-    {{/hasevents}}
 </div>

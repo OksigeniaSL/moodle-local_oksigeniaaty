@@ -28,9 +28,18 @@ namespace local_oksigeniaaty\local;
  *   - kind ('due' or 'close'): the date is a deadline, and the row says so next to its hour ("Due 23:59").
  *   - time (bool): the date has an hour that matters (a class at 16:30), not only a day. On the home, a row of today
  *     then shows its hour big in place of the date.
+ *   - mark (string): with actionlabel, one word over the name of what it asks («Sign»).
  * - seeall (array, optional): label and where it opens, the card's own "See all". The home shows two rows of a card at
  *   most, and this link under its heading; without it, the card's tile takes its place, with "See all".
  * - tile (array): label, icon (fas-*) and where it opens, among the home's shortcuts.
+ *
+ * And, from `<component>_oksigeniaaty_child_cards()` for the family's app (design by Jujol, 15 November 2026):
+ * - facet (array): the child's line of today on the family's home: text, icon (fas-*), urgent (bool) and, the canteen,
+ *   menu (its letter) and menucolor (#rrggbb). The letter is always there, never the colour alone.
+ * - block (array): the plugin's own block on the child's page, which Aty frames with its title and its way to all of it:
+ *   html (the block's body, already rendered by the plugin from inert data: norm 9), title, icon (fas-*), open (where
+ *   its foot leads, as any other target) and openlabel. Without a block, the card's rows go in a frame of the same look.
+ * - A row may carry cover: a data: URL of an image (a book's cover), for the library's shelf.
  *
  * Where it opens: method and args, a page of the plugin's own in the app, with title for its header; or url.
  *
@@ -120,7 +129,7 @@ class homecards {
                         debugging('A card of ' . $plugintype . '_' . $pluginname . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
                         continue;
                     }
-                    if ($card !== null && $card['hasitems']) {
+                    if ($card !== null && ($card['hasitems'] || $card['hasblock'] || $card['facet'] !== null)) {
                         $cards[] = $card;
                     }
                 }
@@ -182,10 +191,12 @@ class homecards {
             $items = [];
         }
         $tile = is_array($card['tile'] ?? null) ? self::tile($card['tile'], $component) : null;
-        if (!$items && $tile === null) {
+        if (!$items && $tile === null && !is_array($card['facet'] ?? null) && !is_array($card['block'] ?? null)) {
             return null;
         }
         $seeall = is_array($card['seeall'] ?? null) ? self::seeall($card['seeall'], $component, $heading) : null;
+        $facet = is_array($card['facet'] ?? null) ? self::facet($card['facet']) : null;
+        $block = is_array($card['block'] ?? null) ? self::block($card['block'], $component, $heading) : null;
 
         return [
             'heading' => template::inert($heading),
@@ -193,6 +204,10 @@ class homecards {
             'items' => $items,
             'tile' => $tile,
             'seeall' => $items ? $seeall : null,
+            'facet' => $facet,
+            'block' => $block,
+            'hasblock' => $block !== null,
+            'hascovers' => (bool) array_filter($items, fn($item) => $item['hascover']),
         ];
     }
 
@@ -278,10 +293,86 @@ class homecards {
             'kind' => $kind,
             'kindlabel' => $kind !== '' ? get_string('home:kind:' . $kind, 'local_oksigeniaaty') : '',
             'actionlabel' => is_scalar($item['actionlabel'] ?? null) ? trim((string) $item['actionlabel']) : '',
+            // Over the name of something to do, one word of what it asks («Sign»): its mark, apart from what only tells.
+            'mark' => is_scalar($item['mark'] ?? null) ? trim((string) $item['mark']) : '',
             'hascount' => $date <= 0 && $count !== '',
             'count' => $count,
             'countlabel' => (string) ($item['countlabel'] ?? ''),
-        ]) + $target;
+        ]) + $target + self::cover($item['cover'] ?? null);
+    }
+
+    /**
+     * A book's cover on a row, for the library's shelf: an image as a data: URL (the app has no session to fetch the
+     * library's files), JPEG, PNG or WebP, of 80 KB at most. Never through inert(), which would leave it an address.
+     *
+     * @param mixed $cover What the plugin returned.
+     * @return array hascover and cover.
+     */
+    private static function cover($cover): array {
+        $ok = is_string($cover) && strlen($cover) <= 110000
+            && preg_match('#^data:image/(jpeg|png|webp);base64,[A-Za-z0-9+/]+=*$#', $cover);
+
+        return ['hascover' => (bool) $ok, 'cover' => $ok ? $cover : ''];
+    }
+
+    /**
+     * A child's line of today, for the family's home.
+     *
+     * @param array $facet What the plugin returned.
+     * @return array|null text, icon, urgent, hasmenu, menu and menucolor; null without a text.
+     */
+    private static function facet(array $facet): ?array {
+        $text = is_scalar($facet['text'] ?? null) ? trim((string) $facet['text']) : '';
+        if ($text === '') {
+            return null;
+        }
+        $icon = (string) ($facet['icon'] ?? '');
+        $menu = is_scalar($facet['menu'] ?? null) ? trim((string) $facet['menu']) : '';
+        $menu = preg_match('/^[A-Za-z0-9]{1,2}$/', $menu) ? \core_text::strtoupper($menu) : '';
+        $colour = (string) ($facet['menucolor'] ?? '');
+
+        return template::inert([
+            'text' => $text,
+            'icon' => preg_match('/^fas-[a-z0-9-]+$/', $icon) ? $icon : 'fas-circle-info',
+            'urgent' => !empty($facet['urgent']),
+            'hasmenu' => $menu !== '',
+            'menu' => $menu,
+        ]) + ['menucolor' => preg_match('/^#[0-9a-fA-F]{6}$/', $colour) ? $colour : ''];
+    }
+
+    /**
+     * A plugin's own block on a child's page.
+     *
+     * The body is the plugin's, rendered on the server from inert data (norm 9 of the Moodle conventions). Aty only takes
+     * away what the app's compiler would read as its own: braces and the at sign of its blocks («@if», «@for»…).
+     *
+     * @param array $block What the plugin returned.
+     * @param string $component The plugin.
+     * @param string $heading The card's heading, for the block's title when none is given.
+     * @return array|null
+     */
+    private static function block(array $block, string $component, string $heading): ?array {
+        $html = is_string($block['html'] ?? null) ? trim($block['html']) : '';
+        $title = is_scalar($block['title'] ?? null) ? trim((string) $block['title']) : $heading;
+        if ($html === '' || $title === '') {
+            return null;
+        }
+        // Braces written as references too: the compiler decodes them before it looks for expressions.
+        $html = preg_replace(['/&#0*123;|&#x0*7b;/i', '/&#0*125;|&#x0*7d;/i'], ['{', '}'], $html);
+        $html = strtr($html, ['{' => '&#65371;', '}' => '&#65373;']);
+        $blocks = 'if|else|for|switch|case|default|defer|placeholder|loading|error|let|empty';
+        $html = preg_replace('/@(?=(' . $blocks . ')\b)/', '&#65312;', $html);
+        $icon = (string) ($block['icon'] ?? '');
+        $open = is_array($block['open'] ?? null) ? self::target($block['open'], $component, $title) : null;
+        $label = is_scalar($block['openlabel'] ?? null) ? trim((string) $block['openlabel']) : '';
+
+        return [
+            'title' => template::inert($title),
+            'icon' => preg_match('/^fas-[a-z0-9-]+$/', $icon) ? $icon : 'fas-shapes',
+            // Never through inert(): it is the plugin's own markup.
+            'html' => $html,
+            'open' => $open !== null && $label !== '' ? ['label' => template::inert($label)] + $open : null,
+        ];
     }
 
     /**

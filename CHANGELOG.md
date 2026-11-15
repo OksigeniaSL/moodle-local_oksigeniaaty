@@ -5,6 +5,23 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.77-dev)
+
+- What a family sees, with Jujol's design (15 November 2026, after Kimi K3's review):
+  - **The home:** each child is a card with their initial, name and group, and a line for each thing they have
+    today, with its plugin's icon («A · Has eaten it all», «A book is due on Friday» in red). A family's own account
+    greets in a line, low, with the day, and «To do» comes before the children.
+  - **The child's page:** their head, then what asks for something to do with its own mark, then a block for each
+    thing in the same frame with its way to all of it.
+    - The library is a shelf: a young reader's covers, an older one's plain spines.
+    - The agenda is the week as a strip of five days, with a dot on the days with something, red when something is due.
+  - **What asks for something to do** has its own look everywhere: the brand's edge and one word over its name.
+- **The cards' contract** (`_oksigeniaaty_child_cards`) takes:
+  - `facet`, the child's line of today, with the canteen's menu letter and colour;
+  - `block`, a plugin's own body for its block, rendered on the server; Aty takes away the braces and the at signs the
+    app would run;
+  - a row's `cover`, a book's cover as a data: URL.
+
 ### Changed (0.5.76-dev)
 
 - A child's page in the family's app shows each card's «See all», as the home does: the canteen's leads to the family's

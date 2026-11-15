@@ -257,6 +257,120 @@ button.aty-ver { padding: 0; border: 0; background: transparent; font-family: in
 button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
 .aty-atajo .aty-atajo-icono { color: var(--primary); font-size: 18px; }
 .aty-atajo .aty-atajo-fuera { color: var(--ion-color-medium); font-size: 12px; }
+
+/* The family's app (Jujol, 15 November 2026). */
+
+
+/* --- The home of a family: one card per child, the door to their file ------------------------------------------- */
+.aty-hijos-tarjetas { display: grid; gap: 10px; margin: 12px 0 4px; }
+.aty-hijo-tarjeta { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 4px 12px;
+    padding: 12px 12px 10px; border-radius: 18px; background: var(--ion-item-background, var(--ion-background-color));
+    color: var(--ion-text-color); text-decoration: none; box-shadow: var(--aty-card-shadow); }
+.aty-hijo-foto { grid-row: 1; display: grid; place-items: center; width: 48px; height: 48px; overflow: hidden;
+    border-radius: 50%; background: rgba(var(--ion-color-primary-rgb), .14); color: var(--primary);
+    font-size: 1.15rem; font-weight: 800; }
+.aty-hijo-foto img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.aty-hijo-quien { min-width: 0; }
+.aty-hijo-nombre { display: block; font-size: 1.12rem; font-weight: 800; line-height: 1.2; }
+.aty-hijo-grupo { display: block; color: var(--ion-color-medium); font-size: .85rem; }
+.aty-hijo-flecha { width: 20px; height: 20px; color: var(--ion-color-medium); }
+/* A line for each thing that has something today, in the words of its plugin; nothing for what has nothing. */
+.aty-facetas { grid-column: 1 / -1; display: grid; gap: 2px; margin: 8px 0 0; padding: 8px 0 0; list-style: none;
+    border-top: 1px solid rgba(var(--ion-color-primary-rgb), .14); }
+.aty-faceta { display: grid; grid-template-columns: 28px 1fr; align-items: center; gap: 8px; min-height: 30px;
+    font-size: .92rem; line-height: 1.3; }
+.aty-faceta-icono { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px;
+    background: rgba(var(--ion-color-primary-rgb), .16); color: var(--primary); }
+.dark .aty-faceta-icono { background: rgba(var(--ion-color-primary-rgb), .22); }
+.aty-faceta-icono svg { width: 17px; height: 17px; }
+.aty-faceta b { font-weight: 800; }
+.aty-faceta-urgente .aty-faceta-icono { background: rgba(var(--ion-color-danger-rgb), .12); color: var(--ion-color-danger); }
+.aty-faceta-urgente b { color: var(--ion-color-danger); }
+/* The letter of the canteen's menu, in its colour (the plugin sends it): never the colour alone, the letter is there. */
+.aty-faceta-menu { display: inline-grid; place-items: center; min-width: 22px; height: 22px; margin-right: 4px;
+    padding: 0 5px; border-radius: 6px; background: var(--aty-faceta-color, var(--primary)); color: #fff;
+    font-size: .8rem; font-weight: 800; vertical-align: 1px; }
+
+/* --- A family's greeting: a line, low; what is to do goes right under it, in «To do». ------------------------- */
+.aty-saludo { margin: 2px 4px 0; color: var(--ion-color-medium); font-size: .95rem; font-weight: 700; }
+
+/* What asks to do something has its own mark, apart from what only tells: the edge of the brand, a word over the
+   name of what it is («Firma») and its button. What only tells has none of them. */
+.aty-por-hacer { box-shadow: inset 4px 0 0 var(--primary), var(--aty-card-shadow); }
+.aty-por-hacer .aty-event-date { background: var(--primary); color: var(--primary-contrast); }
+.aty-por-hacer-marca { align-self: flex-start; padding: 1px 8px; border-radius: 999px; background: rgba(var(--ion-color-primary-rgb), .16);
+    color: var(--primary); font-size: .66rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.dark .aty-por-hacer-marca { background: rgba(var(--ion-color-primary-rgb), .24); }
+
+/* --- The file of a child: their head, what is to do, and the blocks --------------------------------------------- */
+.aty-ficha-cab { display: flex; align-items: center; gap: 14px; margin: 4px 2px 14px; }
+.aty-ficha-cab .aty-hijo-foto { width: 64px; height: 64px; font-size: 1.5rem; }
+.aty-ficha-nombre { margin: 0; font-size: 1.45rem; font-weight: 800; line-height: 1.15; }
+.aty-ficha-grupo { margin: 2px 0 0; color: var(--ion-color-medium); font-size: .92rem; }
+
+/* A block of a plugin: its name and, at the foot, the way to all of it. The inside is the plugin's. */
+.aty-bloque { margin: 0 0 14px; overflow: hidden; border-radius: 20px;
+    background: var(--ion-item-background, var(--ion-background-color)); box-shadow: var(--aty-card-shadow); }
+.aty-bloque-cab { display: flex; align-items: center; gap: 8px; padding: 12px 16px 0; color: var(--ion-text-color);
+    font-size: .74rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+/* The icon of each block on a tint of the brand, so that it reads in light and in dark. */
+.aty-bloque-cab svg { box-sizing: content-box; width: 16px; height: 16px; padding: 5px; border-radius: 8px;
+    background: rgba(var(--ion-color-primary-rgb), .16); color: var(--primary); }
+.dark .aty-bloque-cab svg { background: rgba(var(--ion-color-primary-rgb), .24); }
+.aty-bloque-cuerpo { padding: 10px 16px 14px; }
+.aty-bloque-pie { display: flex; align-items: center; justify-content: space-between; min-height: 48px;
+    padding: 0 16px; border-top: 1px solid rgba(var(--ion-color-primary-rgb), .12); color: var(--primary);
+    font-weight: 800; text-decoration: none; }
+.aty-bloque-pie svg { width: 18px; height: 18px; }
+
+/* --- The library: the books on a shelf, each with until when; a young reader's with its cover and title, an older
+   one's as a plain spine, «A book», because what they read is theirs. --------------------------------------------- */
+.aty-estante { display: flex; align-items: flex-end; gap: 14px; margin: 2px 0 0; padding: 0 0 10px; list-style: none;
+    border-bottom: 3px solid rgba(var(--ion-color-primary-rgb), .22); }
+.aty-libro { display: grid; gap: 6px; width: 92px; }
+.aty-libro-tapa { position: relative; display: block; width: 92px; height: 128px; overflow: hidden; border-radius: 3px 8px 8px 3px;
+    box-shadow: inset 6px 0 0 rgba(0, 0, 0, .14), 0 6px 12px -8px rgba(0, 0, 0, .5); }
+.aty-libro-tapa img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.aty-libro-lomo { display: block; width: 30px; height: 128px; border-radius: 4px;
+    background: linear-gradient(90deg, rgba(var(--ion-color-primary-rgb), .55), rgba(var(--ion-color-primary-rgb), .85));
+    box-shadow: inset -4px 0 0 rgba(0, 0, 0, .12); }
+.aty-libro-lomo-texto { display: grid; gap: 2px; align-content: end; width: auto; }
+.aty-libro-plazo { font-size: .8rem; line-height: 1.25; color: var(--ion-color-medium); }
+.aty-libro-plazo b { display: block; color: var(--ion-text-color); font-size: .86rem; }
+.aty-libro-urgente .aty-libro-plazo b { color: var(--ion-color-danger); }
+/* An older reader's row: the spine and what matters, side by side. */
+.aty-libro-fila { display: grid; grid-template-columns: 30px 1fr; align-items: end; gap: 12px; width: auto; }
+.aty-libro-fila .aty-libro-lomo { height: 84px; }
+.aty-libro-listo .aty-libro-lomo { background: repeating-linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), .75) 0 6px,
+    rgba(var(--ion-color-primary-rgb), .45) 6px 12px); }
+
+/* --- The agenda: the week as a strip, then what comes, with its hour or what it is ----------------------------- */
+.aty-semana { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: 2px 0 12px; padding: 0; list-style: none; }
+.aty-dia { display: grid; justify-items: center; gap: 2px; padding: 6px 0 8px; border-radius: 12px; font-size: .74rem;
+    font-weight: 700; color: var(--ion-color-medium); }
+.aty-dia b { color: var(--ion-text-color); font-size: 1.05rem; font-weight: 800; }
+.aty-dia-hoy { background: var(--primary); color: var(--primary-contrast); }
+.aty-dia-hoy b { color: var(--primary-contrast); }
+.aty-dia-punto { width: 6px; height: 6px; border-radius: 50%; background: transparent; }
+.aty-dia-con .aty-dia-punto { background: var(--primary); }
+.aty-dia-hoy .aty-dia-punto { background: var(--primary-contrast); }
+.aty-dia-plazo .aty-dia-punto { background: var(--ion-color-danger); }
+.aty-agenda-hijo { display: grid; gap: 8px; }
+.aty-agenda-hijo .aty-event { box-shadow: none; outline: 0; padding: 0; background: transparent; }
+
+/* Aty's own pieces in the family's frame: the icons are the app's (ion-icon), and the foot of a block may be a button. */
+.aty-bloque-cab { margin: 0; }
+.aty-bloque-cab ion-icon { box-sizing: content-box; width: 16px; height: 16px; padding: 5px; border-radius: 8px;
+    background: rgba(var(--ion-color-primary-rgb), .16); color: var(--primary); }
+.dark .aty-bloque-cab ion-icon { background: rgba(var(--ion-color-primary-rgb), .24); }
+.aty-faceta-icono ion-icon { width: 17px; height: 17px; }
+.aty-hijo-flecha { font-size: 18px; }
+button.aty-bloque-pie { width: 100%; border: 0; border-top: 1px solid rgba(var(--ion-color-primary-rgb), .12);
+    background: transparent; font: inherit; font-weight: 800; text-align: start; }
+.aty-bloque-pie ion-icon { width: 18px; height: 18px; }
+.aty-hijo-tarjeta { cursor: pointer; }
+.aty-ficha-hacer { margin-bottom: 14px; }
+
 CSS;
     }
 
