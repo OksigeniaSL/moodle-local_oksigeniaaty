@@ -241,6 +241,16 @@ function local_oksigeniaaty_oksigeniafamily_links(stdClass $adult, int $childuse
 }
 
 /**
+ * Whether a QR to scan with the phone makes sense here: not on the phone itself, which cannot scan its own screen. A
+ * tablet or a computer gets it, to open the app on the phone.
+ *
+ * @return bool
+ */
+function local_oksigeniaaty_offer_qr(): bool {
+    return \core_useragent::get_device_type() !== \core_useragent::DEVICETYPE_MOBILE;
+}
+
+/**
  * Whether the visitor is on an iPhone or an iPad while the site has no App Store address: there is no app to offer them.
  * iPadOS's Safari can present itself as a Mac, and then it is taken for a computer, which is offered the QR.
  *

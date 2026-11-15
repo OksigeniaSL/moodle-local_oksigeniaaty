@@ -58,12 +58,13 @@ HTML;
     $noapp = s(get_string('open:noapp', 'local_oksigeniaaty'));
     $appurlattr = s($appurl);
 
+    // The App Store first: Apple asks for its products ahead of others' wherever both are offered.
     $storelinks = '';
-    if ($androidurl !== '') {
-        $storelinks .= '<a href="' . s($androidurl) . '">' . s(get_string('open:android', 'local_oksigeniaaty')) . '</a>';
-    }
     if ($iosurl !== '') {
         $storelinks .= '<a href="' . s($iosurl) . '">' . s(get_string('open:ios', 'local_oksigeniaaty')) . '</a>';
+    }
+    if ($androidurl !== '') {
+        $storelinks .= '<a href="' . s($androidurl) . '">' . s(get_string('open:android', 'local_oksigeniaaty')) . '</a>';
     }
 
     $appurljs = json_encode($appurl);

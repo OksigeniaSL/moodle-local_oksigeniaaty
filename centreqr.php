@@ -49,7 +49,7 @@ $PAGE->set_title($title);
 $PAGE->set_heading($title);
 
 echo $OUTPUT->header();
-echo html_writer::tag('p', get_string('centreqr:intro', 'local_oksigeniaaty', s($CFG->wwwroot)));
+echo html_writer::tag('p', get_string('centreqr:intro', 'local_oksigeniaaty', format_string($SITE->fullname, true, ['context' => context_system::instance()])));
 echo html_writer::div(
     html_writer::empty_tag('img', [
         'src' => 'data:image/svg+xml;base64,' . base64_encode($svg),

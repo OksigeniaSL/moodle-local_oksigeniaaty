@@ -5,6 +5,14 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.70-dev)
+
+- «Open in the Aty app» shows its QR only on a computer or a tablet, to scan with the phone: on the phone itself, which
+  cannot scan its own screen, it shows just the button.
+- The centre QR page names the site by its name instead of its web address.
+- The sign-in bridge lists the App Store before Google Play, with text links that do not imitate the stores' badges
+  («Available on the App Store», «Available on Google Play»), as Apple's marketing rules ask.
+
 ### Changed (0.5.69-dev)
 
 - The status check «Aty app» warns when the iOS app identifier in the mobile app settings is not Aty's (6833200207),

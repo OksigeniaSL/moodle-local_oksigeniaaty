@@ -68,16 +68,19 @@ header('Referrer-Policy: no-referrer');
 
 // A QR of the same one-time link: scan it with the Aty app (or any camera) to sign in on a phone. It is drawn in the
 // site's brand; should that fail, Moodle's plain QR is shown instead.
-try {
-    $qrsvg = \local_oksigeniaaty\local\qrdesign::svg(
-        $openurl->out(false),
-        (string) get_config('local_oksigeniaaty', 'brandcolour'),
-        \local_oksigeniaaty\local\qrdesign::sitelogo()
-    );
-    $qrsrc = 'data:image/svg+xml;base64,' . base64_encode($qrsvg);
-} catch (\Throwable $e) {
-    $qrcode = new core_qrcode($openurl->out(false));
-    $qrsrc = 'data:image/png;base64,' . base64_encode($qrcode->getBarcodePngData(10, 10));
+$qrsrc = '';
+if (local_oksigeniaaty_offer_qr()) {
+    try {
+        $qrsvg = \local_oksigeniaaty\local\qrdesign::svg(
+            $openurl->out(false),
+            (string) get_config('local_oksigeniaaty', 'brandcolour'),
+            \local_oksigeniaaty\local\qrdesign::sitelogo()
+        );
+        $qrsrc = 'data:image/svg+xml;base64,' . base64_encode($qrsvg);
+    } catch (\Throwable $e) {
+        $qrcode = new core_qrcode($openurl->out(false));
+        $qrsrc = 'data:image/png;base64,' . base64_encode($qrcode->getBarcodePngData(10, 10));
+    }
 }
 
 echo $OUTPUT->header();
@@ -87,15 +90,18 @@ echo html_writer::link(
     get_string('open:openbtn', 'local_oksigeniaaty'),
     ['class' => 'btn btn-primary']
 );
-echo html_writer::div(
-    html_writer::empty_tag('img', [
-        'src' => $qrsrc,
-        'alt' => get_string('mylink:qralt', 'local_oksigeniaaty'),
-        'width' => 280,
-        'height' => 280,
-    ]),
-    'oksigeniaaty-qr mt-3'
-);
-echo html_writer::tag('p', get_string('mylink:qrhint', 'local_oksigeniaaty'), ['class' => 'text-muted']);
+if ($qrsrc !== '') {
+    // On a computer or a tablet: scanned with the app on the phone. The phone itself gets only the button.
+    echo html_writer::div(
+        html_writer::empty_tag('img', [
+            'src' => $qrsrc,
+            'alt' => get_string('mylink:qralt', 'local_oksigeniaaty'),
+            'width' => 280,
+            'height' => 280,
+        ]),
+        'oksigeniaaty-qr mt-3'
+    );
+    echo html_writer::tag('p', get_string('mylink:qrhint', 'local_oksigeniaaty'), ['class' => 'text-muted']);
+}
 echo html_writer::tag('p', get_string('mylink:expires', 'local_oksigeniaaty'), ['class' => 'text-muted mt-3']);
 echo $OUTPUT->footer();

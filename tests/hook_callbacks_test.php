@@ -78,6 +78,26 @@ final class hook_callbacks_test extends \advanced_testcase {
     }
 
     /**
+     * «Open in the Aty app» shows its QR only where another device can scan it: not on the phone itself.
+     */
+    public function test_qr_only_where_another_device_can_scan_it(): void {
+        global $CFG;
+        require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
+        $phone = 'Mozilla/5.0 (Linux; Android 16; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 '
+            . 'Mobile Safari/537.36';
+        $iphone = 'Mozilla/5.0 (iPhone; CPU iPhone OS 19_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 Safari/604.1';
+        $tablet = 'Mozilla/5.0 (Linux; Android 16; SM-X710) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 '
+            . 'Safari/537.36';
+        $computer = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36';
+
+        foreach ([$phone => false, $iphone => false, $tablet => true, $computer => true] as $useragent => $expected) {
+            \core_useragent::instance(true, $useragent);
+            $this->assertSame($expected, local_oksigeniaaty_offer_qr(), $useragent);
+        }
+        \core_useragent::instance(true);
+    }
+
+    /**
      * On an iPhone, the app is offered when the site has its App Store address (out of the box), and nothing is without it.
      */
     public function test_no_app_offered_on_iphone(): void {
