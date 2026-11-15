@@ -72,7 +72,9 @@ final class familyaccount_test extends \advanced_testcase {
         $sealed = $url->get_param('k');
 
         $this->assertSame(42, familyaccount::read($sealed));
-        $this->assertStringNotContainsString('42', base64_decode(strtr($sealed, '-_', '+/')));
+        // The account and its time («42:…») never show: the ciphertext is base64, which has no colon, so «42» alone can
+        // turn up in it by chance.
+        $this->assertStringNotContainsString('42:', base64_decode(strtr($sealed, '-_', '+/')));
         $this->assertNull(familyaccount::read('rubbish'));
         $this->assertNull(familyaccount::read(substr($sealed, 0, -4) . 'AAAA'));
 
