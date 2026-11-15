@@ -5,6 +5,12 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Added (0.5.74-dev)
+
+- `child.php?id=<the child's user id>`: the address of a child's page, for notices about a child (the canteen's, first).
+  In Aty, from the next version of the app, it opens the child's page for an adult of their family; in a browser it
+  leads to the person's home.
+
 ### Changed (0.5.73-dev)
 
 - From the laptop to the phone without a hitch (asked by Nuryana): on a computer, «Open in the Aty app» shows the QR
