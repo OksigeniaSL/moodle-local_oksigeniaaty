@@ -120,10 +120,14 @@ $string['forgotpin:emailonce'] = 'The link works once and expires in 30 minutes.
 $string['forgotpin:emailsubject'] = 'Reset your Aty PIN';
 $string['forgotpin:emailwhy'] = 'If you did not ask for this, ignore this e-mail: your PIN stays as it is.';
 $string['forgotpin:heading'] = 'Forgot your Aty PIN?';
-$string['forgotpin:intro'] = 'Enter your username or email and we will email you a link to reset your PIN.';
+$string['forgotpin:intro'] = 'Enter your username, your email or your mobile number and we will send you a link to set a new PIN.';
 $string['forgotpin:link'] = 'Forgot your PIN?';
-$string['forgotpin:search'] = 'Username or email';
-$string['forgotpin:sent'] = 'If that account exists and uses Aty, we have emailed a link to reset the PIN. It works once and expires in 30 minutes.';
+$string['forgotpin:search'] = 'Username, email or mobile number';
+$string['forgotpin:sent'] = 'If that account exists and uses Aty, we have sent a link to set a new PIN: by email or, if the account has no email, to the phone. It works once and expires in 30 minutes.';
+$string['forgotpin:notice'] = 'To set a new PIN in Aty, open this link on your phone: {$a}
+
+It works once and expires in 30 minutes. If you did not ask for it, do nothing: your PIN stays as it was.';
+$string['forgotpin:noticesmall'] = 'Your link to set a new PIN in Aty. It works once and expires in 30 minutes.';
 $string['forgotpin:submit'] = 'Send reset link';
 $string['go:openbtn'] = 'Open in the app';
 $string['go:title'] = 'Open in the app';
@@ -191,6 +195,7 @@ $string['issued:once'] = 'The link works once, until {$a->expires}. It is yours 
 $string['issued:subject'] = 'Your way into the {$a->site} app';
 $string['issued:why'] = 'Sent by {$a->site}. If you were not expecting it, you can ignore this e-mail.';
 $string['issuenotallowed'] = 'A sign-in link cannot be issued for this account: administrator, suspended or deleted accounts always sign in with their password.';
+$string['messageprovider:pinreset'] = 'Aty: a link to set a new PIN, when the account has no email';
 $string['mobilenotenabled'] = 'Your organisation has not turned on mobile access.';
 $string['mylink:expires'] = 'This link works once and expires in 30 minutes. Reload this page to get a new one.';
 $string['mylink:heading'] = 'Open in the Aty app';

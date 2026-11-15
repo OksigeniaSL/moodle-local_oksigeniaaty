@@ -45,13 +45,8 @@ $PAGE->set_heading(get_string('forgotpin:heading', 'local_oksigeniaaty'));
 header('Referrer-Policy: no-referrer');
 
 if ($submitted && confirm_sesskey() && $search !== '') {
-    // Find exactly one active, confirmed, local account by username or (unambiguous) email. Never say whether we did.
-    $base = ['mnethostid' => $CFG->mnet_localhost_id, 'deleted' => 0, 'suspended' => 0, 'confirmed' => 1];
-    $user = $DB->get_record('user', ['username' => core_text::strtolower($search)] + $base);
-    if (!$user && validate_email($search)) {
-        $matches = $DB->get_records('user', ['email' => core_text::strtolower($search)] + $base);
-        $user = count($matches) === 1 ? reset($matches) : null;
-    }
+    // Exactly one active account, by username, e-mail or, with Oksigenia Family, mobile number. Never say whether we found it.
+    $user = \local_oksigeniaaty\local\pinreset::find_user($search);
 
     if ($user && !isguestuser($user)) {
         $systemcontext = context_system::instance();
@@ -68,21 +63,7 @@ if ($submitted && confirm_sesskey() && $search !== '') {
             $key = \local_oksigeniaaty\local\loginkey::create_reset($user->id);
             $openurl = new moodle_url('/local/oksigeniaaty/open.php', ['key' => $key]);
 
-            $lang = force_current_language($user->lang ?? '');
-            $data = (object) ['name' => fullname($user), 'link' => $openurl->out(false)];
-            $subject = get_string('forgotpin:emailsubject', 'local_oksigeniaaty');
-            $bodytext = get_string('forgotpin:emailbody', 'local_oksigeniaaty', $data);
-            $html = \local_oksigeniaaty\local\linkmail::html((int) $user->id, [
-                'hello' => get_string('issued:hello', 'local_oksigeniaaty', (object) ['firstname' => $user->firstname]),
-                'heading' => get_string('forgotpin:emailheading', 'local_oksigeniaaty'),
-                'lead' => [get_string('forgotpin:emaillead', 'local_oksigeniaaty')],
-                'button' => ['url' => $openurl->out(false), 'text' => get_string('forgotpin:emailbutton', 'local_oksigeniaaty')],
-                'after' => [get_string('forgotpin:emailonce', 'local_oksigeniaaty')],
-                'why' => get_string('forgotpin:emailwhy', 'local_oksigeniaaty'),
-            ]);
-            force_current_language($lang);
-
-            email_to_user($user, core_user::get_support_user(), $subject, $bodytext, $html);
+            \local_oksigeniaaty\local\pinreset::send($user, $openurl);
         }
     }
 

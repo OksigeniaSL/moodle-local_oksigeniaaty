@@ -5,6 +5,14 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Added (0.5.72-dev)
+
+- «Forgot my PIN» also finds the account by mobile number, with Oksigenia Family, when the centre or WhatsApp vouched for
+  it; a number shared by two accounts finds nobody, as an e-mail shared by two already did. An account with no real
+  mailbox, such as an adult who entered with a child's code, gets the link as a notice to the phone (the app, and
+  WhatsApp or Telegram where Oksigenia Marandu is set up) instead of an e-mail that could not arrive. New notice:
+  «pinreset».
+
 ### Changed (0.5.71-dev)
 
 - The texts people meet name the centre in one word, as the app does: «tu centro» / «your organisation», no longer

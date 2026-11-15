@@ -120,10 +120,14 @@ $string['forgotpin:emailonce'] = 'El enlace sirve una vez y caduca en 30 minutos
 $string['forgotpin:emailsubject'] = 'Reinicia tu PIN de Aty';
 $string['forgotpin:emailwhy'] = 'Si no lo has pedido, ignora este correo: tu PIN sigue como estaba.';
 $string['forgotpin:heading'] = '¿Olvidaste tu PIN de Aty?';
-$string['forgotpin:intro'] = 'Escribe tu nombre de usuario o tu correo y te enviaremos un enlace para reiniciar el PIN.';
+$string['forgotpin:intro'] = 'Escribe tu nombre de usuario, tu correo o tu móvil y te mandaremos un enlace para poner un PIN nuevo.';
 $string['forgotpin:link'] = '¿Olvidaste el PIN?';
-$string['forgotpin:search'] = 'Nombre de usuario o correo';
-$string['forgotpin:sent'] = 'Si esa cuenta existe y usa Aty, te hemos enviado por correo un enlace para reiniciar el PIN. Funciona una sola vez y caduca en 30 minutos.';
+$string['forgotpin:search'] = 'Nombre de usuario, correo o móvil';
+$string['forgotpin:sent'] = 'Si esa cuenta existe y usa Aty, te hemos mandado un enlace para poner un PIN nuevo: por correo o, si tu cuenta no tiene correo, al móvil. Funciona una sola vez y caduca en 30 minutos.';
+$string['forgotpin:notice'] = 'Para poner un PIN nuevo en Aty, abre este enlace en tu móvil: {$a}
+
+Sirve una vez y caduca en 30 minutos. Si no lo has pedido, no hagas nada: tu PIN sigue como estaba.';
+$string['forgotpin:noticesmall'] = 'Tu enlace para poner un PIN nuevo en Aty. Sirve una vez y caduca en 30 minutos.';
 $string['forgotpin:submit'] = 'Enviar enlace de reinicio';
 $string['go:openbtn'] = 'Abrir en la app';
 $string['go:title'] = 'Abrir en la app';
@@ -191,6 +195,7 @@ $string['issued:once'] = 'El enlace sirve una vez, hasta el {$a->expires}. Es so
 $string['issued:subject'] = 'Tu entrada a la app de {$a->site}';
 $string['issued:why'] = 'Te lo manda {$a->site}. Si no lo esperabas, puedes ignorar este correo.';
 $string['issuenotallowed'] = 'No se puede sacar un enlace de entrada para esta cuenta: las de administración, suspendidas o borradas entran siempre con su contraseña.';
+$string['messageprovider:pinreset'] = 'Aty: el enlace para poner un PIN nuevo, cuando la cuenta no tiene correo';
 $string['mobilenotenabled'] = 'Tu centro no tiene activado el acceso desde el móvil.';
 $string['mylink:expires'] = 'Este enlace funciona una sola vez y caduca en 30 minutos. Recarga esta página para obtener uno nuevo.';
 $string['mylink:heading'] = 'Abrir en la app Aty';
