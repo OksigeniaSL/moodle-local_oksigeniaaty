@@ -446,9 +446,9 @@ final class homecards_test extends \advanced_testcase {
         $this->assertSame($cover, $card['items'][0]['cover']);
         $this->assertFalse($card['items'][1]['hascover']);
         $this->assertTrue($card['hascovers']);
-        $spines = homecards::clean(['heading' => 'Library', 'layout' => 'shelf',
-            'items' => [['title' => 'A book, to pick up', 'detail' => 'until Monday', 'plain' => true, 'pickup' => true]]],
-            'local_x', true);
+        $shelf = ['heading' => 'Library', 'layout' => 'shelf',
+            'items' => [['title' => 'A book, to pick up', 'detail' => 'until Monday', 'plain' => true, 'pickup' => true]]];
+        $spines = homecards::clean($shelf, 'local_x', true);
         $this->assertTrue($spines['hascovers']);
         $this->assertTrue($spines['items'][0]['pickup']);
         $html = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_child', ['blocks' => [
