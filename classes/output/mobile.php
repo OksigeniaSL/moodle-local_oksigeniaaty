@@ -146,7 +146,14 @@ class mobile {
         }
 
         // The shortcuts the tab bar does not have already, the plugins' tiles and writing to a course.
-        $shortcuts = template::inert(self::off_the_tabs(local_oksigeniaaty_get_shortcuts()));
+        $shortcuts = self::off_the_tabs(local_oksigeniaaty_get_shortcuts());
+        if ($familyonly) {
+            // A family's own account cannot enter the site's web pages: only what leads outside it (the school's website).
+            $site = $CFG->wwwroot . '/';
+            $shortcuts = array_values(array_filter($shortcuts, fn(array $shortcut): bool =>
+                strpos((string) $shortcut['url'], $site) !== 0 && (string) $shortcut['url'] !== $CFG->wwwroot));
+        }
+        $shortcuts = template::inert($shortcuts);
         foreach ($cards as $card) {
             if ($card['tile'] !== null) {
                 $shortcuts[] = $card['tile'];

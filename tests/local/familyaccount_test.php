@@ -185,6 +185,7 @@ final class familyaccount_test extends \advanced_testcase {
      * A child's page opens only for an adult of their family, and grades only if the centre shows them.
      */
     public function test_child_page(): void {
+        global $CFG;
         [$student, $adult] = $this->claimed();
         $course = $this->getDataGenerator()->create_course(['shortname' => 'ENG']);
         $this->getDataGenerator()->enrol_user($student->id, $course->id);
@@ -215,7 +216,12 @@ final class familyaccount_test extends \advanced_testcase {
         $html = mobile::mobile_child(['childid' => (int) $student->id])['templates'][0]['html'];
         $this->assertStringContainsString('Essay', $html);
 
+        set_config('homeshortcuts', "My badges | {$CFG->wwwroot}/badges/mybadges.php | fas-award\n"
+            . "School website | https://school.example.org | fas-school", 'local_oksigeniaaty');
         $home = mobile::mobile_home([])['templates'][0]['html'];
+        // It cannot enter the site's pages: only the shortcut that leads outside.
+        $this->assertStringContainsString('School website', $home);
+        $this->assertStringNotContainsString('My badges', $home);
         $this->assertStringContainsString('mobile_child', $home);
         $this->assertStringContainsString('mobile_family_add', $home);
         // A family's own account greets in a line, without the band, and has a card for each child, named in the bar.

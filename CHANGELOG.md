@@ -5,6 +5,11 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.81-dev)
+
+- A family's own account keeps on its home only the shortcuts that lead outside the site (the school's website): it
+  cannot enter the web, so «My badges» and the like led it to a sign-in page.
+
 ### Fixed (0.5.80-dev)
 
 - Rows inside any block's body are lines of it, also in a plugin's own body (Jujol). A test checks a family's own account:
