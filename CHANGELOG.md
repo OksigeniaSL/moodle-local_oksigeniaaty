@@ -5,6 +5,11 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed (0.5.80-dev)
+
+- Rows inside any block's body are lines of it, also in a plugin's own body (Jujol). A test checks a family's own account:
+  a greeting in a line, no band, and a card for each child.
+
 ### Fixed (0.5.79-dev)
 
 - Seen on the phone: the child's page said «Home» in its bar, and now says the child's name.

@@ -218,6 +218,11 @@ final class familyaccount_test extends \advanced_testcase {
         $home = mobile::mobile_home([])['templates'][0]['html'];
         $this->assertStringContainsString('mobile_child', $home);
         $this->assertStringContainsString('mobile_family_add', $home);
+        // A family's own account greets in a line, without the band, and has a card for each child, named in the bar.
+        $this->assertStringContainsString('<p class="aty-saludo">', $home);
+        $this->assertStringNotContainsString('aty-franja', $home);
+        $this->assertStringContainsString('<div class="aty-hijo-tarjeta"', $home);
+        $this->assertStringContainsString('title="Hugo"', $home);
 
         $this->setUser($this->getDataGenerator()->create_user());
         $this->assertStringNotContainsString('mobile_family_add', mobile::mobile_home([])['templates'][0]['html']);
