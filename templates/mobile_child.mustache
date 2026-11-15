@@ -60,7 +60,7 @@
         {{#hashtml}}<div class="aty-bloque-cuerpo">{{{html}}}</div>{{/hashtml}}
         {{#hasshelf}}
         <div class="aty-bloque-cuerpo">
-            <ul class="aty-estante">
+            <ul class="aty-estante{{#spines}} aty-estante-lomos{{/spines}}">
                 {{#items}}
                 <li class="aty-libro{{^hascover}} aty-libro-fila{{/hascover}}{{#urgent}} aty-libro-urgente{{/urgent}}{{#pickup}} aty-libro-listo{{/pickup}}">
                     {{#hascover}}<span class="aty-libro-tapa"><img src="{{cover}}" alt=""></span>{{/hascover}}

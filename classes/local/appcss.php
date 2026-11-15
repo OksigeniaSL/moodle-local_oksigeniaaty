@@ -370,6 +370,10 @@ button.aty-bloque-pie { width: 100%; border: 0; border-top: 1px solid rgba(var(-
 .aty-bloque-pie ion-icon { width: 18px; height: 18px; }
 .aty-hijo-tarjeta { cursor: pointer; }
 .aty-ficha-hacer { margin-bottom: 14px; }
+/* An older reader's shelf, without covers: a spine on each line and its words across, however many books there are. */
+.aty-estante-lomos { flex-direction: column; align-items: stretch; gap: 10px; padding-bottom: 4px; }
+.aty-estante-lomos .aty-libro-fila { grid-template-columns: 22px 1fr; align-items: center; }
+.aty-estante-lomos .aty-libro-fila .aty-libro-lomo { width: 22px; height: 52px; }
 /* Rows inside a block are lines of it, not cards of their own: also in dark, whose outline rule weighs more; and also
    in a plugin's own body (Jujol). */
 :root .aty-bloque-cuerpo .aty-event, :root.dark .aty-bloque-cuerpo .aty-event, :root .dark .aty-bloque-cuerpo .aty-event {

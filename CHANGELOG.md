@@ -5,6 +5,14 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed (0.5.82-dev)
+
+- Seen on the phone with Ayvurenda 1.0.3:
+  - An older reader's shelf, without covers, put three books side by side with their words in a narrow column. Now
+    each spine has its own line, with its words across.
+  - The blocks of a child's page go in the design's order: a plugin's own piece first (the canteen's day), then
+    shelves and rows, and the agenda last.
+
 ### Changed (0.5.81-dev)
 
 - A family's own account keeps on its home only the shortcuts that lead outside the site (the school's website): it

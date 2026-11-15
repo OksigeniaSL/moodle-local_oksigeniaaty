@@ -369,12 +369,16 @@ class mobile {
                 'hashtml' => $block !== null,
                 'html' => $block['html'] ?? '',
                 'hasshelf' => $block === null && $card['hascovers'],
+                // A shelf without a single cover (an older reader's): a spine on each line, its words across.
+                'spines' => $block === null && $card['hascovers'] && !array_filter($rows, fn($row) => $row['hascover']),
                 'hasrows' => $block === null && !$card['hascovers'],
                 'items' => $rows,
                 'open' => $block['open'] ?? ($card['seeall'] ?? null),
                 'isagenda' => false,
             ];
         }
+        // A plugin's own piece first (the canteen's day), then shelves and rows; the agenda goes last (design by Jujol).
+        usort($blocks, fn(array $a, array $b): int => (int) $b['hashtml'] - (int) $a['hashtml']);
         if ($events) {
             $blocks[] = [
                 'title' => template::inert(get_string('family:agenda', $component)),
