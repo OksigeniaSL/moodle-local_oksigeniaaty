@@ -78,9 +78,10 @@ final class hook_callbacks_test extends \advanced_testcase {
     }
 
     /**
-     * «Open in the Aty app» shows its QR only where another device can scan it: not on the phone itself.
+     * «Open in the Aty app» offers the button on the phone, a QR for the phone's camera on a computer and both on a tablet;
+     * the sign-in bridge offers the store of the phone, or both when it cannot be told.
      */
-    public function test_qr_only_where_another_device_can_scan_it(): void {
+    public function test_link_mode_and_store(): void {
         global $CFG;
         require_once($CFG->dirroot . '/local/oksigeniaaty/lib.php');
         $phone = 'Mozilla/5.0 (Linux; Android 16; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 '
@@ -90,9 +91,16 @@ final class hook_callbacks_test extends \advanced_testcase {
             . 'Safari/537.36';
         $computer = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36';
 
-        foreach ([$phone => false, $iphone => false, $tablet => true, $computer => true] as $useragent => $expected) {
+        $expected = [
+            $phone => ['button', 'android'],
+            $iphone => ['button', 'ios'],
+            $tablet => ['both', 'android'],
+            $computer => ['qr', ''],
+        ];
+        foreach ($expected as $useragent => [$mode, $store]) {
             \core_useragent::instance(true, $useragent);
-            $this->assertSame($expected, local_oksigeniaaty_offer_qr(), $useragent);
+            $this->assertSame($mode, local_oksigeniaaty_link_mode(), $useragent);
+            $this->assertSame($store, local_oksigeniaaty_store_platform(), $useragent);
         }
         \core_useragent::instance(true);
     }

@@ -5,6 +5,14 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.73-dev)
+
+- From the laptop to the phone without a hitch (asked by Nuryana): on a computer, «Open in the Aty app» shows the QR
+  first, to scan with the phone's camera, and no button, which would look for the app on the computer; on the phone,
+  the button; on a tablet, both. The sign-in bridge offers only the store of the phone (Google Play on Android, the App
+  Store on an iPhone or iPad) and both when it cannot be told. The text for a site without the App Store no longer says
+  the app is only for Android.
+
 ### Added (0.5.72-dev)
 
 - «Forgot my PIN» also finds the account by mobile number, with Oksigenia Family, when the centre or WhatsApp vouched for

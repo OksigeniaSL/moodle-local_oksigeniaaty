@@ -58,7 +58,10 @@ HTML;
     $noapp = s(get_string('open:noapp', 'local_oksigeniaaty'));
     $appurlattr = s($appurl);
 
-    // The App Store first: Apple asks for its products ahead of others' wherever both are offered.
+    // Only the store of this phone; both when it cannot be told, the App Store first, as Apple asks wherever both are offered.
+    $platform = local_oksigeniaaty_store_platform();
+    $iosurl = $platform === 'android' ? '' : $iosurl;
+    $androidurl = $platform === 'ios' ? '' : $androidurl;
     $storelinks = '';
     if ($iosurl !== '') {
         $storelinks .= '<a href="' . s($iosurl) . '">' . s(get_string('open:ios', 'local_oksigeniaaty')) . '</a>';

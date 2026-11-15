@@ -241,13 +241,38 @@ function local_oksigeniaaty_oksigeniafamily_links(stdClass $adult, int $childuse
 }
 
 /**
- * Whether a QR to scan with the phone makes sense here: not on the phone itself, which cannot scan its own screen. A
- * tablet or a computer gets it, to open the app on the phone.
+ * How «Open in the Aty app» offers the app here. On the phone, its button: a phone cannot scan its own screen. On a
+ * computer, a QR to scan with the phone's camera: the button would look for the app on the computer. On a tablet, which
+ * may have the app, both.
  *
- * @return bool
+ * @return string button, qr or both.
  */
-function local_oksigeniaaty_offer_qr(): bool {
-    return \core_useragent::get_device_type() !== \core_useragent::DEVICETYPE_MOBILE;
+function local_oksigeniaaty_link_mode(): string {
+    switch (\core_useragent::get_device_type()) {
+        case \core_useragent::DEVICETYPE_MOBILE:
+            return 'button';
+        case \core_useragent::DEVICETYPE_TABLET:
+            return 'both';
+        default:
+            return 'qr';
+    }
+}
+
+/**
+ * The store of the visitor's phone: ios on an iPhone or an iPad, android on Android, '' when it cannot be told (a
+ * computer, or an iPad whose Safari presents itself as a Mac). Then both stores are offered, the App Store first.
+ *
+ * @return string
+ */
+function local_oksigeniaaty_store_platform(): string {
+    $useragent = (string) \core_useragent::get_user_agent_string();
+    if (preg_match('/iPhone|iPad|iPod/', $useragent) === 1) {
+        return 'ios';
+    }
+    if (preg_match('/Android/i', $useragent) === 1) {
+        return 'android';
+    }
+    return '';
 }
 
 /**

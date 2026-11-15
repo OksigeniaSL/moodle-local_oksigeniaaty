@@ -68,8 +68,9 @@ header('Referrer-Policy: no-referrer');
 
 // A QR of the same one-time link: scan it with the Aty app (or any camera) to sign in on a phone. It is drawn in the
 // site's brand; should that fail, Moodle's plain QR is shown instead.
+$mode = local_oksigeniaaty_link_mode();
 $qrsrc = '';
-if (local_oksigeniaaty_offer_qr()) {
+if ($mode !== 'button') {
     try {
         $qrsvg = \local_oksigeniaaty\local\qrdesign::svg(
             $openurl->out(false),
@@ -84,14 +85,16 @@ if (local_oksigeniaaty_offer_qr()) {
 }
 
 echo $OUTPUT->header();
-echo html_writer::tag('p', get_string('mylink:intro', 'local_oksigeniaaty'));
-echo html_writer::link(
-    $openurl,
-    get_string('open:openbtn', 'local_oksigeniaaty'),
-    ['class' => 'btn btn-primary']
-);
+// On a computer the QR comes first, to scan with the phone's camera; the button would look for the app on the computer.
+echo html_writer::tag('p', get_string($mode === 'qr' ? 'mylink:introqr' : 'mylink:intro', 'local_oksigeniaaty'));
+if ($mode !== 'qr') {
+    echo html_writer::link(
+        $openurl,
+        get_string('open:openbtn', 'local_oksigeniaaty'),
+        ['class' => 'btn btn-primary']
+    );
+}
 if ($qrsrc !== '') {
-    // On a computer or a tablet: scanned with the app on the phone. The phone itself gets only the button.
     echo html_writer::div(
         html_writer::empty_tag('img', [
             'src' => $qrsrc,
@@ -101,7 +104,9 @@ if ($qrsrc !== '') {
         ]),
         'oksigeniaaty-qr mt-3'
     );
-    echo html_writer::tag('p', get_string('mylink:qrhint', 'local_oksigeniaaty'), ['class' => 'text-muted']);
+    if ($mode === 'both') {
+        echo html_writer::tag('p', get_string('mylink:qrhint', 'local_oksigeniaaty'), ['class' => 'text-muted']);
+    }
 }
 echo html_writer::tag('p', get_string('mylink:expires', 'local_oksigeniaaty'), ['class' => 'text-muted mt-3']);
 echo $OUTPUT->footer();
