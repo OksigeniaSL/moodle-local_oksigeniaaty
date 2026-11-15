@@ -447,8 +447,14 @@ final class homecards_test extends \advanced_testcase {
         $this->assertFalse($card['items'][1]['hascover']);
         $this->assertTrue($card['hascovers']);
         $spines = homecards::clean(['heading' => 'Library', 'layout' => 'shelf',
-            'items' => [['title' => 'A book', 'detail' => 'until Monday', 'plain' => true]]], 'local_x', true);
+            'items' => [['title' => 'A book, to pick up', 'detail' => 'until Monday', 'plain' => true, 'pickup' => true]]],
+            'local_x', true);
         $this->assertTrue($spines['hascovers']);
+        $this->assertTrue($spines['items'][0]['pickup']);
+        $html = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_child', ['blocks' => [
+            ['title' => 'Library', 'icon' => 'fas-book', 'hasshelf' => true, 'items' => $spines['items']],
+        ]]);
+        $this->assertStringContainsString('aty-libro aty-libro-fila aty-libro-listo', $html);
 
         $block = homecards::clean([
             'heading' => 'Canteen',

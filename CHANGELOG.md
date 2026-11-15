@@ -5,6 +5,10 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.78-dev)
+
+- On the library's shelf, a book waiting to be picked up has a striped spine: a row's `pickup` (asked by Ayvurenda).
+
 ### Changed (0.5.77-dev)
 
 - What a family sees, with Jujol's design (15 November 2026, after Kimi K3's review):

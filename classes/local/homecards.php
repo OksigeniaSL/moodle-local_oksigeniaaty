@@ -40,7 +40,8 @@ namespace local_oksigeniaaty\local;
  *   html (the block's body, already rendered by the plugin from inert data: norm 9), title, icon (fas-*), open (where
  *   its foot leads, as any other target) and openlabel. Without a block, the card's rows go in a frame of the same look.
  * - A row may carry cover: a data: URL of an image (a book's cover), for the library's shelf; and the card, layout
- *   'shelf', for a shelf of plain spines when no book has a cover.
+ *   'shelf', for a shelf of plain spines when no book has a cover. A row with pickup (bool) is a book waiting to be
+ *   picked up: a striped spine.
  *
  * Where it opens: method and args, a page of the plugin's own in the app, with title for its header; or url.
  *
@@ -297,6 +298,8 @@ class homecards {
             'actionlabel' => is_scalar($item['actionlabel'] ?? null) ? trim((string) $item['actionlabel']) : '',
             // Over the name of something to do, one word of what it asks («Sign»): its mark, apart from what only tells.
             'mark' => is_scalar($item['mark'] ?? null) ? trim((string) $item['mark']) : '',
+            // On the library's shelf, a book waiting to be picked up: a striped spine.
+            'pickup' => !empty($item['pickup']),
             'hascount' => $date <= 0 && $count !== '',
             'count' => $count,
             'countlabel' => (string) ($item['countlabel'] ?? ''),
