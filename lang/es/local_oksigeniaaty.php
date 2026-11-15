@@ -56,6 +56,7 @@ $string['check:appready_androidappid'] = 'El identificador de la app para Androi
 $string['check:appready_autologin'] = 'El tiempo mínimo entre entradas automáticas pasa de 10 segundos: al abrir desde la app una segunda página web, pide entrar otra vez.';
 $string['check:appready_css'] = 'El CSS de la app no es el de este plugin: la app no se viste con la marca del centro.';
 $string['check:appready_familyapp'] = 'La app para las familias está encendida, pero le falta algo: la autenticación por servicios web, el esquema de URL o la entrada mediante la app.';
+$string['check:appready_iosappid'] = 'El identificador de la app para iOS no es «6833200207»: en el iPhone, el banner de Safari y la página de descarga de Moodle ofrecen la app oficial de Moodle.';
 $string['check:appready_listunknown'] = 'No se ha podido leer la lista de sitios de Oksigenia para comprobar que este está en ella.';
 $string['check:appready_missing'] = 'A la app Aty le falta algo en este sitio para funcionar entera.';
 $string['check:appready_mobileservice'] = 'Los servicios web para móviles están apagados.';

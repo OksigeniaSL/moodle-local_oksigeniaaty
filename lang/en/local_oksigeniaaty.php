@@ -56,6 +56,7 @@ $string['check:appready_androidappid'] = 'The app\'s Android identifier is not �
 $string['check:appready_autologin'] = 'The minimum time between automatic sign-ins is over 10 seconds: opening a second web page from the app asks to sign in again.';
 $string['check:appready_css'] = 'The app\'s CSS is not this plugin\'s: the app does not wear the centre\'s brand.';
 $string['check:appready_familyapp'] = 'The app for families is on, but something it needs is missing: web service authentication, the URL scheme or signing in through the app.';
+$string['check:appready_iosappid'] = 'The app\'s iOS identifier is not «6833200207»: on iPhones, Safari\'s banner and Moodle\'s download page offer Moodle\'s own app.';
 $string['check:appready_listunknown'] = 'Oksigenia\'s list of sites could not be read to check that this one is on it.';
 $string['check:appready_missing'] = 'The Aty app lacks something on this site to work in full.';
 $string['check:appready_mobileservice'] = 'Web services for mobile devices are off.';

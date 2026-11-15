@@ -5,6 +5,11 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.69-dev)
+
+- The status check «Aty app» warns when the iOS app identifier in the mobile app settings is not Aty's (6833200207),
+  as it already did for Android's: on iPhones, Safari's banner and Moodle's download page would offer Moodle's own app.
+
 ### Changed (0.5.68-dev)
 
 - The App Store link comes set, like Google Play's: Aty is in the App Store since 14 November 2026. On the upgrade, a

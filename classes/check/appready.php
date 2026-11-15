@@ -38,6 +38,9 @@ class appready extends check {
     /** The app's identifier in the stores, which Moodle and the push bridge key the devices by. */
     public const APPID = 'com.oksigenia.aty';
 
+    /** The app's App Store identifier, which Safari's banner and Moodle's download page offer on iPhones. */
+    public const IOSAPPID = '6833200207';
+
     /** The app's URL scheme. */
     public const SCHEME = 'oksigeniaaty';
 
@@ -134,6 +137,9 @@ class appready extends check {
         }
         if (strpos((string) get_config('core', 'mobilecssurl'), '/local/oksigeniaaty/styles_app.php') === false) {
             $warnings[] = 'css';
+        }
+        if (get_config('tool_mobile', 'iosappid') !== self::IOSAPPID) {
+            $warnings[] = 'iosappid';
         }
         // "My courses" on and not turned off in the app, but nothing on its page: the app has no tab for the courses.
         if (

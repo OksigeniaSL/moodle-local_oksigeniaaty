@@ -39,6 +39,7 @@ final class appready_test extends \advanced_testcase {
         (new \admin_setting_enablemobileservice('enablemobilewebservice', '', '', 0))->write_setting(1);
         set_config('forcedurlscheme', appready::SCHEME, 'tool_mobile');
         set_config('androidappid', appready::APPID, 'tool_mobile');
+        set_config('iosappid', appready::IOSAPPID, 'tool_mobile');
         set_config('typeoflogin', 1, 'tool_mobile');
         set_config('autologinmintimebetweenreq', 10, 'tool_mobile');
         set_config('airnotifierurl', 'https://push.example.com');
@@ -57,6 +58,9 @@ final class appready_test extends \advanced_testcase {
         set_config('autologinmintimebetweenreq', 360, 'tool_mobile');
         set_config('mobilecssurl', '');
         $this->assertSame([[], ['autologin', 'css']], appready::problems(true));
+        // Moodle's own app offered on iPhones.
+        set_config('iosappid', '633359593', 'tool_mobile');
+        $this->assertSame([[], ['autologin', 'css', 'iosappid']], appready::problems(true));
 
         // What stops the app.
         set_config('forcedurlscheme', 'moodlemobile', 'tool_mobile');
