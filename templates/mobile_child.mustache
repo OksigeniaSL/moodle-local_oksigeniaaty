@@ -23,7 +23,8 @@
     * nothing - What shows when there is nothing yet.
     * hasevents, eventsheading, events - What comes next: name, day, month, time, timestamp, context.
     * hasgrades, gradesheading, grades - The latest grades: grade, name, context.
-    * cards - What other plugins add: heading, items, each of which opens a page, a link or, when plain, nothing.
+    * cards - What other plugins add: heading, items, each of which opens a page, a link or, when plain, nothing, and
+      seeall, the card's own «See all», as on the home.
     * empty - Whether there is nothing to show.
 
     Example context (json):
@@ -51,7 +52,13 @@
     </div>
     {{/hasgrades}}
     {{#cards}}
-    <h2 class="aty-section">{{heading}}</h2>
+    <div class="aty-seccion-cab">
+        <h2 class="aty-section">{{heading}}</h2>
+        {{#seeall}}
+        {{#ispage}}<button type="button" class="aty-ver" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{label}}</button>{{/ispage}}
+        {{^ispage}}<a class="aty-ver" core-link href="{{url}}" capture="{{^browser}}true{{/browser}}{{#browser}}false{{/browser}}"{{^browser}} inApp="true"{{/browser}}>{{label}}</a>{{/ispage}}
+        {{/seeall}}
+    </div>
     <div class="aty-agenda">
         {{#items}}
         {{#ispage}}<button type="button" class="aty-event{{#hascount}} aty-grading{{/hascount}}{{#urgent}} aty-urgent{{/urgent}}" core-site-plugins-new-content component="{{component}}" method="{{method}}" title="{{pagetitle}}" [args]="{{argsjson}}">{{/ispage}}

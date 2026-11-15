@@ -5,6 +5,11 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.76-dev)
+
+- A child's page in the family's app shows each card's «See all», as the home does: the canteen's leads to the family's
+  page of the canteen (the month, the allergens, the recipes and the ideas for dinner), inside the app.
+
 ### Changed (0.5.75-dev)
 
 - In the family's app, a child is named by first name and surnames on their page and their initial, whatever order the
