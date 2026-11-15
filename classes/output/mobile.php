@@ -431,6 +431,8 @@ class mobile {
                 $facets[] = $card['facet'];
             }
         }
+        // What is urgent comes first, in red, whichever plugin it is from.
+        usort($facets, fn(array $a, array $b): int => (int) !empty($b['urgent']) - (int) !empty($a['urgent']));
         if (get_config('local_oksigeniaaty', 'familyagenda') !== '0') {
             $next = self::child_events($childid)[0] ?? null;
             if ($next !== null) {
