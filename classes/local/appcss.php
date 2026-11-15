@@ -370,6 +370,9 @@ button.aty-bloque-pie { width: 100%; border: 0; border-top: 1px solid rgba(var(-
 .aty-bloque-pie ion-icon { width: 18px; height: 18px; }
 .aty-hijo-tarjeta { cursor: pointer; }
 .aty-ficha-hacer { margin-bottom: 14px; }
+/* Rows inside a block are lines of it, not cards of their own: also in dark, whose outline rule weighs more. */
+:root .aty-agenda-hijo .aty-event, :root.dark .aty-agenda-hijo .aty-event, :root .dark .aty-agenda-hijo .aty-event {
+    outline: 0; box-shadow: none; }
 
 CSS;
     }

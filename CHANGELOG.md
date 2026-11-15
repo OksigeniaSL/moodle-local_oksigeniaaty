@@ -5,6 +5,12 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed (0.5.79-dev)
+
+- Seen on the phone: the child's page said «Home» in its bar, and now says the child's name.
+- A plugin's block without an icon of its own takes its tile's or its line's (the canteen's cutlery), not a generic one.
+- In dark mode, the rows inside a block were boxed one by one, like cards inside the card. They are now lines of it.
+
 ### Changed (0.5.78-dev)
 
 - On the library's shelf, a book waiting to be picked up has a striped spine: a row's `pickup` (asked by Ayvurenda).

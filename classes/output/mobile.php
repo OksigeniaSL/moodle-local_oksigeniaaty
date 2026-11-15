@@ -356,7 +356,9 @@ class mobile {
             }
             $blocks[] = [
                 'title' => $block['title'] ?? $card['heading'],
-                'icon' => $block['icon'] ?? ($card['hascovers'] ? 'fas-book' : 'fas-shapes'),
+                // The plugin's own icon: its block's, else its tile's or its line's; a shelf is books.
+                'icon' => $block['icon'] ?? $card['tile']['icon'] ?? $card['facet']['icon']
+                    ?? ($card['hascovers'] ? 'fas-book' : 'fas-shapes'),
                 'hashtml' => $block !== null,
                 'html' => $block['html'] ?? '',
                 'hasshelf' => $block === null && $card['hascovers'],
