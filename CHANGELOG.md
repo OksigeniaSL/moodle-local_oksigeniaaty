@@ -5,6 +5,12 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.71-dev)
+
+- The texts people meet name the centre in one word, as the app does: «tu centro» / «your organisation», no longer
+  «sitio», «centro u organización» or «school or organisation» (expired sign-in link, no mobile access, no family
+  records).
+
 ### Changed (0.5.70-dev)
 
 - «Open in the Aty app» shows its QR only on a computer or a tablet, to scan with the phone: on the phone itself, which
