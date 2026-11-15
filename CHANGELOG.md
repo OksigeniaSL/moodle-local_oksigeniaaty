@@ -5,6 +5,11 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.75-dev)
+
+- In the family's app, a child is named by first name and surnames on their page and their initial, whatever order the
+  site uses for its lists: a site that lists by surname showed «ESO 1º A Alumno» at the top of the child's page.
+
 ### Added (0.5.74-dev)
 
 - `child.php?id=<the child's user id>`: the address of a child's page, for notices about a child (the canteen's, first).

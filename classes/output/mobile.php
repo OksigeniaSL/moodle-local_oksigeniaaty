@@ -395,8 +395,9 @@ class mobile {
         foreach (\local_oksigeniafamily\api::children_of_user((int) $USER->id) as $childid) {
             $user = \core_user::get_user((int) $childid);
             if ($user && !$user->deleted) {
-                $name = fullname($user);
+                // First name and surnames, as a family says it, whatever order the site uses for its lists.
                 $first = trim(format_string($user->firstname));
+                $name = trim($first . ' ' . trim(format_string($user->lastname))) ?: fullname($user);
                 $children[] = [
                     'id' => (int) $user->id,
                     'name' => $name,
