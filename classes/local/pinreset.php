@@ -73,8 +73,10 @@ class pinreset {
      * @return int[] Distinct user ids; none without Family or when it is not a number.
      */
     public static function userids_by_phone(string $typed): array {
-        if (!class_exists('\local_oksigeniafamily\api') || !class_exists('\local_oksigeniafamily\local\phone')
-                || preg_match('/^[\d\s()+.\-]{6,}$/', $typed) !== 1) {
+        if (
+            !class_exists('\local_oksigeniafamily\api') || !class_exists('\local_oksigeniafamily\local\phone')
+            || preg_match('/^[\d\s()+.\-]{6,}$/', $typed) !== 1
+        ) {
             return [];
         }
         $prefix = (string) get_config('local_oksigeniafamily', 'phoneprefix');
