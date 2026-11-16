@@ -110,6 +110,9 @@ class mobile {
             'children' => $children ?? [],
             'haschildren' => !empty($children),
             'familyaddname' => get_string('family:add', 'local_oksigeniaaty'),
+            // Another adult of the household (a partner, a grandparent) joins the same family from a QR on this phone.
+            'caninvite' => !empty($children) && method_exists(\local_oksigeniafamily\output\mobile::class, 'mobile_invite_view'),
+            'invitename' => get_string('family:invite', 'local_oksigeniaaty'),
             // Where the family gets the centre's notices, while there is somewhere left to connect.
             'channelscard' => $children !== null ? channels::home_card($USER) : null,
             'todayheading' => get_string($familyonly ? 'family:todo' : 'home:today', 'local_oksigeniaaty'),

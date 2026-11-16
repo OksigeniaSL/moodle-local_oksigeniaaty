@@ -5,6 +5,12 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Added (0.5.86-dev)
+
+- «Invite another adult» on a family's home, next to «+», where Oksigenia Family 0.3.27 has it: the other adult of the
+  household (a partner without an account of the site, a grandparent) scans a QR on this phone and joins the same family,
+  with all its children.
+
 ### Added (0.5.85-dev)
 
 - From the pilot with families in a school:

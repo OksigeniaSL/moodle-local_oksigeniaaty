@@ -99,6 +99,7 @@ $string['family:children'] = 'Sus hijos';
 $string['family:code'] = 'Código';
 $string['family:grades'] = 'Últimas notas';
 $string['family:heading'] = 'Tu familia';
+$string['family:invite'] = 'Invitar a otro adulto';
 $string['family:linkgone'] = 'Este enlace ya no sirve. Pide un código nuevo al centro.';
 $string['family:linktitle'] = 'La app';
 $string['family:linkused'] = 'Con este enlace ya entraste en la app. Para usarla en otro móvil, pide un código nuevo al centro.';

@@ -284,6 +284,10 @@ final class familyaccount_test extends \advanced_testcase {
         $this->assertStringNotContainsString('My badges', $home);
         $this->assertStringContainsString('mobile_child', $home);
         $this->assertStringContainsString('mobile_family_add', $home);
+        // Another adult of the household is invited from here, where Family has it.
+        if (method_exists(\local_oksigeniafamily\output\mobile::class, 'mobile_invite_view')) {
+            $this->assertStringContainsString('mobile_invite_view', $home);
+        }
         // A family's own account greets in a line, without the band, and has a card for each child, named in the bar.
         $this->assertStringContainsString('<p class="aty-saludo">', $home);
         $this->assertStringNotContainsString('aty-franja', $home);
