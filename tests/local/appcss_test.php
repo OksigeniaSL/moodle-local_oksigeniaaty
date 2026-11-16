@@ -42,6 +42,7 @@ final class appcss_test extends \basic_testcase {
         $this->assertStringContainsString('--primary: #07316b;', $css);
         $this->assertStringContainsString('--ion-color-primary-rgb: 7, 49, 107;', $css);
         $this->assertStringContainsString('--primary-contrast: #ffffff;', $css);
+        $this->assertStringContainsString('--ion-color-primary-contrast: #ffffff;', $css);
         $this->assertStringContainsString('--core-header-toolbar-background: #07316b;', $css);
 
         // A dark block exists and gives a different primary.
@@ -77,6 +78,8 @@ final class appcss_test extends \basic_testcase {
     public function test_light_brand_gets_dark_contrast(): void {
         $css = appcss::generate('#ffff00');
         $this->assertStringContainsString('--primary-contrast: #000000;', $css);
+        // Ionic's own contrast too, or a checkbox or a plugin's sheet would put white on yellow.
+        $this->assertStringContainsString('--ion-color-primary-contrast: #000000;', $css);
     }
 
     /**

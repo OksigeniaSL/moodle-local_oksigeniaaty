@@ -5,6 +5,12 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed (0.5.84-dev)
+
+- The brand's sheet also sets Ionic's own contrast, shade and tint of the primary colour. The app builds those once for
+  its own blue, so with a light brand a checkbox, a pressed button or a plugin's sheet that read them got white ink and
+  a blue shade (seen in Meals 0.106.0's sheet).
+
 ### Changed (0.5.83-dev)
 
 - An older reader's spines, one per line, have a thin line between books and none under them (Jujol).

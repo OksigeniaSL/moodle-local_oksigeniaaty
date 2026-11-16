@@ -28,7 +28,9 @@ namespace local_oksigeniaaty\local;
  * The brand of a site, turned into the app's CSS variables for light and dark.
  *
  * The variable set matches what the official Moodle app reads and what the design template uses: --primary and its
- * shade, tint and contrast, the RGB forms the app expects, and the header toolbar colours. The dark values are derived
+ * shade, tint and contrast, the RGB forms the app expects, and the header toolbar colours. Ionic's own contrast, shade
+ * and tint go with them: the app builds those once for its own blue, and a page that reads them (a pressed button, a
+ * checkbox, a plugin's sheet) would otherwise get the blue's. The dark values are derived
  * from the same brand colour so a site is legible in dark mode without a second setting; the design template may refine
  * them per client.
  */
@@ -467,6 +469,9 @@ CSS;
             . "    --ion-color-primary-contrast-rgb: {$v['contrast-rgb']};\n"
             . "    --primary-shade: {$v['shade']};\n"
             . "    --primary-tint: {$v['tint']};\n"
+            . "    --ion-color-primary-contrast: {$v['contrast']};\n"
+            . "    --ion-color-primary-shade: {$v['shade']};\n"
+            . "    --ion-color-primary-tint: {$v['tint']};\n"
             . "    --core-header-toolbar-background: {$v['toolbarbg']};\n"
             . "    --core-header-toolbar-color: {$v['toolbarcolor']};\n"
             . "    --aty-toolbar: {$v['toolbarbg']};\n"
