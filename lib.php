@@ -238,8 +238,9 @@ function local_oksigeniaaty_oksigeniafamily_links(stdClass $adult, int $childuse
             // A real account of the site, such as a teacher who is also a parent: into the app with it, but only when
             // whoever is here has shown it is theirs (signed in, or through the link sent to its address) and may have a
             // link of their own. Holding a child's code alone never leads into it.
-            if (!$proven || local_oksigeniaaty_is_admin_account((int) $user->id)
-                    || !local_oksigeniaaty_user_can_selfservice((int) $user->id)) {
+            $allowed = $proven && !local_oksigeniaaty_is_admin_account((int) $user->id)
+                && local_oksigeniaaty_user_can_selfservice((int) $user->id);
+            if (!$allowed) {
                 return [];
             }
             return [[
