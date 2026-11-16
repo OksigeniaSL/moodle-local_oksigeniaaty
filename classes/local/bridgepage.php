@@ -62,9 +62,10 @@ CSS;
      *
      * @param string $title The title, already escaped.
      * @param string $body The HTML of the card.
+     * @param string $head More for the head of the page (Safari's banner of the app), already escaped.
      * @return void
      */
-    public static function output(string $title, string $body): void {
+    public static function output(string $title, string $body, string $head = ''): void {
         $lang = str_replace('_', '-', current_language());
         $css = self::CSS;
 
@@ -81,6 +82,7 @@ CSS;
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>$title</title>
+$head
 <style>
 $css
 </style>

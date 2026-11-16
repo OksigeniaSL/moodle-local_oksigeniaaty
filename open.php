@@ -41,6 +41,7 @@ $androidurl = trim((string) get_config('local_oksigeniaaty', 'androidstoreurl'))
 $iosurl = trim((string) get_config('local_oksigeniaaty', 'iosstoreurl'));
 
 $title = s(get_string('open:title', 'local_oksigeniaaty'));
+$head = '';
 
 if ($live && local_oksigeniaaty_is_ios_without_app()) {
     // No app to open or to install: the way on is the browser, and the key stays good for an Android phone.
@@ -56,7 +57,6 @@ HTML;
     $opening = s(get_string('open:opening', 'local_oksigeniaaty'));
     $openbtn = s(get_string('open:openbtn', 'local_oksigeniaaty'));
     $noapp = s(get_string('open:noapp', 'local_oksigeniaaty'));
-    $appurlattr = s($appurl);
 
     // Only the store of this phone; both when it cannot be told, the App Store first, as Apple asks wherever both are offered.
     $platform = local_oksigeniaaty_store_platform();
@@ -70,8 +70,55 @@ HTML;
         $storelinks .= '<a href="' . s($androidurl) . '">' . s(get_string('open:android', 'local_oksigeniaaty')) . '</a>';
     }
 
-    $appurljs = json_encode($appurl);
-    $body = <<<HTML
+    if ($platform === 'android') {
+        // People tap the button before they have the app. Android opens it if it is there and goes to Google Play if not,
+        // and the store hands the sign-in on to the app it installs.
+        $link = \local_oksigeniaaty\api::login_intent($payload, $androidurl);
+        $linkattr = s($link);
+        $linkjs = json_encode($link);
+        $once = json_encode('atyopen:' . substr($keyvalue, 0, 12));
+        $note = s(get_string('open:androidnote', 'local_oksigeniaaty'));
+        // Opened by itself only once: coming back from Google Play would otherwise send them there again.
+        $body = <<<HTML
+    <h1>$title</h1>
+    <p>$opening</p>
+    <a class="btn" href="$linkattr">$openbtn</a>
+    <p class="muted">$note</p>
+    <script>
+    (function () {
+        var seen = false;
+        try {
+            seen = !!window.sessionStorage.getItem($once);
+            window.sessionStorage.setItem($once, '1');
+        } catch (e) {
+            seen = false;
+        }
+        if (!seen) {
+            setTimeout(function () { window.location.href = $linkjs; }, 400);
+        }
+    })();
+    </script>
+HTML;
+    } else if ($platform === 'ios') {
+        // Safari cannot tell a page whether the app is there, and opening it when it is not ends in an error: the steps
+        // in their order, nothing opened by itself, and Safari's own banner, which says «Get» or «Open» as it should.
+        if (preg_match('~/id(\d+)~', $iosurl, $found)) {
+            $head = '<meta name="apple-itunes-app" content="' . s('app-id=' . $found[1] . ', app-argument=' . $appurl) . '">';
+        }
+        $install = s(get_string('open:installfirst', 'local_oksigeniaaty'));
+        $thenopen = s(get_string('open:thenopen', 'local_oksigeniaaty'));
+        $appurlattr = s($appurl);
+        $body = <<<HTML
+    <h1>$title</h1>
+    <p>$install</p>
+    <div class="stores">$storelinks</div>
+    <p>$thenopen</p>
+    <a class="btn" href="$appurlattr">$openbtn</a>
+HTML;
+    } else {
+        $appurlattr = s($appurl);
+        $appurljs = json_encode($appurl);
+        $body = <<<HTML
     <h1>$title</h1>
     <p>$opening</p>
     <a class="btn" href="$appurlattr">$openbtn</a>
@@ -83,6 +130,7 @@ HTML;
     setTimeout(function () { window.location.href = $appurljs; }, 400);
     </script>
 HTML;
+    }
 } else {
     $expired = s(get_string('open:expired', 'local_oksigeniaaty'));
     $body = <<<HTML
@@ -91,4 +139,4 @@ HTML;
 HTML;
 }
 
-\local_oksigeniaaty\local\bridgepage::output($title, $body);
+\local_oksigeniaaty\local\bridgepage::output($title, $body, $head);

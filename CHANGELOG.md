@@ -5,6 +5,25 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Added (0.5.85-dev)
+
+- From the pilot with families in a school:
+  - Adding another child in the app scans the QR on the letter with the app's own scanner, on a phone; the code can
+    still be typed.
+  - A family's home has a card with where the centre's notices reach them (the app, e-mail, WhatsApp, Telegram), with
+    «Connect» where they are not yet; it goes once everything is connected. Connecting no longer warns of leaving the
+    app.
+  - A teacher who is also a parent goes into the app with their own account once Oksigenia Family says it is proven
+    theirs (signed in, or the link sent to its address), and only if they may have a sign-in link of their own.
+  - The sign-in page, on Android, opens the app or, where it is not installed, Google Play, which hands the sign-in on
+    to the app it installs (read from Aty 5.2.4). On an iPhone, the steps in their order (install, then open) and
+    Safari's banner of the app, with nothing opened by itself.
+
+### Fixed (0.5.85-dev)
+
+- A family's account no longer takes an address another account of the site already has: two accounts with one
+  address broke «Forgotten your password?» for both.
+
 ### Fixed (0.5.84-dev)
 
 - The brand's sheet also sets Ionic's own contrast, shade and tint of the primary colour. The app builds those once for

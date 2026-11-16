@@ -168,4 +168,19 @@ final class api_test extends \advanced_testcase {
         $this->assertNotSame($intent, api::app_intent($page, 'abc123'));
         $this->assertStringContainsString('%3Fatylink%3D.', api::app_intent('https://example.org/a'));
     }
+
+    /**
+     * The sign-in page on Android opens Aty if it is there and Google Play if not, which hands the sign-in on to the app.
+     */
+    public function test_login_intent(): void {
+        $play = 'https://play.google.com/store/apps/details?id=com.oksigenia.aty';
+        $intent = api::login_intent('abc', $play);
+
+        $this->assertStringStartsWith('intent://atylogin=abc#Intent;scheme=oksigeniaaty;package=com.oksigenia.aty;', $intent);
+        $store = $play . '&referrer=' . rawurlencode('atylogin=abc');
+        $this->assertStringEndsWith(';S.browser_fallback_url=' . rawurlencode($store) . ';end', $intent);
+        // Without the store's address, Android goes to the app's page in the store by itself.
+        $bare = 'intent://atylogin=abc#Intent;scheme=oksigeniaaty;package=com.oksigenia.aty;end';
+        $this->assertSame($bare, api::login_intent('abc', ''));
+    }
 }

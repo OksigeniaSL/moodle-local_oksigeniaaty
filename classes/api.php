@@ -136,6 +136,26 @@ class api {
     }
 
     /**
+     * How the sign-in page opens Aty on an Android phone: the app where it is installed; where it is not, Google Play,
+     * which gives the sign-in to the app it installs (Aty 5.2.4 reads it when it first opens). Without the store's
+     * address, Android itself goes to the app's page in the store.
+     *
+     * @param string $payload The sign-in, as open.php puts it after «atylogin=».
+     * @param string $playurl The app's page in Google Play (may be empty).
+     * @return string
+     */
+    public static function login_intent(string $payload, string $playurl): string {
+        $intent = 'intent://atylogin=' . $payload . '#Intent;scheme=oksigeniaaty;package=' . self::ATY_PACKAGE;
+        if ($playurl !== '') {
+            $store = $playurl . (strpos($playurl, '?') === false ? '?' : '&') . 'referrer='
+                . rawurlencode('atylogin=' . $payload);
+            $intent .= ';S.browser_fallback_url=' . rawurlencode($store);
+        }
+
+        return $intent . ';end';
+    }
+
+    /**
      * Send a user their sign-in link to the app by e-mail.
      *
      * @param int $userid The user.

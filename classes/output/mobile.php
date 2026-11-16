@@ -110,6 +110,8 @@ class mobile {
             'children' => $children ?? [],
             'haschildren' => !empty($children),
             'familyaddname' => get_string('family:add', 'local_oksigeniaaty'),
+            // Where the family gets the centre's notices, while there is somewhere left to connect.
+            'channelscard' => $children !== null ? channels::home_card($USER) : null,
             'todayheading' => get_string($familyonly ? 'family:todo' : 'home:today', 'local_oksigeniaaty'),
             'starting' => $starting,
             'joinlabel' => get_string('home:join', 'local_oksigeniaaty'),
@@ -547,7 +549,24 @@ class mobile {
     }
 
     /**
-     * Another child's code, typed in the app.
+     * The letter's QR, read with the app's own scanner: it fills in the code. Fixed and the same for every site; the app
+     * has the scanner from 4.5 on, and only on a phone.
+     */
+    private const SCAN_JS = <<<'JS'
+var self = this;
+this.atyCanScan = !!this.CoreQRScanService && this.CoreQRScanService.canScanQR();
+this.atyScanCode = function () {
+    return self.CoreQRScanService.scanQR().then(function (text) {
+        var found = /[#&?]code=([0-9A-Za-z-]+)/.exec(text || '') || /^\s*([0-9A-Za-z-]{4,})\s*$/.exec(text || '');
+        if (found) {
+            self.CONTENT_OTHERDATA.code = found[1].toUpperCase();
+        }
+    });
+};
+JS;
+
+    /**
+     * Another child's code, scanned or typed in the app.
      *
      * @param array $args The arguments the app sends.
      * @return array The template, javascript and data the app expects.
@@ -559,6 +578,7 @@ class mobile {
         $data = template::inert([
             'intro' => get_string('family:addintro', $component),
             'codelabel' => get_string('family:code', $component),
+            'scan' => get_string('family:scan', $component),
             'add' => get_string('family:addbutton', $component),
             'sent' => get_string('family:added', $component),
         ]);
@@ -570,7 +590,7 @@ class mobile {
                     'html' => $OUTPUT->render_from_template('local_oksigeniaaty/mobile_family_add', $data),
                 ],
             ],
-            'javascript' => '',
+            'javascript' => self::SCAN_JS,
             'otherdata' => ['code' => ''],
         ];
     }

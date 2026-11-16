@@ -136,6 +136,12 @@ class familyaccount {
 
         $suffix = strtolower(random_string(20));
         $email = (string) $adult->email;
+        // An address that is already another account's (a teacher who joined their child's family with the school's
+        // address) stays with that account: two accounts with one address break «Forgotten your password?» for both.
+        $taken = 'LOWER(email) = LOWER(:email) AND deleted = 0';
+        if ($email !== '' && $DB->record_exists_select('user', $taken, ['email' => $email])) {
+            $email = '';
+        }
         $record = (object) [
             'auth' => 'webservice',
             'username' => self::PREFIX . $suffix,

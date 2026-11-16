@@ -49,6 +49,30 @@ class channels {
     }
 
     /**
+     * The card on a family's home: the places where the centre can reach them, while one is left to connect. Null once
+     * everything is connected, or where the site offers no more than the app and e-mail.
+     *
+     * @param \stdClass $user The person.
+     * @return array|null { heading, rows (as for_user), connectlabel, more }
+     */
+    public static function home_card(\stdClass $user): ?array {
+        if (!self::available()) {
+            return null;
+        }
+        $rows = self::for_user($user);
+        if (!array_filter($rows, fn(array $row): bool => $row['url'] !== '')) {
+            return null;
+        }
+
+        return [
+            'heading' => get_string('channels:home', 'local_oksigeniaaty'),
+            'rows' => $rows,
+            'connectlabel' => get_string('channels:connect', 'local_oksigeniaaty'),
+            'more' => get_string('channels:title', 'local_oksigeniaaty'),
+        ];
+    }
+
+    /**
      * Where a person can get their notices.
      *
      * @param \stdClass $user The person, with id, auth, username, email and emailstop.

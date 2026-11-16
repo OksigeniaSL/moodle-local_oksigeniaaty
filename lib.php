@@ -215,21 +215,38 @@ function local_oksigeniaaty_familyapp_changed(): void {
 }
 
 /**
- * What the family plugin shows to whoever has just claimed a child's code: the way into the app. Not for an adult with a real
- * account of the site, who signs in as always. The account is not made until the link is used.
+ * What the family plugin shows to whoever has just claimed a child's code: the way into the app. For an adult without an
+ * account, their family's account, not made until the link is used. For an adult with a real account of the site (a
+ * teacher who is also a parent), that account, and only when the family plugin says it is proven theirs.
  *
  * @param stdClass $adult The adult of the family.
  * @param int $childuserid The child.
+ * @param bool $proven Whether whoever claimed has shown the adult's account is theirs: signed in to it, or come through the
+ *     link sent to its address.
  * @return array A list of ['label', 'url', 'note'].
  */
-function local_oksigeniaaty_oksigeniafamily_links(stdClass $adult, int $childuserid): array {
+function local_oksigeniaaty_oksigeniafamily_links(stdClass $adult, int $childuserid, bool $proven = false): array {
     if (!\local_oksigeniaaty\local\familyaccount::available()) {
         return [];
     }
     if ($adult->userid) {
         $user = core_user::get_user((int) $adult->userid);
-        if (!$user || !\local_oksigeniaaty\local\familyaccount::is_own($user)) {
+        if (!$user || $user->deleted || $user->suspended) {
             return [];
+        }
+        if (!\local_oksigeniaaty\local\familyaccount::is_own($user)) {
+            // A real account of the site, such as a teacher who is also a parent: into the app with it, but only when
+            // whoever is here has shown it is theirs (signed in, or through the link sent to its address) and may have a
+            // link of their own. Holding a child's code alone never leads into it.
+            if (!$proven || local_oksigeniaaty_is_admin_account((int) $user->id)
+                    || !local_oksigeniaaty_user_can_selfservice((int) $user->id)) {
+                return [];
+            }
+            return [[
+                'label' => get_string('family:openapp', 'local_oksigeniaaty'),
+                'url' => \local_oksigeniaaty\api::issue_link((int) $user->id, 1)['url'],
+                'note' => get_string('family:openappyours', 'local_oksigeniaaty', format_string(get_site()->shortname)),
+            ]];
         }
     }
 

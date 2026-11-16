@@ -139,6 +139,66 @@ final class familyaccount_test extends \advanced_testcase {
     }
 
     /**
+     * A teacher who is also a parent goes into the app with their own account, once they have shown it is theirs; and
+     * only if they may have a link of their own.
+     */
+    public function test_teacher_parent(): void {
+        global $DB;
+        $teacher = $this->getDataGenerator()->create_user(['firstname' => 'Eva', 'email' => 'eva@school.example']);
+        $student = $this->getDataGenerator()->create_user();
+        $adult = family::claim(family::issue_claim_code((int) $student->id), [
+            'userid' => (int) $teacher->id,
+            'firstname' => 'Eva',
+            'lastname' => 'Real',
+        ]);
+
+        $this->assertSame([], \local_oksigeniaaty_oksigeniafamily_links($adult, (int) $student->id));
+        $links = \local_oksigeniaaty_oksigeniafamily_links($adult, (int) $student->id, true);
+        $this->assertCount(1, $links);
+        $this->assertStringContainsString('/local/oksigeniaaty/open.php?key=', $links[0]['url']);
+        $this->assertNull(familyaccount::ensure((int) $adult->id));
+
+        // Where links of one's own are only for some cohorts, and they are not in them: nothing.
+        $cohort = $this->getDataGenerator()->create_cohort();
+        set_config('selfservicecohorts', (string) $cohort->id, 'local_oksigeniaaty');
+        $this->assertSame([], \local_oksigeniaaty_oksigeniafamily_links($adult, (int) $student->id, true));
+        set_config('selfservicecohorts', '', 'local_oksigeniaaty');
+
+        // An administrator never gets one.
+        $DB->set_field('local_oksigeniafamily_adult', 'userid', get_admin()->id, ['id' => $adult->id]);
+        $adult->userid = get_admin()->id;
+        $this->assertSame([], \local_oksigeniaaty_oksigeniafamily_links($adult, (int) $student->id, true));
+    }
+
+    /**
+     * A family's account never takes an address another account already has: two accounts with one address break
+     * «Forgotten your password?» for both.
+     */
+    public function test_address_of_another_account(): void {
+        $this->getDataGenerator()->create_user(['email' => 'Ana@Example.org']);
+        [, $adult] = $this->claimed();
+
+        $user = \core_user::get_user(familyaccount::ensure((int) $adult->id));
+
+        $this->assertStringEndsWith('@invalid.invalid', $user->email);
+    }
+
+    /**
+     * Adding another child: the letter's QR, read with the app's scanner, or the code typed.
+     */
+    public function test_add_page_scans(): void {
+        $page = mobile::mobile_family_add([]);
+
+        $this->assertStringContainsString('atyScanCode()', $page['templates'][0]['html']);
+        $this->assertStringContainsString(get_string('family:scan', 'local_oksigeniaaty'), $page['templates'][0]['html']);
+        $this->assertStringContainsString('CoreQRScanService.scanQR()', $page['javascript']);
+        // Without Marandu's channels there is nothing more to connect, and no card for it on the home.
+        if (!class_exists(\local_oksigeniamarandu\api::class)) {
+            $this->assertNull(channels::home_card(get_admin()));
+        }
+    }
+
+    /**
      * What the claim page shows: the way in, only where the site uses the app.
      */
     public function test_claim_page_link(): void {

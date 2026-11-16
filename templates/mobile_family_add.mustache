@@ -17,21 +17,26 @@
 {{!
     @template local_oksigeniaaty/mobile_family_add
 
-    Another child's code, typed in the app.
+    Another child's code, scanned from the letter's QR or typed, in the app. The scan button shows only where the app
+    can scan (a phone); its JavaScript, fixed, is in classes/output/mobile.php.
 
     Context variables required for this template:
-    * intro, codelabel, add, sent - The words of the page.
+    * intro, codelabel, scan, add, sent - The words of the page.
 
     Example context (json):
     {
         "intro": "Type the code on the letter from the centre.",
         "codelabel": "Code",
+        "scan": "Scan the QR on the letter",
         "add": "Add",
         "sent": "Added."
     }
 }}
 <div class="ion-padding">
     <p>{{intro}}</p>
+    <ion-button expand="block" class="ion-margin-bottom" *ngIf="atyCanScan" (click)="atyScanCode()">
+        <ion-icon name="fas-qrcode" slot="start" aria-hidden="true"></ion-icon>{{scan}}
+    </ion-button>
     <ion-list>
         <ion-item>
             <ion-input label="{{codelabel}}" labelPlacement="stacked" autocapitalize="characters" [(ngModel)]="CONTENT_OTHERDATA.code"></ion-input>

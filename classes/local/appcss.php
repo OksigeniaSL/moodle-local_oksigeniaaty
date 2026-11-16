@@ -378,6 +378,22 @@ button.aty-bloque-pie { width: 100%; border: 0; border-top: 1px solid rgba(var(-
 .aty-estante-lomos .aty-libro-fila { grid-template-columns: 22px 1fr; align-items: center; padding: 8px 0; }
 .aty-estante-lomos .aty-libro-fila + .aty-libro-fila { border-top: 1px solid rgba(var(--ion-color-primary-rgb), .12); }
 .aty-estante-lomos .aty-libro-fila .aty-libro-lomo { width: 22px; height: 52px; }
+/* Where the centre's notices reach a family: each place on its line, a tick where they already get them and «Connect»
+   where they do not yet; the card leaves the home once everything is connected. */
+.aty-avisos { margin: 12px 0 4px; padding: 4px 14px 0; border-radius: 18px;
+    background: var(--ion-item-background, var(--ion-background-color)); box-shadow: var(--aty-card-shadow); }
+.aty-avisos-canal { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 12px; padding: 10px 0; }
+.aty-avisos-canal + .aty-avisos-canal { border-top: 1px solid rgba(var(--ion-color-primary-rgb), .12); }
+.aty-avisos-icono { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(var(--ion-color-primary-rgb), .14); color: var(--primary); }
+.aty-avisos-icono ion-icon { width: 18px; height: 18px; }
+.aty-avisos-texto { min-width: 0; }
+.aty-avisos-texto b { display: block; font-weight: 800; }
+.aty-avisos-texto small { display: block; overflow: hidden; color: var(--ion-color-medium); font-size: .85rem;
+    text-overflow: ellipsis; white-space: nowrap; }
+.aty-avisos-hecho { width: 20px; height: 20px; color: var(--ion-color-success); }
+.aty-avisos .aty-bloque-pie { display: flex; align-items: center; justify-content: space-between; padding: 12px 0;
+    color: var(--primary); }
 /* Rows inside a block are lines of it, not cards of their own: also in dark, whose outline rule weighs more; and also
    in a plugin's own body (Jujol). */
 :root .aty-bloque-cuerpo .aty-event, :root.dark .aty-bloque-cuerpo .aty-event, :root .dark .aty-bloque-cuerpo .aty-event {

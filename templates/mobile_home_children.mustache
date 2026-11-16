@@ -24,6 +24,8 @@
     * childrenheading, familyheading, familyaddname - The words.
     * children - id, label, initial, group, argsjson, hasfacets and facets (text, icon, urgent, hasmenu, menu, menucolor).
     * haschildren - Whether there are children yet.
+    * channelscard - Where the centre's notices reach the family, while somewhere is left to connect: heading, rows
+      (name, icon, detail, on, url, connect), connectlabel and more, the page of all the places (optional).
 
     Example context (json):
     {
@@ -67,4 +69,20 @@
         </button>
         {{/haschildren}}
     </div>
+    {{#channelscard}}
+    <h2 class="aty-section">{{heading}}</h2>
+    <div class="aty-avisos">
+        {{#rows}}
+        <div class="aty-avisos-canal{{#on}} aty-avisos-on{{/on}}">
+            <span class="aty-avisos-icono"><ion-icon name="{{icon}}" aria-hidden="true"></ion-icon></span>
+            <span class="aty-avisos-texto"><b>{{name}}</b>{{#detail}}<small>{{detail}}</small>{{/detail}}</span>
+            {{#on}}<ion-icon class="aty-avisos-hecho" name="fas-check" aria-hidden="true"></ion-icon>{{/on}}
+            {{#url}}<ion-button size="small" core-link href="{{url}}" capture="false" showBrowserWarning="false" aria-label="{{connect}}">{{connectlabel}}</ion-button>{{/url}}
+        </div>
+        {{/rows}}
+        <button type="button" class="aty-bloque-pie" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_channels" title="{{more}}">
+            {{more}}<ion-icon name="fas-chevron-right" aria-hidden="true"></ion-icon>
+        </button>
+    </div>
+    {{/channelscard}}
 {{/hasfamily}}
