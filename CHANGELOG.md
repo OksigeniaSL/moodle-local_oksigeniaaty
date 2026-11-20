@@ -9,8 +9,8 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 - «Your work» on the app's home, for whoever runs something (the office, the canteen, the library, a families' inbox):
   the panel of the dashboard block Oksigenia Tembiapo, where it is installed and enabled, with its order and its hidden
-  services. The first three things waiting to be sorted out, the urgent first and each with its service's logo and by
-  when, open where they are sorted out; below, a door into each service, two in a row, with how many things of it are
+  services. The first three things waiting to be sorted out, the urgent first and each with its service's logo, open
+  where they are sorted out; below, a door into each service, two in a row, with how many things of it are
   waiting. «See all» opens the whole panel with each service's shortcuts, only when it has more than the home. A plugin
   takes part through the block's `<component>_oksigenia_work()`, and its tile in "Also" gives way to its door. The line
   under the greeting counts what is waiting among the day's things.

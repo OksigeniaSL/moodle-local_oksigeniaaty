@@ -267,7 +267,6 @@ button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
     background: white; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06); }
 .aty-servicio-logo img { display: block; width: 28px; height: 28px; object-fit: contain; }
 .aty-aviso.aty-urgent { box-shadow: inset 4px 0 0 var(--ion-color-danger), var(--aty-card-shadow); }
-.aty-aviso.aty-urgent .aty-event-time { color: var(--ion-color-danger); }
 :root.dark .aty-aviso.aty-urgent, :root .dark .aty-aviso.aty-urgent { outline: 1px solid rgba(255, 255, 255, .08);
     box-shadow: inset 4px 0 0 var(--ion-color-danger); }
 .aty-agenda + .aty-puertas { margin-top: 8px; }

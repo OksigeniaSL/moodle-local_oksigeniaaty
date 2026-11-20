@@ -44,10 +44,9 @@ class yourwork {
      * «Your work» of a person, ready for the templates, or null when there is none: no block, or nothing they run.
      *
      * @param int $userid The person.
-     * @param int $now The time it is.
      * @return array|null See shape().
      */
-    public static function for_user(int $userid, int $now): ?array {
+    public static function for_user(int $userid): ?array {
         global $DB;
 
         $board = self::BOARD;
@@ -88,7 +87,7 @@ class yourwork {
             return null;
         }
 
-        return self::shape($built, $now);
+        return self::shape($built);
     }
 
     /**
@@ -96,12 +95,10 @@ class yourwork {
      * (in its own window, or in the phone's browser for the pages a plugin wants there).
      *
      * @param array $board From the block's board::build(): doors (ordered) and alerts (the urgent first, then by when due).
-     * @param int $now The time it is.
      * @return array|null alerts, shown (the home's), hasshown, doors, hasmore (something only «See all» has), components;
      *     null without doors.
      */
-    public static function shape(array $board, int $now): ?array {
-        $today = usergetmidnight($now);
+    public static function shape(array $board): ?array {
         $doors = [];
         foreach (is_array($board['doors'] ?? null) ? $board['doors'] : [] as $door) {
             $door = is_array($door) ? self::door($door) : null;
@@ -114,7 +111,7 @@ class yourwork {
         }
         $alerts = [];
         foreach (is_array($board['alerts'] ?? null) ? $board['alerts'] : [] as $alert) {
-            $alert = is_array($alert) ? self::alert($alert, $today) : null;
+            $alert = is_array($alert) ? self::alert($alert) : null;
             if ($alert !== null) {
                 $alerts[] = $alert;
             }
@@ -171,36 +168,25 @@ class yourwork {
     }
 
     /**
-     * A line of what is waiting to be sorted out: what, of which service, by when.
+     * A line of what is waiting to be sorted out: what, and of which service. When it is due only orders the list, as in
+     * the block: it may be a time gone by (the oldest of the late books), and the text already says the hour that matters.
      *
-     * @param array $alert As the board gives it: text, url, urgent, due, service, serviceicon.
-     * @param int $today Midnight of today, for the user.
+     * @param array $alert As the board gives it: text, url, urgent, service, serviceicon.
      * @return array|null
      */
-    private static function alert(array $alert, int $today): ?array {
+    private static function alert(array $alert): ?array {
         $text = trim((string) ($alert['text'] ?? ''));
         $target = self::target($alert['url'] ?? '');
         if ($text === '' || $target === null) {
             return null;
         }
-        $due = max(0, (int) ($alert['due'] ?? 0));
-        $duetoday = $due > 0 && usergetmidnight($due) === $today;
 
         return template::inert([
             'text' => $text,
             'service' => trim((string) ($alert['service'] ?? '')),
-            // Today, its hour; another day, the day.
-            'duetext' => $due > 0
-                ? trim(userdate($due, $duetoday ? get_string('strftimetime', 'langconfig')
-                    : get_string('yourwork:dueday', 'local_oksigeniaaty')))
-                : '',
         ]) + [
             'icon' => template::inert(self::icon($alert['serviceicon'] ?? ''), true),
             'urgent' => !empty($alert['urgent']),
-            'hasdue' => $due > 0,
-            'duetoday' => $duetoday,
-            // As in the agenda: the app redraws today's hour in the phone's own time zone.
-            'duetimestamp' => $due * 1000,
         ] + $target;
     }
 

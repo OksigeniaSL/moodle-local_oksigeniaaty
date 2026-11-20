@@ -378,7 +378,6 @@ $string['work:status:one'] = '{$a} persona con la app';
 $string['work:title'] = 'App móvil';
 $string['yourwork:alertcount'] = '{$a} por resolver';
 $string['yourwork:alerts'] = 'Por resolver';
-$string['yourwork:dueday'] = '%e %b';
 $string['yourwork:heading'] = 'Tu trabajo';
 $string['yourwork:none'] = 'Nada por resolver.';
 $string['yourwork:services'] = 'Tus servicios';

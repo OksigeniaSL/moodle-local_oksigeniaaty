@@ -378,7 +378,6 @@ $string['work:status:one'] = '{$a} person with the app';
 $string['work:title'] = 'Mobile app';
 $string['yourwork:alertcount'] = '{$a} to sort out';
 $string['yourwork:alerts'] = 'To sort out';
-$string['yourwork:dueday'] = '%e %b';
 $string['yourwork:heading'] = 'Your work';
 $string['yourwork:none'] = 'Nothing to sort out.';
 $string['yourwork:services'] = 'Your services';

@@ -95,7 +95,7 @@ class mobile {
         // A family's account greets in a line, low, with the day: what it has to do comes right under it (design by Jujol).
         $familyonly = $children !== null && \local_oksigeniaaty\local\familyaccount::is_own($USER);
         // «Your work»: the panel of the dashboard block of the Oksigenia plugins, for whoever runs something.
-        $work = $familyonly ? null : yourwork::for_user((int) $USER->id, $now);
+        $work = $familyonly ? null : yourwork::for_user((int) $USER->id);
 
         $data = template::inert([
             'logourl' => $logourl,
@@ -224,7 +224,7 @@ class mobile {
     public static function mobile_work(array $args): array {
         global $OUTPUT, $USER;
 
-        $work = yourwork::for_user((int) $USER->id, time());
+        $work = yourwork::for_user((int) $USER->id);
         $data = template::inert([
             'alertsheading' => get_string('yourwork:alerts', 'local_oksigeniaaty'),
             'servicesheading' => get_string('yourwork:services', 'local_oksigeniaaty'),

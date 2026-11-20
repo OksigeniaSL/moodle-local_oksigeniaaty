@@ -67,7 +67,7 @@ final class yourwork_test extends \advanced_testcase {
         }
         $user = $this->getDataGenerator()->create_user();
 
-        $this->assertNull(yourwork::for_user((int) $user->id, time()));
+        $this->assertNull(yourwork::for_user((int) $user->id));
     }
 
     /**
@@ -77,10 +77,7 @@ final class yourwork_test extends \advanced_testcase {
     public function test_shape(): void {
         global $CFG;
         $this->resetAfterTest();
-        $this->setTimezone('Europe/Madrid');
-        $now = make_timestamp(2026, 11, 20, 9, 0, 0);
-
-        $work = yourwork::shape($this->board($now), $now);
+        $work = yourwork::shape($this->board(time()));
 
         $this->assertSame(['Canteen', 'Families ｛｛ x ｝｝', 'Library'], array_column($work['doors'], 'title'));
         $this->assertSame(['local_canteen', 'local_inbox', 'local_library'], $work['components']);
@@ -98,14 +95,13 @@ final class yourwork_test extends \advanced_testcase {
         $this->assertSame($texts, array_column($work['alerts'], 'text'));
         $this->assertCount(3, $work['shown']);
         $this->assertTrue($work['hasmore']);
-        [$missing, $ana, $notes] = $work['alerts'];
-        $this->assertTrue($missing['duetoday']);
-        $this->assertSame(($now + 600) * 1000, $missing['duetimestamp']);
-        $this->assertFalse($ana['hasdue']);
+        [$missing, $ana] = $work['alerts'];
+        $this->assertTrue($missing['urgent']);
+        $this->assertSame('Canteen', $missing['service']);
+        $this->assertSame('https://example.org/canteen.svg', $missing['icon']);
+        // When it is due only orders the list, as in the block.
+        $this->assertArrayNotHasKey('due', $missing);
         $this->assertSame($CFG->wwwroot . '/local/inbox/conversation.php?id=7', $ana['url']);
-        $this->assertTrue($notes['hasdue']);
-        $this->assertFalse($notes['duetoday']);
-        $this->assertSame('23 Nov', $notes['duetext']);
     }
 
     /**
@@ -118,9 +114,9 @@ final class yourwork_test extends \advanced_testcase {
         $board['alerts'] = array_slice($board['alerts'], 0, 2);
         $board['doors'][0]['actions'] = [];
 
-        $this->assertFalse(yourwork::shape($board, $now)['hasmore']);
-        $this->assertNull(yourwork::shape(['doors' => [], 'alerts' => $board['alerts']], $now));
-        $this->assertNull(yourwork::shape(['doors' => [['title' => 'No address']]], $now));
+        $this->assertFalse(yourwork::shape($board)['hasmore']);
+        $this->assertNull(yourwork::shape(['doors' => [], 'alerts' => $board['alerts']]));
+        $this->assertNull(yourwork::shape(['doors' => [['title' => 'No address']]]));
     }
 
     /**
@@ -130,7 +126,7 @@ final class yourwork_test extends \advanced_testcase {
         global $OUTPUT;
         $this->resetAfterTest();
         $now = time();
-        $work = yourwork::shape($this->board($now), $now);
+        $work = yourwork::shape($this->board($now));
 
         $home = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_home', [
             'work' => ['heading' => 'Your work', 'seeall' => 'See all'] + $work,
