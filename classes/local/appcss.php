@@ -287,10 +287,19 @@ button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
 .aty-puerta-nombre { font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
 .aty-puerta-estado { display: -webkit-box; overflow: hidden; color: var(--ion-color-medium); font-size: .8rem;
     line-height: 1.3; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-/* The whole panel, behind «See all»: each service, its door and, under it, its shortcuts. */
-.aty-servicios { display: grid; gap: 14px; }
-.aty-servicio .aty-atajos { margin: 8px 0 0; }
+/* The whole panel, behind «See all»: each service a card, its door above and its shortcuts inside it, below. */
+.aty-servicios { display: grid; gap: 10px; }
+.aty-servicio { overflow: hidden; border-radius: 14px; background: var(--ion-item-background, var(--ion-background-color));
+    box-shadow: var(--aty-card-shadow); }
+:root.dark .aty-servicio, :root .dark .aty-servicio { box-shadow: none; outline: 1px solid rgba(255, 255, 255, .08); }
+.aty-servicio .aty-puerta, :root.dark .aty-servicio .aty-puerta, :root .dark .aty-servicio .aty-puerta {
+    border-radius: 0; background: transparent; box-shadow: none; outline: 0; }
 .aty-servicio .aty-puerta-estado { -webkit-line-clamp: 3; }
+.aty-servicio .aty-atajos { margin: 0; padding: 0 12px 12px; }
+.aty-servicio .aty-atajo { min-height: 36px; padding: 0 14px; background: rgba(var(--ion-color-primary-rgb), .1);
+    color: var(--primary); box-shadow: none; }
+:root.dark .aty-servicio .aty-atajo, :root .dark .aty-servicio .aty-atajo {
+    background: rgba(var(--ion-color-primary-rgb), .22); color: var(--ion-text-color); }
 .aty-trabajo-nada { margin: 24px 4px; color: var(--ion-color-medium); }
 
 /* The family's app (Jujol, 15 November 2026). */
