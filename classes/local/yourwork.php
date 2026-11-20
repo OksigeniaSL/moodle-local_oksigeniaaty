@@ -31,8 +31,11 @@ namespace local_oksigeniaaty\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class yourwork {
-    /** @var int The alerts the home shows; the rest, with the services' shortcuts, are behind «See all». */
+    /** @var int The alerts the home shows at least, when there are; every urgent one shows, however many. */
     public const HOME_ALERTS = 3;
+
+    /** @var int The letters of a door's line of state on the home, in whole parts between «·»: two lines of a half door. */
+    public const HOME_STATUS = 44;
 
     /** @var string The block's board, which knows the contract and orders what the plugins give. */
     private const BOARD = '\block_oksigeniatembiapo\local\board';
@@ -116,7 +119,16 @@ class yourwork {
                 $alerts[] = $alert;
             }
         }
-        $shown = array_slice($alerts, 0, self::HOME_ALERTS);
+        // Every urgent one, and the others up to three: the urgent never stay out of sight (Jujol, 20 November 2026).
+        $urgent = array_values(array_filter($alerts, fn(array $alert): bool => $alert['urgent']));
+        $others = array_values(array_filter($alerts, fn(array $alert): bool => !$alert['urgent']));
+        $shown = array_merge($urgent, array_slice($others, 0, max(0, self::HOME_ALERTS - count($urgent))));
+        // The doors with something urgent first, then those with something waiting, then the rest; in each, the block's
+        // order (the site's, then by name).
+        $rank = fn(array $door): int => $door['urgent'] ? 0 : ($door['hasalerts'] ? 1 : 2);
+        $place = array_flip(array_keys($doors));
+        uksort($doors, fn(int $a, int $b): int => [$rank($doors[$a]), $place[$a]] <=> [$rank($doors[$b]), $place[$b]]);
+        $doors = array_values($doors);
 
         return [
             'alerts' => $alerts,
@@ -151,10 +163,12 @@ class yourwork {
             }
         }
         $count = max(0, (int) ($door['alertcount'] ?? 0));
+        $status = trim((string) ($door['status'] ?? ''));
 
         return template::inert([
-            'title' => $title,
-            'status' => trim((string) ($door['status'] ?? '')),
+            'title' => self::name($title),
+            'status' => $status,
+            'statusshort' => self::short($status),
             'alertlabel' => $count > 0 ? get_string('yourwork:alertcount', 'local_oksigeniaaty', $count) : '',
         ]) + [
             'component' => (string) ($door['component'] ?? ''),
@@ -182,8 +196,9 @@ class yourwork {
         }
 
         return template::inert([
-            'text' => $text,
-            'service' => trim((string) ($alert['service'] ?? '')),
+            // All alike, without the full stop some plugins put and others do not («…» and «?» stay).
+            'text' => preg_replace('/(?<!\.)\.$/u', '', $text),
+            'service' => self::name(trim((string) ($alert['service'] ?? ''))),
         ]) + [
             'icon' => template::inert(self::icon($alert['serviceicon'] ?? ''), true),
             'urgent' => !empty($alert['urgent']),
@@ -210,6 +225,46 @@ class yourwork {
         }
 
         return ['url' => template::inert($url, true), 'browser' => browserpages::matches($url)];
+    }
+
+    /**
+     * A service's name without saying twice what its logo already says: «Library · Library of the school» is «Library of
+     * the school». A name in two parts whose second one starts with the first keeps only the second.
+     *
+     * @param string $name The name the plugin gave.
+     * @return string
+     */
+    public static function name(string $name): string {
+        $parts = array_map('trim', explode(' · ', $name, 2));
+        if (count($parts) !== 2 || $parts[0] === '') {
+            return $name;
+        }
+        [$first, $second] = array_map(fn(string $part): string => \core_text::strtolower($part), $parts);
+        if (\core_text::strpos($second, $first) === 0) {
+            return $parts[1];
+        }
+
+        return $name;
+    }
+
+    /**
+     * A door's line of state for the home, never cut in the middle of a part: the whole parts between «·» that fit in two
+     * lines of a half door; always the first. The whole line is behind «See all».
+     *
+     * @param string $status The line the plugin gave.
+     * @return string
+     */
+    public static function short(string $status): string {
+        $short = '';
+        foreach (explode(' · ', $status) as $part) {
+            $longer = $short === '' ? $part : $short . ' · ' . $part;
+            if ($short !== '' && \core_text::strlen($longer) > self::HOME_STATUS) {
+                break;
+            }
+            $short = $longer;
+        }
+
+        return $short;
     }
 
     /**

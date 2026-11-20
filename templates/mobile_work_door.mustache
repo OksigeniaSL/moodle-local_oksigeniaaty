@@ -24,7 +24,7 @@
     * none
 
     Context variables required for this template:
-    * title, status, icon - The service.
+    * title, status, icon - The service; short (from the home's context) for its line in whole parts, statusshort.
     * hasalerts, alertcount, alertlabel, urgent - What of it is waiting.
     * url, browser - Its main page; in the phone's browser for the pages a plugin wants there.
 
@@ -41,6 +41,7 @@
         {{#hasalerts}}<span class="aty-puerta-avisos" aria-label="{{alertlabel}}">{{alertcount}}</span>{{/hasalerts}}
     </span>
     <span class="aty-puerta-nombre">{{title}}</span>
-    {{#status}}<span class="aty-puerta-estado">{{status}}</span>{{/status}}
+    {{#short}}{{#statusshort}}<span class="aty-puerta-estado">{{statusshort}}</span>{{/statusshort}}{{/short}}
+    {{^short}}{{#status}}<span class="aty-puerta-estado">{{status}}</span>{{/status}}{{/short}}
 </a>
 {{/title}}

@@ -73,8 +73,8 @@ With Oksigenia Tembiapo («Your work» on the dashboard), whoever may send the a
 have it, and the site's QR code at hand for whoever runs the site.
 
 Where Tembiapo is installed and enabled, the app's home has «Your work» too, for whoever runs something (the office,
-the canteen, the library): the first three things waiting to be sorted out, the urgent first, each opening where it is
-sorted out, and a door into each service, with the block's order and hidden services. Its «See all» opens the whole
+the canteen, the library): every urgent thing waiting to be sorted out and the others up to three, each opening where
+it is sorted out, and a door into each service, those with something waiting first, with the block's hidden services. Its «See all» opens the whole
 panel, with each service's shortcuts. A plugin takes part through the block's own function,
 `<component>_oksigenia_work(int $userid): array`, and nothing else; its tile in "Also" gives way to its door.
 

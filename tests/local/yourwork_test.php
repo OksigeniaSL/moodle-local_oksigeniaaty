@@ -41,18 +41,23 @@ final class yourwork_test extends \advanced_testcase {
                 ['component' => 'local_inbox', 'title' => 'Families {{ x }}', 'url' => '/local/inbox/',
                     'status' => '', 'icon' => 'javascript:alert(1)', 'alertcount' => 1, 'urgent' => false, 'actions' => []],
                 ['component' => 'local_broken', 'title' => 'No way in', 'url' => 'javascript:alert(1)'],
-                ['component' => 'local_library', 'title' => 'Library', 'url' => 'https://example.org/library/',
-                    'alertcount' => 0, 'actions' => []],
+                ['component' => 'local_library', 'title' => 'Library · Library of the school',
+                    'url' => 'https://example.org/library/', 'alertcount' => 0, 'actions' => []],
+                ['component' => 'local_screens', 'title' => 'Screens', 'url' => 'https://example.org/screens/',
+                    'status' => 'One screen without signal · 12 screens on · 3 groups · next notice at 8:00',
+                    'alertcount' => 1, 'urgent' => true, 'actions' => []],
             ],
             'alerts' => [
                 ['text' => '4 pupils without a menu', 'url' => 'https://example.org/canteen/missing', 'urgent' => true,
                     'due' => $now + 600, 'service' => 'Canteen', 'serviceicon' => 'https://example.org/canteen.svg'],
                 ['text' => 'Ana is waiting for an answer', 'url' => '/local/inbox/conversation.php?id=7', 'urgent' => false,
                     'service' => 'Families', 'serviceicon' => ''],
-                ['text' => 'Notes to review', 'url' => 'https://example.org/canteen/notes', 'urgent' => false,
+                ['text' => 'Notes to review.', 'url' => 'https://example.org/canteen/notes', 'urgent' => false,
                     'due' => $now + 3 * DAYSECS, 'service' => 'Canteen', 'serviceicon' => 'https://example.org/canteen.svg'],
                 ['text' => 'A line that leads nowhere', 'url' => 'ftp://example.org/', 'urgent' => false],
                 ['text' => 'One more', 'url' => 'https://example.org/canteen/more', 'urgent' => false, 'service' => 'Canteen'],
+                ['text' => 'A screen gives no sign.', 'url' => 'https://example.org/screens/', 'urgent' => true,
+                    'service' => 'Screens'],
             ],
         ];
     }
@@ -71,17 +76,21 @@ final class yourwork_test extends \advanced_testcase {
     }
 
     /**
-     * The doors and the alerts as the app takes them: in the board's order, every text inert, every address whole and of
-     * the web, and the home's three first alerts with «See all» for the rest.
+     * The doors and the alerts as the app takes them: the doors with something urgent first, then with something waiting,
+     * then the rest; every text inert, every address whole and of the web; on the home every urgent alert and the others
+     * up to three, with «See all» for the rest.
      */
     public function test_shape(): void {
         global $CFG;
         $this->resetAfterTest();
         $work = yourwork::shape($this->board(time()));
 
-        $this->assertSame(['Canteen', 'Families ｛｛ x ｝｝', 'Library'], array_column($work['doors'], 'title'));
-        $this->assertSame(['local_canteen', 'local_inbox', 'local_library'], $work['components']);
-        [$canteen, $inbox, $library] = $work['doors'];
+        $titles = ['Canteen', 'Screens', 'Families ｛｛ x ｝｝', 'Library of the school'];
+        $this->assertSame($titles, array_column($work['doors'], 'title'));
+        $this->assertSame(['local_canteen', 'local_screens', 'local_inbox', 'local_library'], $work['components']);
+        [$canteen, $screens, $inbox, $library] = $work['doors'];
+        $this->assertSame('One screen without signal · 12 screens on', $screens['statusshort']);
+        $this->assertSame('312 menus today', $canteen['statusshort']);
         $this->assertSame($CFG->wwwroot . '/local/inbox/', $inbox['url']);
         $this->assertSame('', $inbox['icon']);
         $this->assertTrue($canteen['urgent']);
@@ -91,9 +100,11 @@ final class yourwork_test extends \advanced_testcase {
         $this->assertSame([$menu], $canteen['actions']);
         $this->assertFalse($library['hasalerts']);
 
-        $texts = ['4 pupils without a menu', 'Ana is waiting for an answer', 'Notes to review', 'One more'];
+        $texts = ['4 pupils without a menu', 'Ana is waiting for an answer', 'Notes to review', 'One more',
+            'A screen gives no sign'];
         $this->assertSame($texts, array_column($work['alerts'], 'text'));
-        $this->assertCount(3, $work['shown']);
+        $shown = ['4 pupils without a menu', 'A screen gives no sign', 'Ana is waiting for an answer'];
+        $this->assertSame($shown, array_column($work['shown'], 'text'));
         $this->assertTrue($work['hasmore']);
         [$missing, $ana] = $work['alerts'];
         $this->assertTrue($missing['urgent']);
@@ -102,6 +113,18 @@ final class yourwork_test extends \advanced_testcase {
         // When it is due only orders the list, as in the block.
         $this->assertArrayNotHasKey('due', $missing);
         $this->assertSame($CFG->wwwroot . '/local/inbox/conversation.php?id=7', $ana['url']);
+    }
+
+    /**
+     * A name that says twice what its logo says keeps its second part; a line of state on the home, whole parts only.
+     */
+    public function test_name_and_short(): void {
+        $this->assertSame('Library of the school', yourwork::name('Library · Library of the school'));
+        $this->assertSame('Canteen · North', yourwork::name('Canteen · North'));
+        $this->assertSame('Library', yourwork::name('Library'));
+        $long = 'A first part that is longer than two lines of a half door';
+        $this->assertSame($long, yourwork::short($long . ' · and more'));
+        $this->assertSame('', yourwork::short(''));
     }
 
     /**
@@ -136,12 +159,15 @@ final class yourwork_test extends \advanced_testcase {
         $this->assertStringContainsString('inApp="true"', $home);
         $this->assertStringContainsString('class="aty-puerta aty-urgent"', $home);
         $this->assertStringNotContainsString('One more', $home);
+        $this->assertStringContainsString('12 screens on', $home);
+        $this->assertStringNotContainsString('3 groups', $home);
 
         $page = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_work', [
             'hasdoors' => true, 'hasalerts' => true, 'alerts' => $work['alerts'], 'doors' => $work['doors'],
             'alertsheading' => 'To sort out', 'servicesheading' => 'Your services',
         ]);
         $this->assertStringContainsString('One more', $page);
+        $this->assertStringContainsString('3 groups', $page);
         $this->assertStringContainsString('Menu of the day', $page);
 
         $none = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_work', ['hasdoors' => false, 'none' => 'Nothing.']);

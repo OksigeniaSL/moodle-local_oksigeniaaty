@@ -5,6 +5,20 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.88-dev)
+
+- «Your work» on the app's home, after Jujol's review:
+  - every urgent thing shows, however many, and the others up to three;
+  - the doors with something urgent go first, then those with something waiting, then the rest, each group in the
+    block's order;
+  - a service's name that says twice what its logo says keeps its second part («Library · Library of the school» is
+    «Library of the school»);
+  - the count of a door is an outline, and filled in the colour of danger when one is urgent: not by the colour alone;
+  - a door's line of state on the home is never cut with «…»: the whole parts between «·» that fit, and the whole line
+    behind «See all»;
+  - the lines go without the full stop some plugins put;
+  - in dark, the logos' plate is an off white.
+
 ### Added (0.5.87-dev)
 
 - «Your work» on the app's home, for whoever runs something (the office, the canteen, the library, a families' inbox):

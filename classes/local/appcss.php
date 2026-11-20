@@ -266,6 +266,8 @@ button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
 .aty-servicio-logo { flex: 0 0 auto; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px;
     background: white; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06); }
 .aty-servicio-logo img { display: block; width: 28px; height: 28px; object-fit: contain; }
+/* In dark, an off white: ten white plates weigh too much on the dark canvas, and the logos still read. */
+:root.dark .aty-servicio-logo, :root .dark .aty-servicio-logo { background: rgb(222 222 218); box-shadow: none; }
 .aty-aviso.aty-urgent { box-shadow: inset 4px 0 0 var(--ion-color-danger), var(--aty-card-shadow); }
 :root.dark .aty-aviso.aty-urgent, :root .dark .aty-aviso.aty-urgent { outline: 1px solid rgba(255, 255, 255, .08);
     box-shadow: inset 4px 0 0 var(--ion-color-danger); }
@@ -280,13 +282,17 @@ button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
 .aty-puerta-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin: 0 0 8px; }
 .aty-puerta .aty-servicio-logo { width: 40px; height: 40px; border-radius: 11px; }
 .aty-puerta .aty-servicio-logo img { width: 26px; height: 26px; }
-.aty-puerta-avisos { display: inline-grid; place-items: center; min-width: 26px; height: 26px; padding: 0 8px;
-    border-radius: 999px; background: var(--primary); color: var(--primary-contrast); font-size: .82rem; font-weight: 800; }
-.aty-puerta.aty-urgent .aty-puerta-avisos { background: var(--ion-color-danger);
-    color: var(--ion-color-danger-contrast, white); }
+/* How many are waiting: an outline; filled, in the colour of danger, when one is urgent. Not by the colour alone. */
+.aty-puerta-avisos { display: inline-grid; place-items: center; box-sizing: border-box; min-width: 26px; height: 26px;
+    padding: 0 7px; border: 2px solid var(--primary); border-radius: 999px; color: var(--primary); font-size: .82rem;
+    font-weight: 800; }
+:root.dark .aty-puerta-avisos, :root .dark .aty-puerta-avisos { border-color: var(--ion-color-medium);
+    color: var(--ion-text-color); }
+.aty-puerta.aty-urgent .aty-puerta-avisos, :root.dark .aty-puerta.aty-urgent .aty-puerta-avisos,
+:root .dark .aty-puerta.aty-urgent .aty-puerta-avisos { border-color: var(--ion-color-danger);
+    background: var(--ion-color-danger); color: var(--ion-color-danger-contrast, white); }
 .aty-puerta-nombre { font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
-.aty-puerta-estado { display: -webkit-box; overflow: hidden; color: var(--ion-color-medium); font-size: .8rem;
-    line-height: 1.3; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.aty-puerta-estado { color: var(--ion-color-medium); font-size: .8rem; line-height: 1.3; }
 /* The whole panel, behind «See all»: each service a card, its door above and its shortcuts inside it, below. */
 .aty-servicios { display: grid; gap: 10px; }
 .aty-servicio { overflow: hidden; border-radius: 14px; background: var(--ion-item-background, var(--ion-background-color));
@@ -294,7 +300,6 @@ button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
 :root.dark .aty-servicio, :root .dark .aty-servicio { box-shadow: none; outline: 1px solid rgba(255, 255, 255, .08); }
 .aty-servicio .aty-puerta, :root.dark .aty-servicio .aty-puerta, :root .dark .aty-servicio .aty-puerta {
     border-radius: 0; background: transparent; box-shadow: none; outline: 0; }
-.aty-servicio .aty-puerta-estado { -webkit-line-clamp: 3; }
 .aty-servicio .aty-atajos { margin: 0; padding: 0 12px 12px; }
 .aty-servicio .aty-atajo { min-height: 36px; padding: 0 14px; background: rgba(var(--ion-color-primary-rgb), .1);
     color: var(--primary); box-shadow: none; }

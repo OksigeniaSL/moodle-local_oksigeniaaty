@@ -155,6 +155,8 @@ class mobile {
             'hasshown' => $work['hasshown'],
             'shown' => $work['shown'],
             'doors' => $work['doors'],
+            // The doors' lines of state in whole parts, never cut with «…»; the whole lines are behind «See all».
+            'short' => true,
         ];
         $data['todo'] = $todo;
         $data['cards'] = $shown;
