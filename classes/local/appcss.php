@@ -260,6 +260,40 @@ button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
 .aty-atajo .aty-atajo-icono { color: var(--primary); font-size: 18px; }
 .aty-atajo .aty-atajo-fuera { color: var(--ion-color-medium); font-size: 12px; }
 
+/* --- «Your work»: what is waiting, then a door into each service (the dashboard block of the Oksigenia plugins) ------ */
+/* A logo keeps the colours of its brand, so it sits on a plate that is always light, in light and in dark, as in the
+   block. */
+.aty-servicio-logo { flex: 0 0 auto; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px;
+    background: #fff; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06); }
+.aty-servicio-logo img { display: block; width: 28px; height: 28px; object-fit: contain; }
+.aty-aviso.aty-urgent { box-shadow: inset 4px 0 0 var(--ion-color-danger), var(--aty-card-shadow); }
+.aty-aviso.aty-urgent .aty-event-time { color: var(--ion-color-danger); }
+:root.dark .aty-aviso.aty-urgent, :root .dark .aty-aviso.aty-urgent { outline: 1px solid rgba(255, 255, 255, .08);
+    box-shadow: inset 4px 0 0 var(--ion-color-danger); }
+.aty-agenda + .aty-puertas { margin-top: 8px; }
+/* Two doors in a row; an odd last one takes the whole row, so no hole is left. */
+.aty-puertas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.aty-puerta { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 12px; border-radius: 14px;
+    background: var(--ion-item-background, var(--ion-background-color)); color: var(--ion-text-color);
+    text-decoration: none; box-shadow: var(--aty-card-shadow); }
+.aty-puertas .aty-puerta:last-child:nth-child(odd) { grid-column: 1 / -1; }
+:root.dark .aty-puerta, :root .dark .aty-puerta { box-shadow: none; outline: 1px solid rgba(255, 255, 255, .08); }
+.aty-puerta-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin: 0 0 8px; }
+.aty-puerta .aty-servicio-logo { width: 40px; height: 40px; border-radius: 11px; }
+.aty-puerta .aty-servicio-logo img { width: 26px; height: 26px; }
+.aty-puerta-avisos { display: inline-grid; place-items: center; min-width: 26px; height: 26px; padding: 0 8px;
+    border-radius: 999px; background: var(--primary); color: var(--primary-contrast); font-size: .82rem; font-weight: 800; }
+.aty-puerta.aty-urgent .aty-puerta-avisos { background: var(--ion-color-danger);
+    color: var(--ion-color-danger-contrast, #fff); }
+.aty-puerta-nombre { font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+.aty-puerta-estado { display: -webkit-box; overflow: hidden; color: var(--ion-color-medium); font-size: .8rem;
+    line-height: 1.3; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+/* The whole panel, behind «See all»: each service, its door and, under it, its shortcuts. */
+.aty-servicios { display: grid; gap: 14px; }
+.aty-servicio .aty-atajos { margin: 8px 0 0; }
+.aty-servicio .aty-puerta-estado { -webkit-line-clamp: 3; }
+.aty-trabajo-nada { margin: 24px 4px; color: var(--ion-color-medium); }
+
 /* The family's app (Jujol, 15 November 2026). */
 
 

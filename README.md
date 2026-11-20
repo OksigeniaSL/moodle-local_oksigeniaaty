@@ -72,6 +72,12 @@ sign-in link to the app, for a plugin that registers people who have no password
 With Oksigenia Tembiapo («Your work» on the dashboard), whoever may send the app gets a door to it with how many people
 have it, and the site's QR code at hand for whoever runs the site.
 
+Where Tembiapo is installed and enabled, the app's home has «Your work» too, for whoever runs something (the office,
+the canteen, the library): the first three things waiting to be sorted out, the urgent first, each opening where it is
+sorted out, and a door into each service, with the block's order and hidden services. Its «See all» opens the whole
+panel, with each service's shortcuts. A plugin takes part through the block's own function,
+`<component>_oksigenia_work(int $userid): array`, and nothing else; its tile in "Also" gives way to its door.
+
 ## Privacy
 
 The plugin stores a hash of each user's app PIN (never the PIN itself), with its failed attempts, and uses Moodle's one-time user keys for the sign-in links. Both are declared to Moodle's privacy API, which exports and deletes them with the rest of the user's data.

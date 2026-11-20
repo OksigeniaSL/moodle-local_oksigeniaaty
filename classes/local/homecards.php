@@ -201,6 +201,8 @@ class homecards {
         $block = is_array($card['block'] ?? null) ? self::block($card['block'], $component, $heading) : null;
 
         return [
+            // The plugin, so that the home can tell its tile from its door in «Your work».
+            'component' => $component,
             'heading' => template::inert($heading),
             'hasitems' => (bool) $items,
             'items' => $items,

@@ -27,6 +27,7 @@ namespace local_oksigeniaaty\output;
 use local_oksigeniaaty\local\channels;
 use local_oksigeniaaty\local\homecards;
 use local_oksigeniaaty\local\template;
+use local_oksigeniaaty\local\yourwork;
 
 /**
  * Builds what the app shows: for now, the per-site home tab.
@@ -41,7 +42,8 @@ class mobile {
     /**
      * The home tab of the site: a low band of the brand with the greeting and a line that says the day, the children of an
      * adult of a family, "Today" first (what is about to start, with "Join"; what there is to do; what is left of today),
-     * what other plugins add, what comes next and the shortcuts the tab bar does not have.
+     * «Your work» for whoever runs something, what other plugins add, what comes next and the shortcuts the tab bar does
+     * not have.
      *
      * The server decides what is starting when it draws the home; the app asks for it again when it opens and when the
      * home is refreshed, so no JavaScript is needed in the app.
@@ -92,6 +94,8 @@ class mobile {
         $name = self::greeting_name($USER);
         // A family's account greets in a line, low, with the day: what it has to do comes right under it (design by Jujol).
         $familyonly = $children !== null && \local_oksigeniaaty\local\familyaccount::is_own($USER);
+        // «Your work»: the panel of the dashboard block of the Oksigenia plugins, for whoever runs something.
+        $work = $familyonly ? null : yourwork::for_user((int) $USER->id, $now);
 
         $data = template::inert([
             'logourl' => $logourl,
@@ -134,7 +138,24 @@ class mobile {
             'shortcutsheading' => get_string('home:shortcuts', 'local_oksigeniaaty'),
             'opensoutside' => get_string('home:opensoutside', 'local_oksigeniaaty'),
         ]);
-        $data['dayline'] = template::inert(self::day_line($todo, $starting, $today, $unread, $grading, $events, $now));
+        $data['dayline'] = template::inert(self::day_line(
+            $todo,
+            $starting,
+            $today,
+            $unread,
+            $grading,
+            $events,
+            $now,
+            $work !== null ? count($work['alerts']) : 0
+        ));
+        $data['work'] = $work === null ? null : [
+            'heading' => template::inert(get_string('yourwork:heading', 'local_oksigeniaaty')),
+            'seeall' => template::inert(get_string('home:seeall', 'local_oksigeniaaty')),
+            'hasmore' => $work['hasmore'],
+            'hasshown' => $work['hasshown'],
+            'shown' => $work['shown'],
+            'doors' => $work['doors'],
+        ];
         $data['todo'] = $todo;
         $data['cards'] = $shown;
         // The course cards left the home for the tab "My courses"; where the app has no such tab, they come back.
@@ -159,8 +180,10 @@ class mobile {
                 strpos((string) $shortcut['url'], $site) !== 0 && (string) $shortcut['url'] !== $CFG->wwwroot));
         }
         $shortcuts = template::inert($shortcuts);
+        // A plugin with a door in «Your work» does not have its tile too: one way in, not two.
+        $indoors = $work !== null ? array_flip($work['components']) : [];
         foreach ($cards as $card) {
-            if ($card['tile'] !== null) {
+            if ($card['tile'] !== null && !isset($indoors[$card['component']])) {
                 $shortcuts[] = $card['tile'];
             }
         }
@@ -184,6 +207,40 @@ class mobile {
                 [
                     'id' => 'main',
                     'html' => $OUTPUT->render_from_template('local_oksigeniaaty/mobile_home', $data),
+                ],
+            ],
+            'javascript' => '',
+            'otherdata' => [],
+        ];
+    }
+
+    /**
+     * The whole of «Your work», behind its «See all» on the home: everything waiting to be sorted out, then each service
+     * with its shortcuts.
+     *
+     * @param array $args The arguments the app sends.
+     * @return array The template, javascript and data the app expects.
+     */
+    public static function mobile_work(array $args): array {
+        global $OUTPUT, $USER;
+
+        $work = yourwork::for_user((int) $USER->id, time());
+        $data = template::inert([
+            'alertsheading' => get_string('yourwork:alerts', 'local_oksigeniaaty'),
+            'servicesheading' => get_string('yourwork:services', 'local_oksigeniaaty'),
+            'none' => get_string('yourwork:none', 'local_oksigeniaaty'),
+        ]) + [
+            'hasdoors' => $work !== null,
+            'hasalerts' => $work !== null && $work['hasalerts'],
+            'alerts' => $work['alerts'] ?? [],
+            'doors' => $work['doors'] ?? [],
+        ];
+
+        return [
+            'templates' => [
+                [
+                    'id' => 'main',
+                    'html' => $OUTPUT->render_from_template('local_oksigeniaaty/mobile_work', $data),
                 ],
             ],
             'javascript' => '',
@@ -956,6 +1013,7 @@ JS;
      * @param array $grading The assignments waiting for a grade.
      * @param array $events The agenda of the coming days, for what comes next.
      * @param int $now The time it is.
+     * @param int $work What is waiting to be sorted out in «Your work».
      * @return string
      */
     private static function day_line(
@@ -965,7 +1023,8 @@ JS;
         int $unread,
         array $grading,
         array $events,
-        int $now
+        int $now,
+        int $work = 0
     ): string {
         // A title that already ends a sentence (a question, an exclamation) does not take the sentence's full stop.
         $say = fn(string $id, $a = null) => preg_replace(
@@ -997,7 +1056,8 @@ JS;
             }
         }
         $parts = [];
-        foreach (['live' => $live, 'due' => $due, 'close' => $close, 'event' => $other, 'unread' => $unread] as $id => $count) {
+        $counts = ['work' => $work, 'live' => $live, 'due' => $due, 'close' => $close, 'event' => $other, 'unread' => $unread];
+        foreach ($counts as $id => $count) {
             if ($count > 0) {
                 $parts[] = $some($id, $count);
             }

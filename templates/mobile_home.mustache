@@ -19,9 +19,10 @@
 
     The per-site home tab shown in the app, from top to bottom: a low band of the brand with the greeting and a line that
     says the day; the children of an adult of a family; "Today", first what is about to start (with "Join"), then what
-    there is to do and what is left of today; what waits for a grade; what other plugins add, two rows each with their
-    own "See all"; what comes next; and the shortcuts the tab bar does not have. No JavaScript: the server decides what is
-    starting, and the app asks for the home again when it opens and when it is refreshed.
+    there is to do and what is left of today; «Your work», for whoever runs something; what waits for a grade; what
+    other plugins add, two rows each with their own "See all"; what comes next; and the shortcuts the tab bar does not
+    have. No JavaScript: the server decides what is starting, and the app asks for the home again when it opens and when
+    it is refreshed.
     Design: the home of 13 November 2026, on the common per-client template (agents/arte/docs/aty-app-plantilla.md).
 
     Classes required for JS:
@@ -42,6 +43,7 @@
     * todo - The rows of other plugins with something to do (mobile_home_row), with their button.
     * today - What is left of today: { name, timestamp, day, month, time, context, viewurl, kind, kindlabel }.
     * hasunread, unread, unreadlabel, messagesname, messagesurl - The unread conversations, among today's things.
+    * work - «Your work», for whoever runs something (see local_oksigeniaaty/mobile_home_work); none for anyone else.
     * gradingheading, grading, hasgrading - For teachers: the assignments waiting for a grade (name, context, count,
       countlabel, viewurl).
     * cards - Sections other plugins add for this user: { heading, items (mobile_home_row), seeall }. Their "See all" has
@@ -122,6 +124,7 @@
         {{/hasunread}}
     </div>
     {{/hastoday}}
+    {{> local_oksigeniaaty/mobile_home_work }}
     {{#familyonly}}{{> local_oksigeniaaty/mobile_home_children }}{{/familyonly}}
     {{#hasgrading}}
     <h2 class="aty-section">{{gradingheading}}</h2>

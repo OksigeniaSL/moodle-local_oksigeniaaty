@@ -1,0 +1,46 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_oksigeniaaty/mobile_work_door
+
+    A door of «Your work» (local\yourwork): a service the person runs, with its logo on its light plate, how many things
+    of it are waiting (red if one is urgent), its name and a line of how it is. The whole door opens the service.
+
+    Classes required for JS:
+    * none
+
+    Context variables required for this template:
+    * title, status, icon - The service.
+    * hasalerts, alertcount, alertlabel, urgent - What of it is waiting.
+    * url, browser - Its main page; in the phone's browser for the pages a plugin wants there.
+
+    A door without a title is none: the example, empty, draws nothing, because what the app compiles is not HTML that the
+    checks of the templates take.
+
+    Example context (json):
+    {}
+}}
+{{#title}}
+<a class="aty-puerta{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="{{^browser}}true{{/browser}}{{#browser}}false{{/browser}}"{{^browser}} inApp="true"{{/browser}}>
+    <span class="aty-puerta-cab">
+        <span class="aty-servicio-logo">{{#icon}}<img src="{{icon}}" alt="">{{/icon}}</span>
+        {{#hasalerts}}<span class="aty-puerta-avisos" aria-label="{{alertlabel}}">{{alertcount}}</span>{{/hasalerts}}
+    </span>
+    <span class="aty-puerta-nombre">{{title}}</span>
+    {{#status}}<span class="aty-puerta-estado">{{status}}</span>{{/status}}
+</a>
+{{/title}}
