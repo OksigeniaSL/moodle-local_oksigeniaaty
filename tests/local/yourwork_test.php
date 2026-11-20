@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
 
-
 namespace local_oksigeniaaty\local;
 
 /**
@@ -91,12 +90,12 @@ final class yourwork_test extends \advanced_testcase {
         $this->assertTrue($canteen['urgent']);
         $this->assertSame(2, $canteen['alertcount']);
         $this->assertSame('2 to sort out', $canteen['alertlabel']);
-        $this->assertSame([['label' => 'Menu of the day', 'url' => $CFG->wwwroot . '/local/canteen/today.php', 'browser' => false]],
-            $canteen['actions']);
+        $menu = ['label' => 'Menu of the day', 'url' => $CFG->wwwroot . '/local/canteen/today.php', 'browser' => false];
+        $this->assertSame([$menu], $canteen['actions']);
         $this->assertFalse($library['hasalerts']);
 
-        $this->assertSame(['4 pupils without a menu', 'Ana is waiting for an answer', 'Notes to review', 'One more'],
-            array_column($work['alerts'], 'text'));
+        $texts = ['4 pupils without a menu', 'Ana is waiting for an answer', 'Notes to review', 'One more'];
+        $this->assertSame($texts, array_column($work['alerts'], 'text'));
         $this->assertCount(3, $work['shown']);
         $this->assertTrue($work['hasmore']);
         [$missing, $ana, $notes] = $work['alerts'];

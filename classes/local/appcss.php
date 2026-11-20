@@ -264,7 +264,7 @@ button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
 /* A logo keeps the colours of its brand, so it sits on a plate that is always light, in light and in dark, as in the
    block. */
 .aty-servicio-logo { flex: 0 0 auto; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px;
-    background: #fff; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06); }
+    background: white; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06); }
 .aty-servicio-logo img { display: block; width: 28px; height: 28px; object-fit: contain; }
 .aty-aviso.aty-urgent { box-shadow: inset 4px 0 0 var(--ion-color-danger), var(--aty-card-shadow); }
 .aty-aviso.aty-urgent .aty-event-time { color: var(--ion-color-danger); }
@@ -284,7 +284,7 @@ button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
 .aty-puerta-avisos { display: inline-grid; place-items: center; min-width: 26px; height: 26px; padding: 0 8px;
     border-radius: 999px; background: var(--primary); color: var(--primary-contrast); font-size: .82rem; font-weight: 800; }
 .aty-puerta.aty-urgent .aty-puerta-avisos { background: var(--ion-color-danger);
-    color: var(--ion-color-danger-contrast, #fff); }
+    color: var(--ion-color-danger-contrast, white); }
 .aty-puerta-nombre { font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
 .aty-puerta-estado { display: -webkit-box; overflow: hidden; color: var(--ion-color-medium); font-size: .8rem;
     line-height: 1.3; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
