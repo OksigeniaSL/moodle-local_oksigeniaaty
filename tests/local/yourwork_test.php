@@ -152,7 +152,7 @@ final class yourwork_test extends \advanced_testcase {
         $work = yourwork::shape($this->board($now));
 
         $home = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_home', [
-            'work' => ['heading' => 'Your work', 'seeall' => 'See all'] + $work,
+            'work' => ['heading' => 'Your work', 'seeall' => 'See all', 'short' => true] + $work,
         ]);
         $this->assertStringContainsString('method="mobile_work"', $home);
         $this->assertStringContainsString('class="aty-event aty-aviso aty-urgent"', $home);
