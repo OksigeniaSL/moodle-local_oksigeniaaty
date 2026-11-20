@@ -26,7 +26,9 @@
     Context variables required for this template:
     * title, status, icon - The service; short (from the home's context) for its line in whole parts, statusshort.
     * hasalerts, alertcount, alertlabel, urgent - What of it is waiting.
-    * url, browser - Its main page; in the phone's browser for the pages a plugin wants there.
+    * url, browser - Its main page, a page of the web: in the app's window, signed in, never through a plugin's handler of
+      links (those are for the notices to readers and families, and may take a staff page to a reader's one); in the
+      phone's browser for the pages a plugin wants there.
 
     A door without a title is none: the example, empty, draws nothing, because what the app compiles is not HTML that the
     checks of the templates take.
@@ -35,7 +37,7 @@
     {}
 }}
 {{#title}}
-<a class="aty-puerta{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="{{^browser}}true{{/browser}}{{#browser}}false{{/browser}}"{{^browser}} inApp="true"{{/browser}}>
+<a class="aty-puerta{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="false"{{^browser}} inApp="true"{{/browser}}>
     <span class="aty-puerta-cab">
         <span class="aty-servicio-logo">{{#icon}}<img src="{{icon}}" alt="">{{/icon}}</span>
         {{#hasalerts}}<span class="aty-puerta-avisos" aria-label="{{alertlabel}}">{{alertcount}}</span>{{/hasalerts}}

@@ -54,7 +54,7 @@
             {{#hasactions}}
             <div class="aty-atajos">
                 {{#actions}}
-                <a class="aty-atajo" core-link href="{{url}}" capture="{{^browser}}true{{/browser}}{{#browser}}false{{/browser}}"{{^browser}} inApp="true"{{/browser}}>{{label}}</a>
+                <a class="aty-atajo" core-link href="{{url}}" capture="false"{{^browser}} inApp="true"{{/browser}}>{{label}}</a>
                 {{/actions}}
             </div>
             {{/hasactions}}

@@ -5,6 +5,12 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed (0.5.89-dev)
+
+- «Your work»: its doors, shortcuts and alerts open their page of the web in the app's window, signed in, and no longer
+  through a plugin's handler of links. Those handlers are for the notices to readers and families: Ayvurenda's took the
+  library's «Catalogue» shortcut to the reader's page of the library in the app (seen on the phone).
+
 ### Changed (0.5.88-dev)
 
 - «Your work» on the app's home, after Jujol's review:

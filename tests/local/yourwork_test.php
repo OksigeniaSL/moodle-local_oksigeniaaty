@@ -169,6 +169,11 @@ final class yourwork_test extends \advanced_testcase {
         $this->assertStringContainsString('One more', $page);
         $this->assertStringContainsString('3 groups', $page);
         $this->assertStringContainsString('Menu of the day', $page);
+        // Staff pages of the web, signed in, never through a plugin's handler of links: Ayvurenda's took «Catalogue» to the
+        // reader's page of the library (seen on the Pixel, 20 November 2026).
+        $this->assertStringContainsString('capture="false" inApp="true"', $home);
+        $this->assertStringContainsString('capture="false" inApp="true"', $page);
+        $this->assertStringNotContainsString('capture="true"', $page);
 
         $none = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_work', ['hasdoors' => false, 'none' => 'Nothing.']);
         $this->assertStringContainsString('Nothing.', $none);
