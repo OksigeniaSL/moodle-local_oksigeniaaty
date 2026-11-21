@@ -27,7 +27,8 @@ namespace local_oksigeniaaty\local;
  */
 final class work_test extends \advanced_testcase {
     /**
-     * Only whoever may send the app gets the door; it counts the people with the site's app, once each.
+     * Only whoever may send the app gets the door, which no role has by default, not even the manager's; it counts the
+     * people with the site's app, once each.
      */
     public function test_door(): void {
         global $DB;
@@ -36,9 +37,14 @@ final class work_test extends \advanced_testcase {
         $teacher = $generator->create_user();
         $manager = $generator->create_user();
         $generator->role_assign($DB->get_field('role', 'id', ['shortname' => 'manager']), $manager->id);
+        $sender = $generator->create_user();
+        $roleid = $generator->create_role();
+        assign_capability('local/oksigeniaaty:issuelink', CAP_ALLOW, $roleid, \context_system::instance()->id, true);
+        $generator->role_assign($roleid, $sender->id);
         set_config('androidappid', 'com.oksigenia.aty', 'tool_mobile');
 
         $this->assertSame([], work::for_user((int) $teacher->id, false));
+        $this->assertSame([], work::for_user((int) $manager->id, false));
 
         $phone = $generator->create_user();
         $gone = $generator->create_user(['suspended' => 1]);
@@ -50,14 +56,14 @@ final class work_test extends \advanced_testcase {
             ]);
         }
 
-        $doors = work::for_user((int) $manager->id, false);
+        $doors = work::for_user((int) $sender->id, false);
         $this->assertCount(1, $doors);
         $this->assertSame('local_oksigeniaaty', $doors[0]['key']);
         $this->assertSame('Mobile app', $doors[0]['title']);
         $this->assertStringContainsString('/local/oksigeniaaty/sendapp.php', $doors[0]['url']);
         $this->assertSame('1 person with the app', $doors[0]['status']);
         $this->assertSame([], $doors[0]['alerts']);
-        // A manager does not run the site: no QR code.
+        // Whoever does not run the site: no QR code.
         $this->assertSame([], $doors[0]['actions']);
 
         $this->setAdminUser();

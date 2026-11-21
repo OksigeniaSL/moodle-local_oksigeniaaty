@@ -264,6 +264,30 @@ final class familyaccount_test extends \advanced_testcase {
     }
 
     /**
+     * An account made here, given to another person, is no longer the family's: the adult stays in the family without it,
+     * and the account sees no child. A real account in a family is Family's, and stays.
+     */
+    public function test_reassigned(): void {
+        global $DB;
+        [$student, $adult] = $this->claimed();
+        $userid = familyaccount::ensure((int) $adult->id);
+        $this->assertSame([(int) $student->id], family::children_of_user($userid));
+
+        \local_oksigeniaaty\api::account_reassigned($userid);
+
+        $this->assertEmpty($DB->get_field('local_oksigeniafamily_adult', 'userid', ['id' => $adult->id]));
+        $this->assertSame([], family::children_of_user($userid));
+        $this->assertFalse((bool) \core_user::get_user($userid)->deleted);
+
+        $parent = $this->getDataGenerator()->create_user();
+        $child = $this->getDataGenerator()->create_user();
+        family::claim(family::issue_claim_code((int) $child->id), ['userid' => (int) $parent->id, 'firstname' => 'Eva',
+            'lastname' => 'Real']);
+        \local_oksigeniaaty\api::account_reassigned((int) $parent->id);
+        $this->assertSame([(int) $child->id], family::children_of_user((int) $parent->id));
+    }
+
+    /**
      * A child's page opens only for an adult of their family, and grades only if the centre shows them.
      */
     public function test_child_page(): void {

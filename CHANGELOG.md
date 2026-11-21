@@ -5,6 +5,21 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Added (0.5.91-dev)
+
+- `\local_oksigeniaaty\api::account_reassigned($userid)`, for a script of the server when the centre gives an account to
+  another person: it takes off the account everything of its former owner in Aty. Its PIN; every key into the app issued
+  for it (self-service, sent by the centre, PIN reset, and the app's short keys to its web pages); its place in a family,
+  when it is an account Aty made for an adult of one; and the app's sessions, the tokens of the mobile service and the
+  phones registered for notices. Moodle's own (password, web sessions, profile) stays the script's.
+
+### Changed (0.5.91-dev, capabilities)
+
+- `local/oksigeniaaty:issuelink` (send people their way into the app, «Send the app») is no longer given to the
+  manager's role by default: no role has it, and the centre gives it to the roles it trusts. Only for new installations,
+  and for a role reset to its defaults: on a site that has the plugin already, the managers keep it until it is taken
+  away from them.
+
 ### Security (0.5.91-dev)
 
 - «Forgot my PIN» for an account without a mailbox: the notice to the phone no longer carries in its link the reset key,

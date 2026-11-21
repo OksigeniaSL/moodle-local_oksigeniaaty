@@ -192,4 +192,53 @@ class api {
 
         return email_to_user($user, linkmail::from($userid), $subject, $body, $html);
     }
+
+    /**
+     * Take off an account everything of its former owner in Aty, when the centre gives the account to another person. A
+     * script of the server calls it, at the moment of the change.
+     *
+     * What goes: the PIN; every key into the app issued for the account (the self-service ones of «Open in the app», the
+     * ones the centre sent and the PIN-reset ones, and the app's own short keys to its web pages); the account's place in
+     * a family, if it is an account Aty made for an adult of one (the family keeps the adult, without the account); and
+     * the app's sessions, the tokens of the mobile service and the phones registered for its notices, so that a phone of
+     * the former owner signs out. The new owner enters the app afresh, with a link of their own, and sets their own PIN.
+     *
+     * Moodle's own (the password, the web sessions, the profile) is the script's to change. A real account that is an
+     * adult of a family in Oksigenia Family stays in that family: that is Family's to undo.
+     *
+     * @param int $userid The account.
+     * @return void
+     */
+    public static function account_reassigned(int $userid): void {
+        global $DB;
+
+        $transaction = $DB->start_delegated_transaction();
+
+        local\pin::delete($userid);
+        $scripts = [loginkey::SCRIPT, loginkey::ISSUED_SCRIPT, loginkey::RESET_SCRIPT, 'tool_mobile'];
+        [$insql, $params] = $DB->get_in_or_equal($scripts);
+        $DB->delete_records_select('user_private_key', "script $insql AND userid = ?", array_merge($params, [$userid]));
+
+        $user = \core_user::get_user($userid);
+        $family = '\local_oksigeniafamily\api';
+        if ($user && local\familyaccount::is_own($user) && class_exists($family) && method_exists($family, 'set_adult_user')) {
+            foreach ($DB->get_records('local_oksigeniafamily_adult', ['userid' => $userid], '', 'id') as $adult) {
+                $family::set_adult_user((int) $adult->id, null);
+            }
+        }
+
+        $servicename = defined('MOODLE_OFFICIAL_MOBILE_SERVICE') ? MOODLE_OFFICIAL_MOBILE_SERVICE : 'moodle_mobile_app';
+        $serviceid = $DB->get_field('external_services', 'id', ['shortname' => $servicename]);
+        if ($serviceid) {
+            $DB->delete_records('external_tokens', ['userid' => $userid, 'externalserviceid' => $serviceid]);
+        }
+        $devices = $DB->get_fieldset_select('user_devices', 'id', 'userid = ?', [$userid]);
+        if ($devices && $DB->get_manager()->table_exists('message_airnotifier_devices')) {
+            [$insql, $params] = $DB->get_in_or_equal($devices);
+            $DB->delete_records_select('message_airnotifier_devices', "userdeviceid $insql", $params);
+        }
+        $DB->delete_records('user_devices', ['userid' => $userid]);
+
+        $transaction->allow_commit();
+    }
 }

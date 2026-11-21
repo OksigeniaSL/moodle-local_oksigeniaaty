@@ -183,4 +183,56 @@ final class api_test extends \advanced_testcase {
         $bare = 'intent://atylogin=abc#Intent;scheme=oksigeniaaty;package=com.oksigenia.aty;end';
         $this->assertSame($bare, api::login_intent('abc', ''));
     }
+
+    /**
+     * An account given to another person keeps nothing of its former owner in Aty: no PIN, no key into the app, no token
+     * of the mobile service and no phone for its notices. Another service's token, and other people's things, stay.
+     */
+    public function test_account_reassigned(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $generator = $this->getDataGenerator();
+        $user = $generator->create_user();
+        $other = $generator->create_user();
+        $system = \context_system::instance();
+
+        local\pin::set((int) $user->id, '482915');
+        local\pin::set((int) $other->id, '305118');
+        loginkey::create((int) $user->id);
+        loginkey::create_issued((int) $user->id);
+        loginkey::create_reset((int) $user->id);
+        create_user_key('tool_mobile', (int) $user->id);
+        $otherkey = loginkey::create((int) $other->id);
+
+        $mobile = $DB->get_record('external_services', ['shortname' => MOODLE_OFFICIAL_MOBILE_SERVICE], '*', MUST_EXIST);
+        $DB->insert_record('external_services', (object) ['name' => 'Another service', 'shortname' => 'another_service',
+            'enabled' => 1, 'restrictedusers' => 0, 'timecreated' => time()]);
+        $another = $DB->get_record('external_services', ['shortname' => 'another_service'], '*', MUST_EXIST);
+        \core_external\util::generate_token(EXTERNAL_TOKEN_PERMANENT, $mobile, (int) $user->id, $system);
+        \core_external\util::generate_token(EXTERNAL_TOKEN_PERMANENT, $another, (int) $user->id, $system);
+        \core_external\util::generate_token(EXTERNAL_TOKEN_PERMANENT, $mobile, (int) $other->id, $system);
+
+        $device = fn(\stdClass $owner, string $uuid): int => $DB->insert_record('user_devices', (object) [
+            'userid' => $owner->id, 'appid' => api::ATY_PACKAGE, 'name' => 'Pixel', 'model' => 'Pixel', 'platform' => 'Android',
+            'version' => '16', 'pushid' => 'push-' . $uuid, 'uuid' => $uuid, 'timecreated' => time(), 'timemodified' => time(),
+        ]);
+        $phone = $device($user, 'a1');
+        $DB->insert_record('message_airnotifier_devices', (object) ['userdeviceid' => $phone, 'enable' => 1]);
+        $otherphone = $device($other, 'b1');
+
+        api::account_reassigned((int) $user->id);
+
+        $this->assertFalse(local\pin::has_pin((int) $user->id));
+        $this->assertSame(0, $DB->count_records('user_private_key', ['userid' => $user->id]));
+        $this->assertSame(0, $DB->count_records('external_tokens', ['userid' => $user->id, 'externalserviceid' => $mobile->id]));
+        $this->assertSame(1, $DB->count_records('external_tokens', ['userid' => $user->id, 'externalserviceid' => $another->id]));
+        $this->assertSame(0, $DB->count_records('user_devices', ['userid' => $user->id]));
+        $this->assertSame(0, $DB->count_records('message_airnotifier_devices', ['userdeviceid' => $phone]));
+
+        $this->assertTrue(local\pin::has_pin((int) $other->id));
+        $this->assertTrue(loginkey::is_live($otherkey));
+        $this->assertSame(1, $DB->count_records('external_tokens', ['userid' => $other->id]));
+        $this->assertTrue($DB->record_exists('user_devices', ['id' => $otherphone]));
+        $this->assertFalse((bool) \core_user::get_user((int) $user->id)->deleted);
+    }
 }

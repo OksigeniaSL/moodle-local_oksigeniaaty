@@ -67,7 +67,11 @@ A plugin can take part in the app's home, in the official Moodle app and in Oksi
   several schools or libraries share a site.
 
 And `\local_oksigeniaaty\api::issue_link($userid, $days)` and `api::send_link($userid, $days)` make and send a one-time
-sign-in link to the app, for a plugin that registers people who have no password yet.
+sign-in link to the app, for a plugin that registers people who have no password yet. When the centre gives an account
+to another person, `api::account_reassigned($userid)` takes off it everything of its former owner in the app: PIN, keys,
+place in a family (for an account the app made), tokens and phones.
+
+«Send the app» needs `local/oksigeniaaty:issuelink`, which no role has by default: give it to the roles you trust.
 
 With Oksigenia Tembiapo («Your work» on the dashboard), whoever may send the app gets a door to it with how many people
 have it, and the site's QR code at hand for whoever runs the site.

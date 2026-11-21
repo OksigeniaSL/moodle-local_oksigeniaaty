@@ -67,7 +67,11 @@ Un plugin puede estar en el inicio de la app, en la oficial de Moodle y en Oksig
   donde varios colegios o bibliotecas comparten un sitio.
 
 Y `\local_oksigeniaaty\api::issue_link($userid, $days)` y `api::send_link($userid, $days)` crean y envían un enlace de
-entrada a la app, de un solo uso, para un plugin que da de alta a gente que aún no tiene contraseña.
+entrada a la app, de un solo uso, para un plugin que da de alta a gente que aún no tiene contraseña. Cuando el centro da
+una cuenta a otra persona, `api::account_reassigned($userid)` le quita todo lo de su dueño anterior en la app: PIN,
+llaves, sitio en una familia (si es una cuenta que hizo la app), tokens y móviles.
+
+«Mandar la app» pide `local/oksigeniaaty:issuelink`, que ningún rol tiene de serie: dásela a los roles de confianza.
 
 Con Oksigenia Tembiapo («Tu trabajo» en el área personal), quien puede mandar la app tiene una puerta a ella con cuántas
 personas la tienen, y quien administra el sitio, el QR del centro a mano.

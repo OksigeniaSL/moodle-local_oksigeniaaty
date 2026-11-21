@@ -27,14 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 $capabilities = [
 
     // Issue an Aty sign-in link or QR for another user (self-service needs no capability). Sensitive: it lets the
-    // holder hand someone a one-time link that logs that person into the app, so give it only to trusted roles
-    // (managers, librarians, canteen staff).
+    // holder hand someone a one-time link that logs that person into the app, so no role has it by default, not even
+    // the manager's: the centre gives it to the roles it trusts (the office, librarians, canteen staff).
     'local/oksigeniaaty:issuelink' => [
         'riskbitmask' => RISK_PERSONAL | RISK_SPAM,
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => [
-            'manager' => CAP_ALLOW,
-        ],
+        'archetypes' => [],
     ],
 ];
