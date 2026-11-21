@@ -215,7 +215,6 @@ button.aty-event { width: 100%; border: 0; font: inherit; text-align: start; }
 .aty-hijo-inicial { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%;
     background: rgba(var(--ion-color-primary-rgb), .14); color: var(--primary); font-weight: 800; }
 .aty-hijo-mas { padding-left: 14px; color: var(--primary); }
-.aty-hijo-solo { justify-content: center; width: 40px; padding: 0; }
 
 /* Today: the hour big where the date was (it is today); what is about to start, with "Join". */
 .aty-event-hora { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -282,15 +281,18 @@ button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
 .aty-puerta-cab { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin: 0 0 8px; }
 .aty-puerta .aty-servicio-logo { width: 40px; height: 40px; border-radius: 11px; }
 .aty-puerta .aty-servicio-logo img { width: 26px; height: 26px; }
-/* How many are waiting: an outline; filled, in the colour of danger, when one is urgent. Not by the colour alone. */
-.aty-puerta-avisos { display: inline-grid; place-items: center; box-sizing: border-box; min-width: 26px; height: 26px;
-    padding: 0 7px; border: 2px solid var(--primary); border-radius: 999px; color: var(--primary); font-size: .82rem;
-    font-weight: 800; }
-:root.dark .aty-puerta-avisos, :root .dark .aty-puerta-avisos { border-color: var(--ion-color-medium);
-    color: var(--ion-text-color); }
-.aty-puerta.aty-urgent .aty-puerta-avisos, :root.dark .aty-puerta.aty-urgent .aty-puerta-avisos,
-:root .dark .aty-puerta.aty-urgent .aty-puerta-avisos { border-color: var(--ion-color-danger);
-    background: var(--ion-color-danger); color: var(--ion-color-danger-contrast, white); }
+/* Something waiting: a dot, as a ring; filled, in the colour of danger and bigger, when something is urgent. Not by the
+   colour alone, and not a number: the block counts lines, and one line may be many things. */
+.aty-puerta-punto { flex: 0 0 auto; box-sizing: border-box; width: 14px; height: 14px; margin: 4px;
+    border: 3px solid var(--primary); border-radius: 50%; }
+:root.dark .aty-puerta-punto, :root .dark .aty-puerta-punto { border-color: var(--ion-text-color); }
+.aty-puerta.aty-urgent .aty-puerta-punto, :root.dark .aty-puerta.aty-urgent .aty-puerta-punto,
+:root .dark .aty-puerta.aty-urgent .aty-puerta-punto { width: 18px; height: 18px; margin: 2px;
+    border-color: var(--ion-color-danger); background: var(--ion-color-danger); }
+/* The line that says how many more are waiting, and opens them. */
+.aty-mas .aty-event-name { color: var(--primary); }
+:root.dark .aty-mas .aty-event-name, :root .dark .aty-mas .aty-event-name { color: var(--ion-text-color); }
+.aty-mas ion-icon { flex: 0 0 auto; width: 18px; height: 18px; color: var(--ion-color-medium); }
 .aty-puerta-nombre { font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
 .aty-puerta-estado { color: var(--ion-color-medium); font-size: .8rem; line-height: 1.3; }
 /* The whole panel, behind «See all»: each service a card, its door above and its shortcuts inside it, below. */

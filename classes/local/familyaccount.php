@@ -177,4 +177,25 @@ class familyaccount {
             delete_user($user);
         }
     }
+
+    /**
+     * The ways in of the home that an account made here may take: what leads outside the site (the school's website) and
+     * the pages of the plugins in the app. Not the site's web pages, whether a shortcut of the site or a plugin's tile.
+     *
+     * @param array[] $links Shortcuts and tiles: url, or ispage for a page in the app.
+     * @return array[] Those it may take, in their order.
+     */
+    public static function outside_site(array $links): array {
+        global $CFG;
+
+        $site = $CFG->wwwroot . '/';
+
+        return array_values(array_filter($links, function (array $link) use ($CFG, $site): bool {
+            if (!empty($link['ispage'])) {
+                return true;
+            }
+            $url = (string) ($link['url'] ?? '');
+            return $url !== '' && strpos($url, $site) !== 0 && $url !== $CFG->wwwroot;
+        }));
+    }
 }

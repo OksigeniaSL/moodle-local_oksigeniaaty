@@ -95,4 +95,29 @@ final class loginkey_test extends \advanced_testcase {
         $this->assertNotEmpty($result['token']);
         $this->assertNull($result['privatetoken']);
     }
+
+    /**
+     * newpin.php hands its owner the reset key they asked for, while it can be used: not an ordinary key, nor another
+     * person's, nor one expired or used.
+     */
+    public function test_live_reset(): void {
+        global $DB;
+        $this->resetAfterTest();
+        $user = $this->getDataGenerator()->create_user();
+        $other = $this->getDataGenerator()->create_user();
+
+        loginkey::create((int) $user->id);
+        $this->assertNull(loginkey::live_reset((int) $user->id));
+
+        $key = loginkey::create_reset((int) $user->id);
+        $this->assertSame($key, loginkey::live_reset((int) $user->id));
+        $this->assertNull(loginkey::live_reset((int) $other->id));
+
+        $DB->set_field('user_private_key', 'validuntil', time() - 1, ['value' => $key]);
+        $this->assertNull(loginkey::live_reset((int) $user->id));
+
+        $key = loginkey::create_reset((int) $user->id);
+        loginkey::consume($key);
+        $this->assertNull(loginkey::live_reset((int) $user->id));
+    }
 }

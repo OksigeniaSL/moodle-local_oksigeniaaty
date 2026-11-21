@@ -225,6 +225,24 @@ final class familyaccount_test extends \advanced_testcase {
     }
 
     /**
+     * An account made here keeps, of the home's ways in, what leads outside the site and the pages in the app: not the
+     * site's web pages, whether a shortcut of the site or a plugin's tile.
+     */
+    public function test_outside_site(): void {
+        global $CFG;
+        $links = [
+            ['label' => 'Badges', 'url' => $CFG->wwwroot . '/badges/mybadges.php'],
+            ['label' => 'Site', 'url' => $CFG->wwwroot],
+            ['label' => 'School website', 'url' => 'https://school.example.org/'],
+            ['label' => 'Library tile', 'ispage' => false, 'url' => $CFG->wwwroot . '/local/library/'],
+            ['label' => 'Canteen tile', 'ispage' => true, 'component' => 'local_canteen', 'method' => 'mobile_menu'],
+        ];
+
+        $kept = familyaccount::outside_site($links);
+        $this->assertSame(['School website', 'Canteen tile'], array_column($kept, 'label'));
+    }
+
+    /**
      * Whoever leaves takes the account made for them; a real account stays.
      */
     public function test_leaving(): void {

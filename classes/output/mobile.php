@@ -146,7 +146,7 @@ class mobile {
             $grading,
             $events,
             $now,
-            $work !== null ? count($work['alerts']) : 0
+            $work !== null ? $work['total'] : 0
         ));
         $data['work'] = $work === null ? null : [
             'heading' => template::inert(get_string('yourwork:heading', 'local_oksigeniaaty')),
@@ -154,6 +154,8 @@ class mobile {
             'hasmore' => $work['hasmore'],
             'hasshown' => $work['hasshown'],
             'shown' => $work['shown'],
+            'morelabel' => $work['morelabel'],
+            'moreurgent' => $work['moreurgent'],
             'doors' => $work['doors'],
             // The doors' lines of state in whole parts, never cut with «…»; the whole lines are behind «See all».
             'short' => true,
@@ -174,20 +176,18 @@ class mobile {
         }
 
         // The shortcuts the tab bar does not have already, the plugins' tiles and writing to a course.
-        $shortcuts = self::off_the_tabs(local_oksigeniaaty_get_shortcuts());
-        if ($familyonly) {
-            // A family's own account cannot enter the site's web pages: only what leads outside it (the school's website).
-            $site = $CFG->wwwroot . '/';
-            $shortcuts = array_values(array_filter($shortcuts, fn(array $shortcut): bool =>
-                strpos((string) $shortcut['url'], $site) !== 0 && (string) $shortcut['url'] !== $CFG->wwwroot));
-        }
-        $shortcuts = template::inert($shortcuts);
+        $shortcuts = template::inert(self::off_the_tabs(local_oksigeniaaty_get_shortcuts()));
         // A plugin with a door in «Your work» does not have its tile too: one way in, not two.
         $indoors = $work !== null ? array_flip($work['components']) : [];
         foreach ($cards as $card) {
             if ($card['tile'] !== null && !isset($indoors[$card['component']])) {
                 $shortcuts[] = $card['tile'];
             }
+        }
+        if ($familyonly) {
+            // A family's own account cannot enter the site's web pages, from the site's shortcuts or from a plugin's tile:
+            // only what leads outside it (the school's website) and the pages of the plugins in the app.
+            $shortcuts = \local_oksigeniaaty\local\familyaccount::outside_site($shortcuts);
         }
         // Whoever may post in a course's announcements, whatever their role is called.
         if (self::writable_classes(1)) {
@@ -235,6 +235,8 @@ class mobile {
             'hasdoors' => $work !== null,
             'hasalerts' => $work !== null && $work['hasalerts'],
             'alerts' => $work['alerts'] ?? [],
+            'beyondlabel' => $work['beyondlabel'] ?? '',
+            'beyondurl' => $work['beyondurl'] ?? '',
             'doors' => $work['doors'] ?? [],
         ];
 

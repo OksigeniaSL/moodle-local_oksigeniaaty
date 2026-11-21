@@ -17,15 +17,17 @@
 {{!
     @template local_oksigeniaaty/mobile_work
 
-    The whole of «Your work» in the app (local\yourwork), behind the home's «See all»: everything waiting to be sorted
-    out, the urgent first; then each service, its door and, under it, its shortcuts. With nothing left (it was sorted out
-    meanwhile), a line that says so.
+    The whole of «Your work» in the app (local\yourwork), behind the home's «See all»: what is waiting to be sorted out,
+    the urgent first, fifty at most, and past them a line that says how many more and opens the dashboard of the web,
+    where the block has them all; then each service, its door and, under it, its shortcuts. With nothing left (it was
+    sorted out meanwhile), a line that says so.
 
     Classes required for JS:
     * none
 
     Context variables required for this template:
     * alertsheading, hasalerts, alerts (mobile_work_alert) - What is waiting.
+    * beyondlabel, beyondurl - The line to the rest, on the web; none when there is no rest.
     * servicesheading, doors (mobile_work_door, with hasactions and actions: label, url, browser) - The services.
     * hasdoors, none - Whether there is anything; the line for when there is not.
 
@@ -44,6 +46,12 @@
         {{#alerts}}
         {{> local_oksigeniaaty/mobile_work_alert }}
         {{/alerts}}
+        {{#beyondlabel}}
+        <a class="aty-event aty-aviso aty-mas" core-link href="{{beyondurl}}" capture="false" inApp="true">
+            <span class="aty-event-body"><span class="aty-event-name">{{beyondlabel}}</span></span>
+            <ion-icon name="fas-chevron-right" aria-hidden="true"></ion-icon>
+        </a>
+        {{/beyondlabel}}
     </div>
     {{/hasalerts}}
     <h2 class="aty-section">{{servicesheading}}</h2>

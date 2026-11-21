@@ -31,8 +31,14 @@ namespace local_oksigeniaaty\local;
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class yourwork {
-    /** @var int The alerts the home shows at least, when there are; every urgent one shows, however many. */
+    /** @var int The alerts the home shows at least, when there are: the urgent first, then the others. */
     public const HOME_ALERTS = 3;
+
+    /** @var int The urgent alerts the home shows at most; a line that says how many more leads to «See all». */
+    public const HOME_URGENT = 6;
+
+    /** @var int The alerts «See all» shows at most; a line that says how many more leads to the dashboard of the web. */
+    public const ALL_ALERTS = 50;
 
     /** @var int The letters of a door's line of state on the home, in whole parts between «·»: two lines of a half door. */
     public const HOME_STATUS = 44;
@@ -98,10 +104,13 @@ class yourwork {
      * (in its own window, or in the phone's browser for the pages a plugin wants there).
      *
      * @param array $board From the block's board::build(): doors (ordered) and alerts (the urgent first, then by when due).
-     * @return array|null alerts, shown (the home's), hasshown, doors, hasmore (something only «See all» has), components;
-     *     null without doors.
+     * @return array|null total (every alert), alerts («See all»'s, up to ALL_ALERTS), beyondlabel and beyondurl (the line to
+     *     the rest, on the web), shown (the home's), hasshown, morelabel and moreurgent (the home's line to the rest), doors,
+     *     hasmore (something only «See all» has), components; null without doors.
      */
     public static function shape(array $board): ?array {
+        global $CFG;
+
         $doors = [];
         foreach (is_array($board['doors'] ?? null) ? $board['doors'] : [] as $door) {
             $door = is_array($door) ? self::door($door) : null;
@@ -119,10 +128,15 @@ class yourwork {
                 $alerts[] = $alert;
             }
         }
-        // Every urgent one, and the others up to three: the urgent never stay out of sight (Jujol, 20 November 2026).
+        // The urgent first, up to six, and the others up to three in all; the rest, behind a line that says how many and
+        // opens «See all», marked when urgent ones are among them. A hard limit: a service that piles up a hundred alerts
+        // does not make the home a list of a hundred.
         $urgent = array_values(array_filter($alerts, fn(array $alert): bool => $alert['urgent']));
         $others = array_values(array_filter($alerts, fn(array $alert): bool => !$alert['urgent']));
-        $shown = array_merge($urgent, array_slice($others, 0, max(0, self::HOME_ALERTS - count($urgent))));
+        $shown = array_slice($urgent, 0, self::HOME_URGENT);
+        $shown = array_merge($shown, array_slice($others, 0, max(0, self::HOME_ALERTS - count($shown))));
+        $more = count($alerts) - count($shown);
+        $beyond = max(0, count($alerts) - self::ALL_ALERTS);
         // The doors with something urgent first, then those with something waiting, then the rest; in each, the block's
         // order (the site's, then by name).
         $rank = fn(array $door): int => $door['urgent'] ? 0 : ($door['hasalerts'] ? 1 : 2);
@@ -131,13 +145,19 @@ class yourwork {
         $doors = array_values($doors);
 
         return [
-            'alerts' => $alerts,
+            'total' => count($alerts),
+            'alerts' => array_slice($alerts, 0, self::ALL_ALERTS),
             'hasalerts' => (bool) $alerts,
+            // Past what «See all» shows, the whole list is the dashboard's block, on the web.
+            'beyondlabel' => $beyond ? template::inert(get_string('yourwork:moreweb', 'local_oksigeniaaty', $beyond)) : '',
+            'beyondurl' => template::inert($CFG->wwwroot . '/my/', true),
             'shown' => $shown,
             'hasshown' => (bool) $shown,
+            'morelabel' => $more ? template::inert(get_string('yourwork:more', 'local_oksigeniaaty', $more)) : '',
+            'moreurgent' => count($urgent) > self::HOME_URGENT,
             'doors' => $doors,
             // «See all» only when it has something the home has not: more alerts, or a service's shortcuts.
-            'hasmore' => count($alerts) > count($shown) || (bool) array_filter(array_column($doors, 'hasactions')),
+            'hasmore' => $more > 0 || (bool) array_filter(array_column($doors, 'hasactions')),
             'components' => array_values(array_unique(array_column($doors, 'component'))),
         ];
     }
@@ -162,20 +182,25 @@ class yourwork {
                 $actions[] = template::inert(['label' => $label]) + $to;
             }
         }
+        // How many lines of alerts, not how many things: «4 pupils without a menu» is one line. The contract does not say
+        // how many things each line is, so the door shows a dot, not a number that would say less than there is.
         $count = max(0, (int) ($door['alertcount'] ?? 0));
+        $urgent = !empty($door['urgent']);
         $status = trim((string) ($door['status'] ?? ''));
 
         return template::inert([
             'title' => self::name($title),
             'status' => $status,
             'statusshort' => self::short($status),
-            'alertlabel' => $count > 0 ? get_string('yourwork:alertcount', 'local_oksigeniaaty', $count) : '',
+            'alertlabel' => $count > 0
+                ? get_string($urgent ? 'yourwork:alertdoturgent' : 'yourwork:alertdot', 'local_oksigeniaaty')
+                : '',
         ]) + [
             'component' => (string) ($door['component'] ?? ''),
             'icon' => template::inert(self::icon($door['icon'] ?? ''), true),
             'alertcount' => $count,
             'hasalerts' => $count > 0,
-            'urgent' => !empty($door['urgent']),
+            'urgent' => $urgent,
             'actions' => $actions,
             'hasactions' => (bool) $actions,
         ] + $target;

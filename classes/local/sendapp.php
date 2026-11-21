@@ -94,14 +94,16 @@ class sendapp {
             if (!$course->visible) {
                 require_capability('moodle/course:viewhiddencourses', $context);
             }
-            // A group left over from the course chosen before.
-            if ($groupid && !$DB->record_exists('groups', ['id' => $groupid, 'courseid' => $courseid])) {
+            // A group left over from the course chosen before, or, in separate groups, one that is not theirs.
+            $own = self::own_groups($course);
+            $theirs = $own === null || in_array($groupid, $own, true);
+            if ($groupid && (!$theirs || !$DB->record_exists('groups', ['id' => $groupid, 'courseid' => $courseid]))) {
                 $groupid = 0;
             }
             $view->kind = 'course';
             $view->course = $course;
             $view->groupid = $groupid;
-            $view->users = linkroster::course($courseid, $groupid);
+            $view->users = self::course_people($course, $groupid);
         } else if ($cohortid) {
             $cohort = $DB->get_record('cohort', ['id' => $cohortid], '*', MUST_EXIST);
             require_capability('moodle/cohort:view', \context_system::instance());
@@ -118,6 +120,44 @@ class sendapp {
         }
 
         return $view;
+    }
+
+    /**
+     * The groups of a course whose people the person looking may see here: all of them; or, in a course of separate groups
+     * and without «Access all groups», only their own, as on the course's page of participants.
+     *
+     * @param \stdClass $course The course, with its group mode.
+     * @return int[]|null Null for all; otherwise the ids of their own groups, none if they are in none.
+     */
+    public static function own_groups(\stdClass $course): ?array {
+        global $USER;
+
+        $separate = (int) groups_get_course_groupmode($course) === SEPARATEGROUPS;
+        if (!$separate || has_capability('moodle/site:accessallgroups', \context_course::instance($course->id))) {
+            return null;
+        }
+
+        return array_map('intval', array_keys(groups_get_all_groups((int) $course->id, (int) $USER->id)));
+    }
+
+    /**
+     * The people of a course, or of one of its groups, that the person looking may see here: in separate groups, only
+     * those of their own groups.
+     *
+     * @param \stdClass $course The course, with its group mode.
+     * @param int $groupid One of its groups, or 0 for the whole course (all their own groups, in separate groups).
+     * @return \stdClass[] Users by id.
+     */
+    public static function course_people(\stdClass $course, int $groupid = 0): array {
+        $own = self::own_groups($course);
+        if ($own === null) {
+            return linkroster::course((int) $course->id, $groupid);
+        }
+        if ($groupid) {
+            return in_array($groupid, $own, true) ? linkroster::course((int) $course->id, $groupid) : [];
+        }
+
+        return $own ? linkroster::course((int) $course->id, $own) : [];
     }
 
     /**
@@ -146,7 +186,7 @@ class sendapp {
 
         $now = time();
         $ctxselect = \context_helper::get_preload_record_columns_sql('ctx');
-        $sql = "SELECT c.id, c.fullname, c.shortname, c.category, c.visible, n.people, $ctxselect
+        $sql = "SELECT c.id, c.fullname, c.shortname, c.category, c.visible, c.groupmode, n.people, $ctxselect
                   FROM {course} c
                   JOIN (SELECT e.courseid, COUNT(DISTINCT ue.userid) AS people
                           FROM {enrol} e
@@ -199,7 +239,7 @@ class sendapp {
         $ctxselect = \context_helper::get_preload_record_columns_sql('ctx');
         $full = $DB->sql_like('c.fullname', ':full', false, false);
         $short = $DB->sql_like('c.shortname', ':short', false, false);
-        $sql = "SELECT c.id, c.fullname, c.shortname, c.category, c.visible, $ctxselect
+        $sql = "SELECT c.id, c.fullname, c.shortname, c.category, c.visible, c.groupmode, $ctxselect
                   FROM {course} c
                   JOIN {context} ctx ON ctx.instanceid = c.id AND ctx.contextlevel = :level
                  WHERE c.id <> :siteid
@@ -291,14 +331,16 @@ class sendapp {
 
     /**
      * Clear the PIN of one person of the list who forgot it and cannot get it back by e-mail (no address, or an account
-     * made for a family): the next link they open lets them set a new one. It is logged.
+     * made for a family): the next link they open lets them set a new one. Whoever has a mailbox gets it back by
+     * themselves, with «Forgot your PIN?». It is logged.
      *
      * @param array[] $rows The list, from linkroster::rows().
      * @param int $userid The person.
      * @return bool Whether there was one to clear.
      */
     public static function clear_pin(array $rows, int $userid): bool {
-        if (!self::row_of($rows, $userid) || !pin::has_pin($userid)) {
+        $row = self::row_of($rows, $userid);
+        if (!$row || !self::may_clear_pin($row['user']) || !pin::has_pin($userid)) {
             return false;
         }
         pin::delete($userid);
@@ -308,6 +350,16 @@ class sendapp {
         ])->trigger();
 
         return true;
+    }
+
+    /**
+     * Whether the school may clear a person's PIN here: only when e-mail does not reach them.
+     *
+     * @param \stdClass $user The person, with their e-mail.
+     * @return bool
+     */
+    public static function may_clear_pin(\stdClass $user): bool {
+        return !pinreset::has_mailbox($user);
     }
 
     /**
@@ -349,7 +401,7 @@ class sendapp {
 
         return array_map(fn($course) => [
             'course' => $course,
-            'rows' => linkroster::rows(linkroster::course((int) $course->id)),
+            'rows' => linkroster::rows(self::course_people($course)),
         ], $courses);
     }
 

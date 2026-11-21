@@ -100,6 +100,24 @@ class loginkey {
     }
 
     /**
+     * The user's current PIN-reset key, while it can still be used: not expired and not being claimed. Only for a page that
+     * hands it to its owner's own session (newpin.php), so that the notice to the phone never carries it.
+     *
+     * @param int $userid The user id.
+     * @return string|null The key value, or null if there is none to use.
+     */
+    public static function live_reset(int $userid): ?string {
+        global $DB;
+
+        $key = $DB->get_record('user_private_key', ['script' => self::RESET_SCRIPT, 'userid' => $userid]);
+        if (!$key || $key->iprestriction !== null || (!empty($key->validuntil) && $key->validuntil < time())) {
+            return null;
+        }
+
+        return (string) $key->value;
+    }
+
+    /**
      * Validate a key and consume it (single use), returning the user id it belongs to.
      *
      * The key is claimed atomically with a private nonce, so two concurrent requests with the same key cannot both

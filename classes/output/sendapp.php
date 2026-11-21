@@ -296,7 +296,8 @@ class sendapp implements \renderable, \templatable {
                 'sendto' => $id,
                 'sesskey' => sesskey(),
                 'sendtext' => get_string($state === linkroster::SENT ? 'sendapp:again' : 'sendapp:send', $component),
-                'haspin' => isset($withpin[$id]),
+                // Only where the server lets the school clear it: for whoever e-mail does not reach.
+                'haspin' => isset($withpin[$id]) && logic::may_clear_pin($row['user']),
                 'fixurl' => $fix ? (new \moodle_url('/user/editadvanced.php', ['id' => $id]))->out(false) : '',
                 'fixtext' => $fix ? get_string('sendapp:fixemail', $component) : '',
             ];
@@ -346,21 +347,26 @@ class sendapp implements \renderable, \templatable {
     }
 
     /**
-     * The groups of a course as chips, the whole course first, or none if it has no groups.
+     * The groups of a course as chips, the whole course first, or none if it has no groups. In separate groups, for whoever
+     * may not see all of them, only their own, after «Your groups»; with just one, no chips.
      *
      * @param \stdClass $course The course.
      * @return array[]
      */
     protected function groups(\stdClass $course): array {
         $groups = groups_get_all_groups($course->id);
-        if (!$groups) {
+        $own = logic::own_groups($course);
+        if ($own !== null) {
+            $groups = array_intersect_key($groups, array_flip($own));
+        }
+        if (!$groups || ($own !== null && count($groups) === 1)) {
             return [];
         }
         $context = \context_course::instance($course->id);
         $url = new \moodle_url('/local/oksigeniaaty/sendapp.php', ['courseid' => $course->id]);
         $chips = [[
             'url' => $url->out(false),
-            'name' => get_string('sendapp:wholecourse', 'local_oksigeniaaty'),
+            'name' => get_string($own === null ? 'sendapp:wholecourse' : 'sendapp:owngroups', 'local_oksigeniaaty'),
             'current' => !$this->view->groupid,
         ]];
         foreach ($groups as $group) {

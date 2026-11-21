@@ -94,8 +94,10 @@ final class yourwork_test extends \advanced_testcase {
         $this->assertSame($CFG->wwwroot . '/local/inbox/', $inbox['url']);
         $this->assertSame('', $inbox['icon']);
         $this->assertTrue($canteen['urgent']);
-        $this->assertSame(2, $canteen['alertcount']);
-        $this->assertSame('2 to sort out', $canteen['alertlabel']);
+        // A dot, not the count of lines: «4 pupils without a menu» is one line and four things.
+        $this->assertTrue($canteen['hasalerts']);
+        $this->assertSame('Something urgent to sort out', $canteen['alertlabel']);
+        $this->assertSame('Something to sort out', $inbox['alertlabel']);
         $menu = ['label' => 'Menu of the day', 'url' => $CFG->wwwroot . '/local/canteen/today.php', 'browser' => false];
         $this->assertSame([$menu], $canteen['actions']);
         $this->assertFalse($library['hasalerts']);
@@ -106,6 +108,10 @@ final class yourwork_test extends \advanced_testcase {
         $shown = ['4 pupils without a menu', 'A screen gives no sign', 'Ana is waiting for an answer'];
         $this->assertSame($shown, array_column($work['shown'], 'text'));
         $this->assertTrue($work['hasmore']);
+        $this->assertSame(5, $work['total']);
+        $this->assertSame('2 more to sort out', $work['morelabel']);
+        $this->assertFalse($work['moreurgent']);
+        $this->assertSame('', $work['beyondlabel']);
         [$missing, $ana] = $work['alerts'];
         $this->assertTrue($missing['urgent']);
         $this->assertSame('Canteen', $missing['service']);
@@ -128,6 +134,38 @@ final class yourwork_test extends \advanced_testcase {
     }
 
     /**
+     * A hard limit: on the home, six urgent at most and a line with how many more, marked when urgent ones are among them;
+     * in «See all», fifty, and a line to the rest on the web.
+     */
+    public function test_limits(): void {
+        global $CFG;
+        $this->resetAfterTest();
+        $board = $this->board(time());
+        $alert = fn(int $i, bool $urgent): array => ['text' => ($urgent ? 'Urgent ' : 'Waiting ') . $i,
+            'url' => 'https://example.org/canteen/' . $i, 'urgent' => $urgent, 'service' => 'Canteen'];
+        $board['alerts'] = array_merge(
+            array_map(fn(int $i): array => $alert($i, true), range(1, 8)),
+            array_map(fn(int $i): array => $alert($i, false), range(1, 60))
+        );
+        $work = yourwork::shape($board);
+
+        $this->assertSame(68, $work['total']);
+        $this->assertSame(array_map(fn(int $i): string => 'Urgent ' . $i, range(1, 6)), array_column($work['shown'], 'text'));
+        $this->assertSame('62 more to sort out', $work['morelabel']);
+        $this->assertTrue($work['moreurgent']);
+        $this->assertCount(yourwork::ALL_ALERTS, $work['alerts']);
+        $this->assertSame('18 more to sort out, on the web', $work['beyondlabel']);
+        $this->assertSame($CFG->wwwroot . '/my/', $work['beyondurl']);
+
+        // Two urgent: both, and one more to make three.
+        $board['alerts'] = array_merge([$alert(1, true), $alert(2, true)], [$alert(1, false), $alert(2, false)]);
+        $work = yourwork::shape($board);
+        $this->assertSame(['Urgent 1', 'Urgent 2', 'Waiting 1'], array_column($work['shown'], 'text'));
+        $this->assertSame('1 more to sort out', $work['morelabel']);
+        $this->assertFalse($work['moreurgent']);
+    }
+
+    /**
      * «See all» only when the panel has more than the home: here, two alerts and no shortcuts. Without doors, nothing.
      */
     public function test_see_all_and_nothing(): void {
@@ -138,6 +176,7 @@ final class yourwork_test extends \advanced_testcase {
         $board['doors'][0]['actions'] = [];
 
         $this->assertFalse(yourwork::shape($board)['hasmore']);
+        $this->assertSame('', yourwork::shape($board)['morelabel']);
         $this->assertNull(yourwork::shape(['doors' => [], 'alerts' => $board['alerts']]));
         $this->assertNull(yourwork::shape(['doors' => [['title' => 'No address']]]));
     }
@@ -158,6 +197,15 @@ final class yourwork_test extends \advanced_testcase {
         $this->assertStringContainsString('class="aty-event aty-aviso aty-urgent"', $home);
         $this->assertStringContainsString('inApp="true"', $home);
         $this->assertStringContainsString('class="aty-puerta aty-urgent"', $home);
+        // The door's dot says what it means; an urgent line says so to screen readers, not only with its colour.
+        $dot = '<span class="aty-puerta-punto" role="img" aria-label="Something urgent to sort out">';
+        $this->assertStringContainsString($dot, $home);
+        $this->assertStringNotContainsString('aty-puerta-avisos', $home);
+        $this->assertStringContainsString('<span class="sr-only">Urgent: </span>4 pupils without a menu', $home);
+        $this->assertStringNotContainsString('<span class="sr-only">Urgent: </span>Ana', $home);
+        // The rest, behind a line that says how many and opens «See all».
+        $this->assertStringContainsString('2 more to sort out', $home);
+        $this->assertSame(2, substr_count($home, 'method="mobile_work"'));
         $this->assertStringNotContainsString('One more', $home);
         $this->assertStringContainsString('12 screens on', $home);
         $this->assertStringNotContainsString('3 groups', $home);
@@ -174,6 +222,13 @@ final class yourwork_test extends \advanced_testcase {
         $this->assertStringContainsString('capture="false" inApp="true"', $home);
         $this->assertStringContainsString('capture="false" inApp="true"', $page);
         $this->assertStringNotContainsString('capture="true"', $page);
+
+        $this->assertStringNotContainsString('on the web', $page);
+        $beyond = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_work', [
+            'hasdoors' => true, 'hasalerts' => true, 'alerts' => $work['alerts'], 'doors' => [],
+            'beyondlabel' => '18 more to sort out, on the web', 'beyondurl' => 'https://example.org/my/',
+        ]);
+        $this->assertStringContainsString('href="https://example.org/my/" capture="false" inApp="true"', $beyond);
 
         $none = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_work', ['hasdoors' => false, 'none' => 'Nothing.']);
         $this->assertStringContainsString('Nothing.', $none);

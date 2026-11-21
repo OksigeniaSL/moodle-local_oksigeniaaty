@@ -5,6 +5,36 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Security (0.5.91-dev)
+
+- «Forgot my PIN» for an account without a mailbox: the notice to the phone no longer carries in its link the reset key,
+  which signs in without the PIN, so the push bridge, Firebase and, with Oksigenia Marandu, WhatsApp or Telegram no
+  longer see it. The notice leads to a new page, `newpin.php`, which hands the key the account asked for in the last half
+  hour to the account's own session, in the app or on the web, and from there to the app, to set a new PIN.
+- «Send the app»: «Clear the PIN» is only for whoever e-mail does not reach, as it said, now checked on the server and
+  not only in the list. In a course of separate groups, whoever may not see all the groups sees, sends to and clears
+  only the people of their own groups, as on the course's page of participants, and the course's card counts only them.
+- The home of a family's own account: a plugin's tile that leads to a page of the site no longer shows, as the site's
+  shortcuts already did not.
+
+### Fixed (0.5.91-dev)
+
+- «Forgot my PIN» finds an e-mail whatever case it was saved in, on PostgreSQL too («Ana@Example.org»); two accounts
+  whose addresses differ only in case find nobody, as two with the same address.
+
+### Changed (0.5.91-dev)
+
+- «Your work» has a hard limit. On the home, six urgent at most, and the others up to three in all, then a line that
+  says how many more there are and opens «See all», with the edge of danger when urgent ones are among them. In «See
+  all», fifty, then a line with how many more, to the dashboard of the web, where the block has them all.
+- A door of «Your work» shows a dot, not a number: the block counts lines of alerts, and «4 pupils without a menu» is
+  one line. A ring; filled in the colour of danger, and bigger, when something is urgent; and it says which to screen
+  readers.
+- An urgent alert of «Your work» and an urgent line of a child on the family's home say «Urgent:» to screen readers,
+  not only with their colour.
+- The family's home: the «+» says «Add a child» in words, next to «Invite another adult», and the heading is «Your
+  children», as everywhere else in the app.
+
 ### Security (0.5.90-dev)
 
 - A teacher who is also a parent gets the way into the app with their own account only signed in to it here. Before,

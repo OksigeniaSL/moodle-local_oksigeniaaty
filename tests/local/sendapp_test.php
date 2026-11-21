@@ -17,6 +17,7 @@
 namespace local_oksigeniaaty\local;
 
 use local_oksigeniaaty\event\pin_cleared;
+use local_oksigeniaaty\output;
 
 /**
  * «Send the app»: who the person looking may reach, the cards of the courses under way, sending and clearing a PIN.
@@ -147,6 +148,64 @@ final class sendapp_test extends \advanced_testcase {
         $this->allow((int) $teacher->id, ['moodle/cohort:view']);
         $this->assertSame('cohort', sendapp::audience(0, 0, (int) $cohort->id, '')->kind);
         $this->assertSame('home', sendapp::audience(SITEID, 0, 0, '')->kind);
+    }
+
+    /**
+     * In a course of separate groups, whoever may not see all the groups sees here only the people of their own, as on the
+     * course's page of participants: in the list, in the chips, in the card's count and in what they may clear. With
+     * «Access all groups», everybody.
+     */
+    public function test_separate_groups(): void {
+        global $PAGE;
+        $generator = $this->getDataGenerator();
+        $course = $generator->create_course(['groupmode' => SEPARATEGROUPS, 'startdate' => time() - DAYSECS]);
+        $mine = $generator->create_group(['courseid' => $course->id, 'name' => 'Grupo A']);
+        $theirs = $generator->create_group(['courseid' => $course->id, 'name' => 'Grupo B']);
+        $teacher = $generator->create_user();
+        $ana = $generator->create_user(['email' => 'atyfamily-ana@invalid.invalid']);
+        $leo = $generator->create_user(['email' => 'atyfamily-leo@invalid.invalid']);
+        $generator->enrol_user($teacher->id, $course->id, 'teacher');
+        $generator->enrol_user($ana->id, $course->id, 'student');
+        $generator->enrol_user($leo->id, $course->id, 'student');
+        $generator->create_group_member(['groupid' => $mine->id, 'userid' => $teacher->id]);
+        $generator->create_group_member(['groupid' => $mine->id, 'userid' => $ana->id]);
+        $generator->create_group_member(['groupid' => $theirs->id, 'userid' => $leo->id]);
+        pin::set((int) $leo->id, '482915');
+        $PAGE->set_url(new \moodle_url('/local/oksigeniaaty/sendapp.php'));
+        $output = $PAGE->get_renderer('core');
+        $here = new \moodle_url('/local/oksigeniaaty/sendapp.php', ['courseid' => $course->id]);
+        $this->setUser($teacher);
+
+        $this->assertSame([(int) $mine->id], sendapp::own_groups(get_course($course->id)));
+        $view = sendapp::audience((int) $course->id, 0, 0, '');
+        $this->assertEqualsCanonicalizing([(int) $teacher->id, (int) $ana->id], array_keys($view->users));
+        // Another group is not theirs: their own instead.
+        $view = sendapp::audience((int) $course->id, (int) $theirs->id, 0, '');
+        $this->assertSame(0, $view->groupid);
+        $this->assertArrayNotHasKey((int) $leo->id, $view->users);
+        $this->assertFalse(sendapp::clear_pin(linkroster::rows($view->users), (int) $leo->id));
+        $this->assertTrue(pin::has_pin((int) $leo->id));
+        // The card of the course counts their own people only.
+        $this->assertCount(2, sendapp::running_courses()[0]['rows']);
+        // With one group of their own there is nothing to choose.
+        $page = (new output\sendapp($view, linkroster::rows($view->users), $here))->export_for_template($output);
+        $this->assertFalse($page['chosen']['hasgroups']);
+
+        // In two groups: «Your groups», then each of them, and not the other.
+        $also = $generator->create_group(['courseid' => $course->id, 'name' => 'Grupo C']);
+        $generator->create_group_member(['groupid' => $also->id, 'userid' => $teacher->id]);
+        $page = (new output\sendapp($view, linkroster::rows($view->users), $here))->export_for_template($output);
+        $names = array_column($page['chosen']['groups'], 'name');
+        $this->assertSame([get_string('sendapp:owngroups', 'local_oksigeniaaty'), 'Grupo A', 'Grupo C'], $names);
+
+        // Whoever may see all the groups sees everybody, and may clear Leo's PIN.
+        $head = $generator->create_user();
+        $generator->enrol_user($head->id, $course->id, 'editingteacher');
+        $this->setUser($head);
+        $this->assertNull(sendapp::own_groups(get_course($course->id)));
+        $view = sendapp::audience((int) $course->id, 0, 0, '');
+        $this->assertArrayHasKey((int) $leo->id, $view->users);
+        $this->assertTrue(sendapp::clear_pin(linkroster::rows($view->users), (int) $leo->id));
     }
 
     /**
@@ -285,17 +344,21 @@ final class sendapp_test extends \advanced_testcase {
     }
 
     /**
-     * «Clear the PIN» only for someone in the list who has one, and it is logged.
+     * «Clear the PIN» only for someone in the list who has one and whom e-mail does not reach (whoever it reaches gets it
+     * back by themselves), and it is logged.
      */
     public function test_clear_pin(): void {
         $generator = $this->getDataGenerator();
         $course = $generator->create_course();
-        $forgot = $generator->create_user();
-        $nopin = $generator->create_user();
-        $outsider = $generator->create_user();
+        $forgot = $generator->create_user(['email' => 'atyfamily-forgot@invalid.invalid']);
+        $mailbox = $generator->create_user(['email' => 'ana@example.com']);
+        $nopin = $generator->create_user(['email' => 'atyfamily-nopin@invalid.invalid']);
+        $outsider = $generator->create_user(['email' => 'atyfamily-outsider@invalid.invalid']);
         $generator->enrol_user($forgot->id, $course->id);
+        $generator->enrol_user($mailbox->id, $course->id);
         $generator->enrol_user($nopin->id, $course->id);
         pin::set((int) $forgot->id, '482915');
+        pin::set((int) $mailbox->id, '305118');
         pin::set((int) $outsider->id, '771204');
         $rows = linkroster::rows(linkroster::course((int) $course->id));
         $this->assertSame([(int) $forgot->id => 0], sendapp::with_pin([(int) $forgot->id, (int) $nopin->id]));
@@ -304,6 +367,8 @@ final class sendapp_test extends \advanced_testcase {
 
         $this->assertFalse(sendapp::clear_pin($rows, (int) $outsider->id));
         $this->assertTrue(pin::has_pin((int) $outsider->id));
+        $this->assertFalse(sendapp::clear_pin($rows, (int) $mailbox->id));
+        $this->assertTrue(pin::has_pin((int) $mailbox->id));
         $this->assertFalse(sendapp::clear_pin($rows, (int) $nopin->id));
         $this->assertTrue(sendapp::clear_pin($rows, (int) $forgot->id));
         $this->assertFalse(pin::has_pin((int) $forgot->id));
@@ -315,18 +380,21 @@ final class sendapp_test extends \advanced_testcase {
 
     /**
      * The page of a big course: a bar in place of the phones, the first people of a long list and the link to all of them,
-     * «Clear the PIN» where there is one, and the button for those waiting with its question in place.
+     * «Clear the PIN» where there is one that the school may clear (not for whoever e-mail reaches), and the button for
+     * those waiting with its question in place.
      */
     public function test_page_of_a_big_course(): void {
-        global $PAGE;
+        global $DB, $PAGE;
         $generator = $this->getDataGenerator();
         $course = $generator->create_course(['fullname' => 'Inglés B1']);
         $count = sendapp::PHONES + 1;
         for ($i = 0; $i < $count; $i++) {
             $generator->enrol_user($generator->create_user(['lastname' => sprintf('P%03d', $i)])->id, $course->id);
         }
-        $first = current(linkroster::rows(linkroster::course((int) $course->id)));
+        [$first, $second] = linkroster::rows(linkroster::course((int) $course->id));
+        $DB->set_field('user', 'email', 'atyfamily-p000@invalid.invalid', ['id' => $first['user']->id]);
         pin::set((int) $first['user']->id, '482915');
+        pin::set((int) $second['user']->id, '305118');
         $this->setAdminUser();
         $PAGE->set_url(new \moodle_url('/local/oksigeniaaty/sendapp.php'));
         $output = $PAGE->get_renderer('core');

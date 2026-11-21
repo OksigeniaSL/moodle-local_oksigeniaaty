@@ -26,8 +26,8 @@ use stdClass;
  *
  * People rarely remember a username. They may give it, their e-mail or, with Oksigenia Family, their mobile number,
  * when the centre or WhatsApp vouched for it. The link goes by e-mail to a real mailbox; an account without one, such as
- * an adult who entered with a child's code, gets it as a notice to the phone (the app, and WhatsApp or Telegram where
- * Oksigenia Marandu is set up).
+ * an adult who entered with a child's code, gets a notice to the phone (the app, and WhatsApp or Telegram where Oksigenia
+ * Marandu is set up) that leads to the link without carrying it.
  *
  * @package    local_oksigeniaaty
  * @copyright  2026 Oksigenia SL <dev@oksigenia.cc>
@@ -55,7 +55,12 @@ class pinreset {
             return $user;
         }
         if (validate_email($search)) {
-            $matches = $DB->get_records('user', ['email' => core_text::strtolower($search)] + $base);
+            // Whatever case it was saved in: PostgreSQL compares as written, and «Ana@Example.org» is the same mailbox.
+            $matches = $DB->get_records_select(
+                'user',
+                'LOWER(email) = LOWER(:email) AND mnethostid = :host AND deleted = 0 AND suspended = 0 AND confirmed = 1',
+                ['email' => $search, 'host' => $base['mnethostid']]
+            );
             return count($matches) === 1 ? reset($matches) : null;
         }
 
@@ -106,10 +111,14 @@ class pinreset {
     }
 
     /**
-     * Send the reset link: by e-mail to a real mailbox, otherwise as a notice to the phone.
+     * Send the way to a new PIN: the reset link by e-mail to a real mailbox; otherwise a notice to the phone.
+     *
+     * The notice carries no key. It travels through the push bridge and Firebase and, with Oksigenia Marandu, through
+     * WhatsApp or Telegram, and a reset key signs in without the PIN. So it only says where to go: newpin.php, which hands
+     * the key to the account's own session, in the app or on the web.
      *
      * @param stdClass $user The user record.
-     * @param moodle_url $openurl The sign-in bridge with the reset key.
+     * @param moodle_url $openurl The sign-in bridge with the reset key, for the e-mail.
      * @return string 'email' or 'notice', for the record.
      */
     public static function send(stdClass $user, moodle_url $openurl): string {
@@ -139,12 +148,16 @@ class pinreset {
         $message->userfrom = core_user::get_noreply_user();
         $message->userto = $user;
         $message->subject = $subject;
-        $message->fullmessage = get_string('forgotpin:notice', 'local_oksigeniaaty', $link);
+        $message->fullmessage = get_string('forgotpin:notice', 'local_oksigeniaaty');
         $message->fullmessageformat = FORMAT_PLAIN;
         $message->fullmessagehtml = '';
         $message->smallmessage = get_string('forgotpin:noticesmall', 'local_oksigeniaaty');
         $message->notification = 1;
-        $message->contexturl = $link;
+        // From WhatsApp or Telegram, on an Android phone with the app, the page opens in the app, signed in.
+        $message->contexturl = \local_oksigeniaaty\api::app_link(
+            (int) $user->id,
+            (new moodle_url('/local/oksigeniaaty/newpin.php'))->out(false)
+        );
         $message->contexturlname = get_string('forgotpin:emailbutton', 'local_oksigeniaaty');
         force_current_language($lang);
         message_send($message);

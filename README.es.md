@@ -30,7 +30,7 @@ del sitio ▸ Informes ▸ Comprobaciones del sistema*) dice cuáles faltan, sin
 Para llevar a tu gente a la app:
 - **el QR del centro**, en carteles y circulares;
 - **«Mandar la app»**, que manda a cada persona su enlace sin contraseña, por curso, persona o cohorte, y deja borrar el
-  PIN a quien lo olvidó;
+  PIN a quien lo olvidó y no recibe correo;
 - **la barra «Abrir en la app»** al pie de cada página, que se enciende cuando la gente ya sabe que tiene la app.
 
 Si en tu centro hay menores de 13 años, limita a algunas cohortes la entrada sin contraseña que cada uno saca por su

@@ -18,15 +18,17 @@
     @template local_oksigeniaaty/mobile_home_work
 
     «Your work» on the app's home (local\yourwork), for whoever runs something: under its heading, the first things
-    waiting to be sorted out, the urgent first, and a door into each service, two in a row. Its «See all» opens the whole
-    panel, only when that has more: more things waiting, or the services' shortcuts.
+    waiting to be sorted out, the urgent first (six at most), then a line that says how many more there are and opens the
+    whole panel, with the edge of danger when urgent ones are among them; and a door into each service, two in a row. Its
+    «See all» opens the whole panel, only when that has more: more things waiting, or the services' shortcuts.
 
     Classes required for JS:
     * none
 
     Context variables required for this template:
-    * work - heading, seeall, hasmore, hasshown, shown (mobile_work_alert), doors (mobile_work_door) and short (true: the
-      doors' lines in whole parts); none when the person runs nothing.
+    * work - heading, seeall, hasmore, hasshown, shown (mobile_work_alert), morelabel and moreurgent (the line to the
+      rest), doors (mobile_work_door) and short (true: the doors' lines in whole parts); none when the person runs
+      nothing.
 
     Example context (json):
     {}
@@ -41,6 +43,12 @@
     {{#shown}}
     {{> local_oksigeniaaty/mobile_work_alert }}
     {{/shown}}
+    {{#morelabel}}
+    <button type="button" class="aty-event aty-aviso aty-mas{{#moreurgent}} aty-urgent{{/moreurgent}}" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_work" title="{{heading}}" [args]="{}">
+        <span class="aty-event-body"><span class="aty-event-name">{{#moreurgent}}<span class="sr-only">{{#str}} yourwork:urgent, local_oksigeniaaty {{/str}} </span>{{/moreurgent}}{{morelabel}}</span></span>
+        <ion-icon name="fas-chevron-right" aria-hidden="true"></ion-icon>
+    </button>
+    {{/morelabel}}
 </div>
 {{/hasshown}}
 <div class="aty-puertas">

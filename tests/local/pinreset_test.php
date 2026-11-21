@@ -41,9 +41,18 @@ final class pinreset_test extends \advanced_testcase {
         $gen->create_user(['email' => 'familia@example.com']);
         $gen->create_user(['email' => 'familia@example.com']);
         $gen->create_user(['username' => 'luis.ejemplo', 'email' => 'luis@example.com', 'suspended' => 1]);
+        $eva = $gen->create_user(['email' => 'Eva@Example.org']);
+        $gen->create_user(['email' => 'Pareja@example.org']);
+        $gen->create_user(['email' => 'pareja@example.org']);
 
         $this->assertEquals($ana->id, pinreset::find_user('Ana.Ejemplo')->id);
         $this->assertEquals($ana->id, pinreset::find_user(' ana@example.com ')->id);
+        $this->assertEquals($ana->id, pinreset::find_user('ANA@example.com')->id);
+        // Saved with capitals, found however it is typed, on PostgreSQL too.
+        $this->assertEquals($eva->id, pinreset::find_user('eva@example.org')->id);
+        $this->assertEquals($eva->id, pinreset::find_user('EVA@EXAMPLE.ORG')->id);
+        // Two accounts whose addresses differ only in case are one mailbox: nobody.
+        $this->assertNull(pinreset::find_user('pareja@example.org'));
         $this->assertNull(pinreset::find_user('familia@example.com'));
         $this->assertNull(pinreset::find_user('nadie@example.com'));
         $this->assertNull(pinreset::find_user('luis.ejemplo'));
@@ -95,7 +104,8 @@ final class pinreset_test extends \advanced_testcase {
     }
 
     /**
-     * A real address gets the link by e-mail; an account whose address is a placeholder gets it as a notice to the phone.
+     * A real address gets the link by e-mail; an account whose address is a placeholder gets a notice to the phone, which
+     * leads to newpin.php and never carries the key: the bridge, Firebase and Marandu see it whole.
      */
     public function test_send_by_email_or_to_the_phone(): void {
         $this->resetAfterTest();
@@ -121,7 +131,9 @@ final class pinreset_test extends \advanced_testcase {
         $this->assertCount(1, $sent);
         $this->assertEquals($nomailbox->id, $sent[0]->useridto);
         $this->assertSame('pinreset', $sent[0]->eventtype);
-        $this->assertSame($url->out(false), $sent[0]->contexturl);
-        $this->assertStringContainsString($url->out(false), $sent[0]->fullmessage);
+        $this->assertSame((new \moodle_url('/local/oksigeniaaty/newpin.php'))->out(false), $sent[0]->contexturl);
+        foreach (['contexturl', 'subject', 'fullmessage', 'fullmessagehtml', 'smallmessage'] as $field) {
+            $this->assertStringNotContainsString('abc123', (string) $sent[0]->$field, $field);
+        }
     }
 }

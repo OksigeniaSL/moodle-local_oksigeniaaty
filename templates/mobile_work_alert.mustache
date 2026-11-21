@@ -19,7 +19,8 @@
 
     A line of «Your work» (local\yourwork): something waiting to be sorted out, with the logo of its service on its light
     plate, what it is and of which service. The whole line opens where it is sorted out; an urgent one has the edge of
-    danger. When it is due only orders the list, as in the block: the text says the hour that matters.
+    danger and, for screen readers, «Urgent:» before its text. When it is due only orders the list, as in the block: the
+    text says the hour that matters.
 
     Classes required for JS:
     * none
@@ -39,7 +40,7 @@
 <a class="aty-event aty-aviso{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="false"{{^browser}} inApp="true"{{/browser}}>
     <span class="aty-servicio-logo">{{#icon}}<img src="{{icon}}" alt="">{{/icon}}</span>
     <span class="aty-event-body">
-        <span class="aty-event-name">{{text}}</span>
+        <span class="aty-event-name">{{#urgent}}<span class="sr-only">{{#str}} yourwork:urgent, local_oksigeniaaty {{/str}} </span>{{/urgent}}{{text}}</span>
         {{#service}}<span class="aty-event-context">{{service}}</span>{{/service}}
     </span>
 </a>

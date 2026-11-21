@@ -62,17 +62,17 @@ class linkroster {
     }
 
     /**
-     * The people actively enrolled in a course, or in one of its groups.
+     * The people actively enrolled in a course, or in some of its groups.
      *
      * @param int $courseid The course.
-     * @param int $groupid The group, or 0 for the whole course.
+     * @param int|int[] $groupids A group, or several (whoever is in any of them); 0 or none for the whole course.
      * @return \stdClass[] Users by id.
      */
-    public static function course(int $courseid, int $groupid = 0): array {
+    public static function course(int $courseid, int|array $groupids = 0): array {
         global $DB;
 
         $context = \context_course::instance($courseid);
-        [$enrolled, $params] = get_enrolled_sql($context, '', $groupid, true);
+        [$enrolled, $params] = get_enrolled_sql($context, '', $groupids, true);
 
         return $DB->get_records_sql(
             self::select() . " JOIN ($enrolled) je ON je.id = u.id WHERE " . self::active(),

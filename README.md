@@ -30,7 +30,7 @@ status*) says which are missing, without showing any secret:
 To bring your people to the app:
 - **the site's QR code**, on posters and letters;
 - **«Send the app»**, which sends each person their passwordless link, by course, person or cohort, and lets you clear
-  the PIN of someone who forgot it;
+  the PIN of someone who forgot it and whom e-mail does not reach;
 - **the «Open in the app» bar** at the foot of every page, to turn on once people know they have the app.
 
 If your school has children under 13, limit to some cohorts the passwordless sign-in each person gets on their own:
@@ -73,9 +73,10 @@ With Oksigenia Tembiapo («Your work» on the dashboard), whoever may send the a
 have it, and the site's QR code at hand for whoever runs the site.
 
 Where Tembiapo is installed and enabled, the app's home has «Your work» too, for whoever runs something (the office,
-the canteen, the library): every urgent thing waiting to be sorted out and the others up to three, each opening where
-it is sorted out, and a door into each service, those with something waiting first, with the block's hidden services. Its «See all» opens the whole
-panel, with each service's shortcuts. A plugin takes part through the block's own function,
+the canteen, the library): the urgent things waiting to be sorted out, six at most, and the others up to three in all,
+each opening where it is sorted out, then a line with how many more; and a door into each service, with a dot when
+something of it is waiting, those with something waiting first, with the block's hidden services. Its «See all» opens
+the whole panel, fifty things at most, with each service's shortcuts. A plugin takes part through the block's own function,
 `<component>_oksigenia_work(int $userid): array`, and nothing else; its tile in "Also" gives way to its door.
 
 ## Privacy
