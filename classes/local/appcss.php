@@ -101,7 +101,21 @@ class appcss {
      * @return string The CSS.
      */
     public static function homesheet(string $brandhex): string {
-        return self::homevars($brandhex, '.aty-home', ":root.dark .aty-home,\n:root .dark .aty-home") . self::homecss();
+        return self::homevars($brandhex, '.aty-home', ":root.dark .aty-home,\n:root .dark .aty-home") . self::homecss()
+            . self::family();
+    }
+
+    /**
+     * Oksigenia Family's own sheet for the app, when the site has it. The app loads a plugin's sheet only with a handler
+     * of it that is on for the person, and Family's menu entries are off for a family's adults, who reach its pages (a
+     * request for consent) from this home: without this, those pages would have no style of their own.
+     *
+     * @return string The CSS, or '' without Family.
+     */
+    public static function family(): string {
+        global $CFG;
+        $file = $CFG->dirroot . '/local/oksigeniafamily/app/mobile.css';
+        return is_readable($file) ? "\n/* Oksigenia Family. */\n" . (string) file_get_contents($file) : '';
     }
 
     /**

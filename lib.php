@@ -68,7 +68,10 @@ function local_oksigeniaaty_appcss_version(): string {
     // an upgrade the stored one only changes after the upgrade steps run.
     $version = (string) \core_plugin_manager::instance()->get_plugin_info('local_oksigeniaaty')->versiondisk;
 
-    return substr(sha1($version . "\n" . $brand . "\n" . local_oksigeniaaty_client_css()), 0, 12);
+    // Family's sheet goes in the home's (appcss::family()): a change of it busts the cache too.
+    $family = \local_oksigeniaaty\local\appcss::family();
+
+    return substr(sha1($version . "\n" . $brand . "\n" . local_oksigeniaaty_client_css() . "\n" . $family), 0, 12);
 }
 
 /**
