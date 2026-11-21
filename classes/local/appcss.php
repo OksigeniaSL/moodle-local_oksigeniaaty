@@ -483,7 +483,7 @@ button.aty-bloque-pie { width: 100%; border: 0; border-top: 1px solid rgba(var(-
 /* Another child's code (mobile_family_add): scanning the letter first, big; typing it under, in the letters' own shape. */
 .aty-codigo { padding: 18px 16px 24px; }
 .aty-codigo-intro { margin: 0 0 16px; font-size: 1.02rem; line-height: 1.45; }
-.aty-codigo-escanear { display: flex; align-items: center; gap: 16px; width: 100%; margin: 0; padding: 16px;
+.aty-codigo-escanear { display: flex; box-sizing: border-box; cursor: pointer; align-items: center; gap: 16px; width: 100%; margin: 0; padding: 16px;
     border: 0; border-radius: 18px; background: var(--primary, var(--ion-color-primary)); color: var(--primary-contrast, var(--ion-color-primary-contrast)); font: inherit;
     text-align: start; box-shadow: 0 10px 24px -14px rgba(var(--ion-color-primary-rgb), .7); }
 .aty-codigo-carta { flex: 0 0 auto; width: 64px; height: 76px; }
