@@ -5,6 +5,13 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.92-dev)
+
+- A sign-in link opened on a phone that already holds other accounts asks with the person's name as their language says
+  it («Tomás Medina Hernández», not the site's «Medina Hernández Tomás» of its lists) and with the centre's name instead
+  of its address. `token.php` gives `sitename` too; the app uses it from its next version, and an older one keeps the
+  address.
+
 ### Added (0.5.91-dev)
 
 - `\local_oksigeniaaty\api::account_reassigned($userid)`, for a script of the server when the centre gives an account to
