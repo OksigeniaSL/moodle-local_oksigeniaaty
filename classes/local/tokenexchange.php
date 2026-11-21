@@ -178,8 +178,11 @@ class tokenexchange {
             // The name as the language says it (first name first in Spanish), whatever order the site's lists use, and
             // the centre's name rather than its address.
             'fullname' => get_string('fullnamedisplay', 'moodle', $user),
-            'sitename' => format_string(get_site()->fullname, true,
-                ['context' => \context_system::instance(), 'escape' => false]),
+            'sitename' => format_string(
+                get_site()->fullname,
+                true,
+                ['context' => \context_system::instance(), 'escape' => false]
+            ),
             'username' => $user->username,
             // When the token expires (0 = never), so the app can renew it before it does.
             'validuntil' => $apptoken['validuntil'],
