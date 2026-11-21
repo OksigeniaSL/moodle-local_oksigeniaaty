@@ -122,6 +122,8 @@ class pinreset {
      * @return string 'email' or 'notice', for the record.
      */
     public static function send(stdClass $user, moodle_url $openurl): string {
+        global $OUTPUT;
+
         $lang = force_current_language($user->lang ?? '');
         $link = $openurl->out(false);
         $subject = get_string('forgotpin:emailsubject', 'local_oksigeniaaty');
@@ -160,6 +162,8 @@ class pinreset {
         );
         $message->contexturlname = get_string('forgotpin:emailbutton', 'local_oksigeniaaty');
         force_current_language($lang);
+        // The app draws its own icon only beside notices of activities; anyone else's, it takes from the notice.
+        $message->customdata = ['notificationiconurl' => $OUTPUT->image_url('icon', 'local_oksigeniaaty')->out(false)];
         message_send($message);
         return 'notice';
     }
