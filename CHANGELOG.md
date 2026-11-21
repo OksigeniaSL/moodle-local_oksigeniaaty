@@ -11,6 +11,7 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
   it («Tomás Medina Hernández», not the site's «Medina Hernández Tomás» of its lists) and with the centre's name instead
   of its address. `token.php` gives `sitename` too; the app uses it from its next version, and an older one keeps the
   address.
+- «Forgot my PIN»'s notice in the app carries the plugin's icon instead of the app's generic pencil.
 
 ### Added (0.5.91-dev)
 
