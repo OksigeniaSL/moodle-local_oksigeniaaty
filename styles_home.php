@@ -29,7 +29,9 @@ define('NO_DEBUG_DISPLAY', true);
 
 require(__DIR__ . '/../../config.php');
 
-$css = \local_oksigeniaaty\local\appcss::homesheet((string) get_config('local_oksigeniaaty', 'brandcolour'));
+// With Family's own sheet after it (appcss::family()), which the app would not load otherwise for a family's adults.
+$css = \local_oksigeniaaty\local\appcss::homesheet((string) get_config('local_oksigeniaaty', 'brandcolour'))
+    . \local_oksigeniaaty\local\appcss::family();
 
 header('Content-Type: text/css; charset=utf-8');
 header('Cache-Control: public, max-age=31536000, immutable');

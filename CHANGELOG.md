@@ -7,8 +7,8 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Fixed (0.5.94-dev)
 
-- Oksigenia Family's pages opened from the home (a request for consent) have their style: the home's sheet carries
-  Family's own (`appcss::family()`), since the app loads a plugin's sheet only with a handler of it that is on for the
+- Oksigenia Family's pages opened from the home (a request for consent) have their style: the home's sheet is served
+  with Family's own after it (`styles_home.php`, `appcss::family()`), since the app loads a plugin's sheet only with a handler of it that is on for the
   person, and Family's menu entries are off for a family's adults.
 
 ### Changed (0.5.93-dev, Jujol's design of the 21-11 review)

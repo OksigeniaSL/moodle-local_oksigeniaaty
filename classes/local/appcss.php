@@ -101,8 +101,7 @@ class appcss {
      * @return string The CSS.
      */
     public static function homesheet(string $brandhex): string {
-        return self::homevars($brandhex, '.aty-home', ":root.dark .aty-home,\n:root .dark .aty-home") . self::homecss()
-            . self::family();
+        return self::homevars($brandhex, '.aty-home', ":root.dark .aty-home,\n:root .dark .aty-home") . self::homecss();
     }
 
     /**
