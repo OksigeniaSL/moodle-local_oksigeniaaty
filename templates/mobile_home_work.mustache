@@ -25,10 +25,13 @@
     Classes required for JS:
     * none
 
+    With one door only and something waiting (single), the list and the door would say the same thing twice: the door
+    opens instead, its head into the service and its lines inside it, each into its own thing; the rest, in «See all».
+
     Context variables required for this template:
     * work - heading, seeall, hasmore, hasshown, shown (mobile_work_alert), morelabel and moreurgent (the line to the
-      rest), doors (mobile_work_door) and short (true: the doors' lines in whole parts); none when the person runs
-      nothing.
+      rest), doors (mobile_work_door), single (one door, opened) and short (true: the doors' lines in whole parts); none
+      when the person runs nothing.
 
     Example context (json):
     {}
@@ -38,6 +41,27 @@
     <h2 class="aty-section">{{heading}}</h2>
     {{#hasmore}}<button type="button" class="aty-ver" core-site-plugins-new-content component="local_oksigeniaaty" method="mobile_work" title="{{heading}}" [args]="{}">{{seeall}}</button>{{/hasmore}}
 </div>
+{{#single}}
+{{#doors}}
+<div class="aty-puerta-abierta{{#urgent}} aty-urgent{{/urgent}}">
+    <a class="aty-puerta-abierta-cab" core-link href="{{url}}" capture="false"{{^browser}} inApp="true"{{/browser}}>
+        <span class="aty-servicio-logo">{{#icon}}<img src="{{icon}}" alt="">{{/icon}}</span>
+        <span class="aty-puerta-nombre">{{title}}</span>
+        <ion-icon name="fas-chevron-right" aria-hidden="true"></ion-icon>
+    </a>
+    <div class="aty-puerta-abierta-avisos">
+        {{#shown}}
+        <a class="aty-puerta-abierta-aviso{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="false"{{^browser}} inApp="true"{{/browser}}>
+            <span class="aty-puerta-abierta-punto"></span>
+            <span class="aty-event-name">{{#urgent}}<span class="sr-only">{{#str}} yourwork:urgent, local_oksigeniaaty {{/str}} </span>{{/urgent}}{{text}}</span>
+            <ion-icon name="fas-chevron-right" aria-hidden="true"></ion-icon>
+        </a>
+        {{/shown}}
+    </div>
+</div>
+{{/doors}}
+{{/single}}
+{{^single}}
 {{#hasshown}}
 <div class="aty-agenda">
     {{#shown}}
@@ -56,4 +80,5 @@
     {{> local_oksigeniaaty/mobile_work_door }}
     {{/doors}}
 </div>
+{{/single}}
 {{/work}}

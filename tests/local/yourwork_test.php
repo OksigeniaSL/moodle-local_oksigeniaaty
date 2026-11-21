@@ -182,6 +182,21 @@ final class yourwork_test extends \advanced_testcase {
     }
 
     /**
+     * With a single door that has something waiting, the home opens it with its alerts inside (single); with two doors,
+     * or a single one with nothing waiting, it does not.
+     */
+    public function test_single_door(): void {
+        $this->resetAfterTest();
+        $board = $this->board(time());
+        $inbox = $board['doors'][1];
+        $alert = $board['alerts'][1];
+
+        $this->assertTrue(yourwork::shape(['doors' => [$inbox], 'alerts' => [$alert]])['single']);
+        $this->assertFalse(yourwork::shape(['doors' => [$inbox], 'alerts' => []])['single']);
+        $this->assertFalse(yourwork::shape(['doors' => [$inbox, $board['doors'][0]], 'alerts' => [$alert]])['single']);
+    }
+
+    /**
      * What the app receives: the alerts that open in its own window, the doors, and «See all» opening the whole panel.
      */
     public function test_templates(): void {

@@ -17,36 +17,44 @@
 {{!
     @template local_oksigeniaaty/mobile_family_add
 
-    Another child's code, scanned from the letter's QR or typed, in the app. The scan button shows only where the app
-    can scan (a phone); its JavaScript, fixed, is in classes/output/mobile.php.
+    Another child's code, scanned from the letter's QR or typed, in the app. Scanning goes first and big, with the letter
+    and its QR drawn (Jujol, 21 November 2026): it showed only where the app can scan (a phone); its JavaScript, fixed,
+    is in classes/output/mobile.php. Typing it goes under, in a wide field that already shows the code's shape, with
+    where it is on the letter; «Add» lights up with its eight letters and digits.
 
     Context variables required for this template:
-    * intro, codelabel, scan, add, sent - The words of the page.
+    * intro, codelabel, scan, scanhelp, typecode (with a camera), typecodeonly (without one), codewhere, add, sent -
+      The words of the page.
 
     Example context (json):
     {
         "intro": "Type the code on the letter from the centre.",
         "codelabel": "Code",
         "scan": "Scan the QR on the letter",
+        "scanhelp": "The camera opens: point it at the square on the letter.",
+        "typecode": "No camera? Type the code",
+        "typecodeonly": "Type the code on the letter",
+        "codewhere": "It is on the letter, under the QR: eight letters and digits.",
         "add": "Add",
         "sent": "Added."
     }
 }}
-<div class="ion-padding">
-    <p>{{intro}}</p>
-    <ion-button expand="block" class="ion-margin-bottom" *ngIf="atyCanScan" (click)="atyScanCode()">
-        <ion-icon name="fas-qrcode" slot="start" aria-hidden="true"></ion-icon>{{scan}}
-    </ion-button>
-    <ion-list>
-        <ion-item>
-            <ion-input label="{{codelabel}}" labelPlacement="stacked" autocapitalize="characters" [(ngModel)]="CONTENT_OTHERDATA.code"></ion-input>
-        </ion-item>
-    </ion-list>
-    <ion-button expand="block" class="ion-margin-top" core-site-plugins-call-ws name="local_oksigeniaaty_family_claim"
+<div class="aty-codigo">
+    <p class="aty-codigo-intro">{{intro}}</p>
+    <button type="button" class="aty-codigo-escanear" *ngIf="atyCanScan" (click)="atyScanCode()">
+        <span class="aty-codigo-carta"><svg viewBox="0 0 64 76" aria-hidden="true"><path d="M6 2h38l14 14v56a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z" fill="#fff"/><path d="M44 2v12a2 2 0 0 0 2 2h12" fill="#e9e3d8"/><rect x="11" y="12" width="22" height="3" rx="1.5" fill="#c9c2b6"/><rect x="11" y="19" width="16" height="3" rx="1.5" fill="#c9c2b6"/><rect x="17" y="32" width="30" height="30" rx="2" fill="#fff" stroke="#1d1d1f" stroke-width="2"/><g fill="#1d1d1f"><rect x="21" y="36" width="8" height="8"/><rect x="35" y="36" width="8" height="8"/><rect x="21" y="50" width="8" height="8"/><rect x="35" y="50" width="3" height="3"/><rect x="40" y="53" width="3" height="5"/><rect x="35" y="56" width="3" height="2"/></g><rect x="17" y="66" width="30" height="3" rx="1.5" fill="#c9c2b6"/></svg></span>
+        <span class="aty-codigo-escanear-texto"><b>{{scan}}</b><small>{{scanhelp}}</small></span>
+    </button>
+    <p class="aty-codigo-o" *ngIf="atyCanScan">{{typecode}}</p>
+    <p class="aty-codigo-o" *ngIf="!atyCanScan">{{typecodeonly}}</p>
+    <ion-input class="aty-codigo-campo" aria-label="{{codelabel}}" placeholder="XXXX-XXXX" maxlength="9"
+        autocapitalize="characters" autocomplete="off" [(ngModel)]="CONTENT_OTHERDATA.code"></ion-input>
+    <p class="aty-codigo-donde">{{codewhere}}</p>
+    <ion-button expand="block" class="aty-codigo-anadir" core-site-plugins-call-ws name="local_oksigeniaaty_family_claim"
         [params]="{code: CONTENT_OTHERDATA.code}"
         [preSets]="{getFromCache: 0, saveToCache: 0}"
         successMessage="{{sent}}" goBackOnSuccess="true"
-        [disabled]="!CONTENT_OTHERDATA.code">
+        [disabled]="(CONTENT_OTHERDATA.code || '').replace('-', '').trim().length !== 8">
         {{add}}
     </ion-button>
 </div>

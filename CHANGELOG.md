@@ -5,6 +5,16 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.5.93-dev, Jujol's design of the 21-11 review)
+
+- «Your work» with a single door that has something waiting: the door opens on the home with its alerts inside, instead
+  of the list and the door saying the same twice (`yourwork::shape()` gives `single`). With two doors or more, as before.
+- «Add with another code»: scanning the letter's QR comes first and big, with the letter drawn; below, «No camera? Type
+  the code», a wide field that shows its shape (XXXX-XXXX); «Add» lights up with the eight letters and digits.
+- The PIN pad's new words come from the server, as the rest (`pinhint`, `pinshuffle`, `pinshufflehelp`, in
+  `token.php` and in `renew`): «Better with 6 digits or more» while creating it, and «Shuffle the keys» named, with what
+  it is for. An app that does not know them keeps its pad as it was.
+
 ### Changed (0.5.92-dev)
 
 - A sign-in link opened on a phone that already holds other accounts asks with the person's name as their language says

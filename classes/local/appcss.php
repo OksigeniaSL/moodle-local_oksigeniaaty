@@ -448,6 +448,58 @@ button.aty-bloque-pie { width: 100%; border: 0; border-top: 1px solid rgba(var(-
 :root .aty-bloque-cuerpo .aty-event, :root.dark .aty-bloque-cuerpo .aty-event, :root .dark .aty-bloque-cuerpo .aty-event {
     outline: 0; box-shadow: none; border: 0; background: transparent; }
 
+/* «Your work» with one door only: the door opened, with what is waiting inside it (Jujol, 21 November 2026). The list
+   and the door said the same thing twice («1 conversation of yours to answer · Chat with families» over «Chat with
+   families · 1 of yours to answer»). Its head opens the service; each line opens its own thing. */
+.aty-puerta-abierta { overflow: hidden; border-radius: 16px; background: var(--ion-item-background, var(--ion-background-color));
+    box-shadow: var(--aty-card-shadow); }
+:root.dark .aty-puerta-abierta, :root .dark .aty-puerta-abierta { box-shadow: none; outline: 1px solid rgba(255, 255, 255, .08); }
+.aty-puerta-abierta-cab { display: flex; align-items: center; gap: 12px; padding: 12px 14px; color: var(--ion-text-color);
+    text-decoration: none; }
+.aty-puerta-abierta-cab .aty-servicio-logo { width: 40px; height: 40px; border-radius: 11px; }
+.aty-puerta-abierta-cab .aty-servicio-logo img { width: 26px; height: 26px; }
+.aty-puerta-abierta-cab .aty-puerta-nombre { flex: 1 1 auto; min-width: 0; font-size: 1.02rem; }
+.aty-puerta-abierta ion-icon, .aty-puerta-abierta .aty-flecha { flex: 0 0 auto; width: 18px; height: 18px; color: var(--ion-color-medium); }
+.aty-puerta-abierta-avisos { display: flex; flex-direction: column; padding: 0 0 4px; }
+.aty-puerta-abierta-aviso { display: flex; align-items: center; gap: 12px; margin: 0 8px; padding: 12px 6px 12px 10px;
+    border-top: 1px solid rgba(var(--ion-color-primary-rgb), .12); color: var(--ion-text-color); text-decoration: none;
+    font: inherit; text-align: start; background: transparent; border-left: 0; border-right: 0; border-bottom: 0; width: auto; }
+/* the dot of a line: a ring, filled in red when urgent, as on the doors */
+.aty-puerta-abierta-punto { flex: 0 0 auto; box-sizing: border-box; width: 12px; height: 12px; margin: 0 14px 0 14px;
+    border: 2px solid var(--primary); border-radius: 50%; }
+:root.dark .aty-puerta-abierta-punto, :root .dark .aty-puerta-abierta-punto { border-color: var(--ion-text-color); }
+.aty-puerta-abierta-aviso.aty-urgent .aty-puerta-abierta-punto, :root.dark .aty-puerta-abierta-aviso.aty-urgent .aty-puerta-abierta-punto,
+:root .dark .aty-puerta-abierta-aviso.aty-urgent .aty-puerta-abierta-punto { border-color: var(--ion-color-danger);
+    background: var(--ion-color-danger); }
+.aty-puerta-abierta-aviso .aty-event-name { flex: 1 1 auto; min-width: 0; font-weight: 700; line-height: 1.3; }
+.aty-puerta-abierta-aviso.aty-urgent .aty-event-name { color: var(--ion-color-danger); }
+.aty-puerta-abierta-aviso.aty-mas .aty-event-name { color: var(--primary); }
+:root.dark .aty-puerta-abierta-aviso.aty-mas .aty-event-name, :root .dark .aty-puerta-abierta-aviso.aty-mas .aty-event-name {
+    color: var(--ion-text-color); }
+.aty-puerta-abierta.aty-urgent { box-shadow: inset 4px 0 0 var(--ion-color-danger), var(--aty-card-shadow); }
+:root.dark .aty-puerta-abierta.aty-urgent, :root .dark .aty-puerta-abierta.aty-urgent {
+    box-shadow: inset 4px 0 0 var(--ion-color-danger); }
+
+/* Another child's code (mobile_family_add): scanning the letter first, big; typing it under, in the letters' own shape. */
+.aty-codigo { padding: 18px 16px 24px; }
+.aty-codigo-intro { margin: 0 0 16px; font-size: 1.02rem; line-height: 1.45; }
+.aty-codigo-escanear { display: flex; align-items: center; gap: 16px; width: 100%; margin: 0; padding: 16px;
+    border: 0; border-radius: 18px; background: var(--primary, var(--ion-color-primary)); color: var(--primary-contrast, var(--ion-color-primary-contrast)); font: inherit;
+    text-align: start; box-shadow: 0 10px 24px -14px rgba(var(--ion-color-primary-rgb), .7); }
+.aty-codigo-carta { flex: 0 0 auto; width: 64px; height: 76px; }
+.aty-codigo-carta svg { display: block; width: 100%; height: 100%; }
+.aty-codigo-escanear-texto { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.aty-codigo-escanear-texto b { font-size: 1.1rem; font-weight: 800; line-height: 1.25; }
+.aty-codigo-escanear-texto small { font-size: .88rem; line-height: 1.35; opacity: .9; }
+.aty-codigo-o { margin: 26px 4px 8px; color: var(--ion-color-medium); font-size: .92rem; font-weight: 700; }
+.aty-codigo-campo { --padding-start: 0; --padding-end: 0; --placeholder-color: var(--ion-color-medium);
+    --placeholder-opacity: .55; display: block; width: 100%; min-height: 64px; padding: 6px 14px; border-radius: 14px;
+    border: 2px solid rgba(var(--ion-color-primary-rgb), .35); background: var(--ion-item-background, var(--ion-background-color));
+    font-family: "Roboto Mono", "Noto Sans Mono", ui-monospace, monospace; font-size: 1.7rem; font-weight: 700;
+    letter-spacing: .22em; text-align: center; text-transform: uppercase; }
+.aty-codigo-campo.has-focus, .aty-codigo-campo:focus-within { border-color: var(--primary, var(--ion-color-primary)); }
+.aty-codigo-donde { margin: 8px 4px 0; color: var(--ion-color-medium); font-size: .85rem; line-height: 1.4; }
+.aty-codigo-anadir { margin-top: 18px; }
 CSS;
     }
 

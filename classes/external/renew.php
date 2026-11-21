@@ -83,6 +83,8 @@ class renew extends external_api {
                 'ok' => get_string('pinokenter', 'local_oksigeniaaty'),
                 'cancel' => get_string('pincancel', 'local_oksigeniaaty'),
                 'biometric' => get_string('pinbiometric', 'local_oksigeniaaty'),
+                'shuffle' => get_string('pinshuffle', 'local_oksigeniaaty'),
+                'shufflehelp' => get_string('pinshufflehelp', 'local_oksigeniaaty'),
             ];
 
             if ($params['pin'] === '') {
@@ -135,6 +137,8 @@ class renew extends external_api {
             'ok' => $pinui['ok'],
             'cancel' => $pinui['cancel'],
             'biometric' => $pinui['biometric'],
+            'shuffle' => $pinui['shuffle'],
+            'shufflehelp' => $pinui['shufflehelp'],
         ];
     }
 
@@ -156,6 +160,8 @@ class renew extends external_api {
             'ok' => new external_value(PARAM_TEXT, 'Localised confirm label, when asking for the PIN'),
             'cancel' => new external_value(PARAM_TEXT, 'Localised cancel label, when asking for the PIN'),
             'biometric' => new external_value(PARAM_TEXT, 'Localised biometric prompt, when asking for the PIN'),
+            'shuffle' => new external_value(PARAM_TEXT, 'Localised label of the switch that shuffles the keys', VALUE_DEFAULT, ''),
+            'shufflehelp' => new external_value(PARAM_TEXT, 'Localised explanation of the shuffled keys', VALUE_DEFAULT, ''),
         ]);
     }
 }

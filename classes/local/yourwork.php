@@ -106,7 +106,8 @@ class yourwork {
      * @param array $board From the block's board::build(): doors (ordered) and alerts (the urgent first, then by when due).
      * @return array|null total (every alert), alerts («See all»'s, up to ALL_ALERTS), beyondlabel and beyondurl (the line to
      *     the rest, on the web), shown (the home's), hasshown, morelabel and moreurgent (the home's line to the rest), doors,
-     *     hasmore (something only «See all» has), components; null without doors.
+     *     single (one door with something waiting: the home opens it), hasmore (something only «See all» has), components;
+     *     null without doors.
      */
     public static function shape(array $board): ?array {
         global $CFG;
@@ -156,6 +157,9 @@ class yourwork {
             'morelabel' => $more ? template::inert(get_string('yourwork:more', 'local_oksigeniaaty', $more)) : '',
             'moreurgent' => count($urgent) > self::HOME_URGENT,
             'doors' => $doors,
+            // One door only, with something waiting: its lines go inside it (mobile_home_work), not in a list over it that
+            // says the same thing (Jujol, 21 November 2026).
+            'single' => count($doors) === 1 && (bool) $shown,
             // «See all» only when it has something the home has not: more alerts, or a service's shortcuts.
             'hasmore' => $more > 0 || (bool) array_filter(array_column($doors, 'hasactions')),
             'components' => array_values(array_unique(array_column($doors, 'component'))),

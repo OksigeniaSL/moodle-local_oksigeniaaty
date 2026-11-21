@@ -643,6 +643,10 @@ JS;
             'intro' => get_string('family:addintro', $component),
             'codelabel' => get_string('family:code', $component),
             'scan' => get_string('family:scan', $component),
+            'scanhelp' => get_string('family:scanhelp', $component),
+            'typecode' => get_string('family:typecode', $component),
+            'typecodeonly' => get_string('family:typecodeonly', $component),
+            'codewhere' => get_string('family:codewhere', $component),
             'add' => get_string('family:addbutton', $component),
             'sent' => get_string('family:added', $component),
         ]);

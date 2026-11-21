@@ -109,6 +109,8 @@ class tokenexchange {
                 'cancel' => get_string('pincancel', 'local_oksigeniaaty'),
                 'forgot' => get_string('forgotpin:link', 'local_oksigeniaaty'),
                 'biometric' => get_string('pinbiometric', 'local_oksigeniaaty'),
+                'shuffle' => get_string('pinshuffle', 'local_oksigeniaaty'),
+                'shufflehelp' => get_string('pinshufflehelp', 'local_oksigeniaaty'),
             ];
             if ($pin === '') {
                 return ['needspin' => true, 'pinui' => $pinui];
@@ -155,6 +157,10 @@ class tokenexchange {
             'message' => get_string('pinsetup', 'local_oksigeniaaty'),
             'ok' => get_string('pinoksetup', 'local_oksigeniaaty'),
             'cancel' => get_string('pinskip', 'local_oksigeniaaty'),
+            // A line under the dots while the PIN is set, and the switch that shuffles the keys, said in words.
+            'hint' => get_string('pinhint', 'local_oksigeniaaty'),
+            'shuffle' => get_string('pinshuffle', 'local_oksigeniaaty'),
+            'shufflehelp' => get_string('pinshufflehelp', 'local_oksigeniaaty'),
             // The new PIN is typed twice: the second pad confirms it, and says so when they do not match.
             'confirmtitle' => get_string('pintitleconfirm', 'local_oksigeniaaty'),
             'confirmmessage' => get_string('pinconfirm', 'local_oksigeniaaty'),
