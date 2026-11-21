@@ -217,7 +217,8 @@ function local_oksigeniaaty_familyapp_changed(): void {
 /**
  * What the family plugin shows to whoever has just claimed a child's code: the way into the app. For an adult without an
  * account, their family's account, not made until the link is used. For an adult with a real account of the site (a
- * teacher who is also a parent), that account, and only when the family plugin says it is proven theirs.
+ * teacher who is also a parent), that account, and only to that account signed in here: a link that came by email can
+ * be opened again from a history or a log, and never leads into a real account.
  *
  * @param stdClass $adult The adult of the family.
  * @param int $childuserid The child.
@@ -226,6 +227,7 @@ function local_oksigeniaaty_familyapp_changed(): void {
  * @return array A list of ['label', 'url', 'note'].
  */
 function local_oksigeniaaty_oksigeniafamily_links(stdClass $adult, int $childuserid, bool $proven = false): array {
+    global $USER;
     if (!\local_oksigeniaaty\local\familyaccount::available()) {
         return [];
     }
@@ -238,14 +240,18 @@ function local_oksigeniaaty_oksigeniafamily_links(stdClass $adult, int $childuse
             // A real account of the site, such as a teacher who is also a parent: into the app with it, but only when
             // whoever is here has shown it is theirs (signed in, or through the link sent to its address) and may have a
             // link of their own. Holding a child's code alone never leads into it.
-            $allowed = $proven && !local_oksigeniaaty_is_admin_account((int) $user->id)
+            $signedin = isloggedin() && !isguestuser() && (int) $USER->id === (int) $user->id;
+            $allowed = $proven && $signedin && !local_oksigeniaaty_is_admin_account((int) $user->id)
                 && local_oksigeniaaty_user_can_selfservice((int) $user->id);
             if (!$allowed) {
                 return [];
             }
+            // Half an hour, as «Open in the app» from the site: not the day of a link sent by the centre, nor taking
+            // its place.
+            $key = \local_oksigeniaaty\local\loginkey::create((int) $user->id);
             return [[
                 'label' => get_string('family:openapp', 'local_oksigeniaaty'),
-                'url' => \local_oksigeniaaty\api::issue_link((int) $user->id, 1)['url'],
+                'url' => (new moodle_url('/local/oksigeniaaty/open.php', ['key' => $key]))->out(false),
                 'note' => get_string('family:openappyours', 'local_oksigeniaaty', format_string(get_site()->shortname)),
             ]];
         }

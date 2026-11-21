@@ -471,6 +471,21 @@ final class homecards_test extends \advanced_testcase {
         $this->assertStringNotContainsString('@if', $block['block']['html']);
         $this->assertSame('mobile_canteen', $block['block']['open']['method']);
 
+        // Named references of braces, and any at sign (an address would leave the page blank).
+        $named = homecards::clean([
+            'heading' => 'Canteen',
+            'block' => [
+                'html' => '<p title="&lcub;&lcub;1+1&rcub;&rcub;">&lbrace;&lbrace; x &rbrace;&rbrace; info@school.example @x &amp;</p>',
+                'title' => 'Canteen', 'icon' => 'fas-utensils',
+            ],
+        ], 'local_x', true);
+        $out = $named['block']['html'];
+        foreach (['{', '}', '@', '&lcub;', '&rcub;', '&lbrace;', '&rbrace;'] as $gone) {
+            $this->assertStringNotContainsString($gone, $out);
+        }
+        $this->assertStringContainsString('info&#64;school.example', $out);
+        $this->assertStringContainsString('&amp;', $out);
+
         $html = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_child', [
             'name' => 'Leo Ruiz', 'initial' => 'L',
             'blocks' => [

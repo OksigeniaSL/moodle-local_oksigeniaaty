@@ -139,8 +139,9 @@ final class familyaccount_test extends \advanced_testcase {
     }
 
     /**
-     * A teacher who is also a parent goes into the app with their own account, once they have shown it is theirs; and
-     * only if they may have a link of their own.
+     * A teacher who is also a parent goes into the app with their own account, only signed in to it here (never
+     * through a link that came by email, which a history or a log can open again); and only if they may have a link of
+     * their own.
      */
     public function test_teacher_parent(): void {
         global $DB;
@@ -153,6 +154,9 @@ final class familyaccount_test extends \advanced_testcase {
         ]);
 
         $this->assertSame([], \local_oksigeniaaty_oksigeniafamily_links($adult, (int) $student->id));
+        // Proven by the link sent to the address, but not signed in: no way into the real account.
+        $this->assertSame([], \local_oksigeniaaty_oksigeniafamily_links($adult, (int) $student->id, true));
+        $this->setUser($teacher);
         $links = \local_oksigeniaaty_oksigeniafamily_links($adult, (int) $student->id, true);
         $this->assertCount(1, $links);
         $this->assertStringContainsString('/local/oksigeniaaty/open.php?key=', $links[0]['url']);

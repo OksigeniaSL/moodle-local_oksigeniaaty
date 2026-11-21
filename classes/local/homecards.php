@@ -351,7 +351,7 @@ class homecards {
      * A plugin's own block on a child's page.
      *
      * The body is the plugin's, rendered on the server from inert data (norm 9 of the Moodle conventions). Aty only takes
-     * away what the app's compiler would read as its own: braces and the at sign of its blocks («@if», «@for»…).
+     * away what the app's compiler would read as its own: braces, also written as references, and every at sign.
      *
      * @param array $block What the plugin returned.
      * @param string $component The plugin.
@@ -364,11 +364,16 @@ class homecards {
         if ($html === '' || $title === '') {
             return null;
         }
-        // Braces written as references too: the compiler decodes them before it looks for expressions.
-        $html = preg_replace(['/&#0*123;|&#x0*7b;/i', '/&#0*125;|&#x0*7d;/i'], ['{', '}'], $html);
+        // Braces written as references too, numeric or named («&lcub;», «&lbrace;»): the compiler decodes them before it
+        // looks for expressions. Any reference that decodes to a brace or an at sign is first made the character itself.
+        $html = preg_replace_callback('/&(#[0-9]+|#x[0-9a-f]+|[a-z][a-z0-9]*);/i', function (array $match): string {
+            $char = html_entity_decode($match[0], ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            return in_array($char, ['{', '}', '@'], true) ? $char : $match[0];
+        }, $html);
         $html = strtr($html, ['{' => '&#65371;', '}' => '&#65373;']);
-        $blocks = 'if|else|for|switch|case|default|defer|placeholder|loading|error|let|empty';
-        $html = preg_replace('/@(?=(' . $blocks . ')\b)/', '&#65312;', $html);
+        // Every at sign, not only before the compiler's own words: an address such as «info@school.org» is read as the
+        // start of a block and leaves the page blank. Written as a reference, it shows the same and the compiler leaves it.
+        $html = str_replace('@', '&#64;', $html);
         $icon = (string) ($block['icon'] ?? '');
         $open = is_array($block['open'] ?? null) ? self::target($block['open'], $component, $title) : null;
         $label = is_scalar($block['openlabel'] ?? null) ? trim((string) $block['openlabel']) : '';

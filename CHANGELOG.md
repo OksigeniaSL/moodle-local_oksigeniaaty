@@ -5,6 +5,15 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Security (0.5.90-dev)
+
+- A teacher who is also a parent gets the way into the app with their own account only signed in to it here. Before,
+  the link of the family plugin's confirmation by email, which can be opened again for two days from a history or a
+  log, gave each time a new key of a day to that real account. Now it is half an hour, as «Open in the app».
+- A plugin's block on a child's page: braces written as named references («&lcub;», «&lbrace;») no longer reach the
+  app's compiler as an expression, and every at sign is written as a reference, so an address such as
+  «info@school.example» no longer leaves the page blank.
+
 ### Fixed (0.5.89-dev)
 
 - «Your work»: its doors, shortcuts and alerts open their page of the web in the app's window, signed in, and no longer
