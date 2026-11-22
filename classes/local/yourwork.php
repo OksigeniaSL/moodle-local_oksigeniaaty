@@ -158,7 +158,7 @@ class yourwork {
             'moreurgent' => count($urgent) > self::HOME_URGENT,
             'doors' => $doors,
             // One door only, with something waiting: its lines go inside it (mobile_home_work), not in a list over it that
-            // says the same thing (Jujol, 21 November 2026).
+            // says the same thing.
             'single' => count($doors) === 1 && (bool) $shown,
             // «See all» only when it has something the home has not: more alerts, or a service's shortcuts.
             'hasmore' => $more > 0 || (bool) array_filter(array_column($doors, 'hasactions')),

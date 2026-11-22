@@ -33,7 +33,7 @@ namespace local_oksigeniaaty\local;
  *   most, and this link under its heading; without it, the card's tile takes its place, with "See all".
  * - tile (array): label, icon (fas-*) and where it opens, among the home's shortcuts.
  *
- * And, from `<component>_oksigeniaaty_child_cards()` for the family's app (design by Jujol, 15 November 2026):
+ * And, from `<component>_oksigeniaaty_child_cards()` for the family's app (15 November 2026):
  * - facet (array): the child's line of today on the family's home: text, icon (fas-*), urgent (bool) and, the canteen,
  *   menu (its letter) and menucolor (#rrggbb). The letter is always there, never the colour alone.
  * - block (array): the plugin's own block on the child's page, which Aty frames with its title and its way to all of it:

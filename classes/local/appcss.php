@@ -171,8 +171,7 @@ class appcss {
      * the deadlines that say what they are, the plugins' cards with their "See all" and the shortcuts as chips.
      *
      * It is the same for every client and only reads the brand variables above and the app's own (Ionic's and Aty's), so it
-     * follows light and dark on its own. Design: the home of 13 November 2026, on the common per-client template
-     * (agents/arte/docs/aty-app-plantilla.md).
+     * follows light and dark on its own. Design: the home of 13 November 2026, on the common per-client template.
      *
      * @return string
      */
@@ -322,7 +321,7 @@ button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
     background: rgba(var(--ion-color-primary-rgb), .22); color: var(--ion-text-color); }
 .aty-trabajo-nada { margin: 24px 4px; color: var(--ion-color-medium); }
 
-/* The family's app (Jujol, 15 November 2026). */
+/* The family's app (15 November 2026). */
 
 
 /* --- The home of a family: one card per child, the door to their file ------------------------------------------- */
@@ -435,7 +434,7 @@ button.aty-bloque-pie { width: 100%; border: 0; border-top: 1px solid rgba(var(-
 .aty-hijo-tarjeta { cursor: pointer; }
 .aty-ficha-hacer { margin-bottom: 14px; }
 /* An older reader's shelf, without covers: a spine on each line and its words across, however many books there are;
-   no longer standing on a board, so a thin line between books instead of the one under them (Jujol). */
+   no longer standing on a board, so a thin line between books instead of the one under them. */
 .aty-estante-lomos { flex-direction: column; align-items: stretch; gap: 0; padding-bottom: 0; border-bottom: 0; }
 .aty-estante-lomos .aty-libro-fila { grid-template-columns: 22px 1fr; align-items: center; padding: 8px 0; }
 .aty-estante-lomos .aty-libro-fila + .aty-libro-fila { border-top: 1px solid rgba(var(--ion-color-primary-rgb), .12); }
@@ -457,11 +456,11 @@ button.aty-bloque-pie { width: 100%; border: 0; border-top: 1px solid rgba(var(-
 .aty-avisos .aty-bloque-pie { display: flex; align-items: center; justify-content: space-between; padding: 12px 0;
     color: var(--primary); }
 /* Rows inside a block are lines of it, not cards of their own: also in dark, whose outline rule weighs more; and also
-   in a plugin's own body (Jujol). */
+   in a plugin's own body. */
 :root .aty-bloque-cuerpo .aty-event, :root.dark .aty-bloque-cuerpo .aty-event, :root .dark .aty-bloque-cuerpo .aty-event {
     outline: 0; box-shadow: none; border: 0; background: transparent; }
 
-/* «Your work» with one door only: the door opened, with what is waiting inside it (Jujol, 21 November 2026). The list
+/* «Your work» with one door only: the door opened, with what is waiting inside it (21 November 2026). The list
    and the door said the same thing twice («1 conversation of yours to answer · Chat with families» over «Chat with
    families · 1 of yours to answer»). Its head opens the service; each line opens its own thing. */
 .aty-puerta-abierta { overflow: hidden; border-radius: 16px; background: var(--ion-item-background, var(--ion-background-color));

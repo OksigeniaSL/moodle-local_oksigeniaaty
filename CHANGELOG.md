@@ -11,7 +11,7 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
   with Family's own after it (`styles_home.php`, `appcss::family()`), since the app loads a plugin's sheet only with a handler of it that is on for the
   person, and Family's menu entries are off for a family's adults.
 
-### Changed (0.5.93-dev, Jujol's design of the 21-11 review)
+### Changed (0.5.93-dev, the design of the 21 November review)
 
 - «Your work» with a single door that has something waiting: the door opens on the home with its alerts inside, instead
   of the list and the door saying the same twice (`yourwork::shape()` gives `single`). With two doors or more, as before.
@@ -91,7 +91,7 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Changed (0.5.88-dev)
 
-- «Your work» on the app's home, after Jujol's review:
+- «Your work» on the app's home, after a design review:
   - every urgent thing shows, however many, and the others up to three;
   - the doors with something urgent go first, then those with something waiting, then the rest, each group in the
     block's order;
@@ -146,7 +146,7 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Changed (0.5.83-dev)
 
-- An older reader's spines, one per line, have a thin line between books and none under them (Jujol).
+- An older reader's spines, one per line, have a thin line between books and none under them.
 
 ### Fixed (0.5.82-dev)
 
@@ -164,7 +164,7 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Fixed (0.5.80-dev)
 
-- Rows inside any block's body are lines of it, also in a plugin's own body (Jujol). A test checks a family's own account:
+- Rows inside any block's body are lines of it, also in a plugin's own body. A test checks a family's own account:
   a greeting in a line, no band, and a card for each child.
 
 ### Fixed (0.5.79-dev)
@@ -179,7 +179,7 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Changed (0.5.77-dev)
 
-- What a family sees, with Jujol's design (15 November 2026, after Kimi K3's review):
+- What a family sees, with its new design (15 November 2026):
   - **The home:** each child is a card with their initial, name and group, and a line for each thing they have
     today, with its plugin's icon («A · Has eaten it all», «A book is due on Friday» in red). A family's own account
     greets in a line, low, with the day, and «To do» comes before the children.
@@ -212,7 +212,7 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Changed (0.5.73-dev)
 
-- From the laptop to the phone without a hitch (asked by Nuryana): on a computer, «Open in the Aty app» shows the QR
+- From the laptop to the phone without a hitch (asked by a school): on a computer, «Open in the Aty app» shows the QR
   first, to scan with the phone's camera, and no button, which would look for the app on the computer; on the phone,
   the button; on a tablet, both. The sign-in bridge offers only the store of the phone (Google Play on Android, the App
   Store on an iPhone or iPad) and both when it cannot be told. The text for a site without the App Store no longer says
@@ -282,7 +282,7 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ### Changed (0.5.63-dev)
 
-- «Send the app», redone (Jujol). One search for a course, a person or a cohort takes the place of the tabs and the
+- «Send the app», redone. One search for a course, a person or a cohort takes the place of the tabs and the
   form. The courses under way that the person may see come as cards, those with most people still without the app
   first, with how many are missing. Once one is chosen: a phone for each person (a bar past 60), «Send to the 6 still
   waiting» with its question in place (no page apart, no JavaScript), and the people in columns by how they stand, those
@@ -301,7 +301,7 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 - «Send the app» lets the school clear the PIN of someone in the list who forgot it and cannot get it back by e-mail (no
   address, or an account made for a family); the next link lets them set a new one. It is logged (`pin_cleared`).
 - On the home, the pill to add another child's code is a round «+» at the end of the children's row, with its name as
-  label; with no children yet, it keeps its text (Jujol).
+  label; with no children yet, it keeps its text.
 - The settings «Home heading» and «Home welcome» are gone: the new home greets the person and says their day, and the
   site's name is in the header. What was set stays stored, unused.
 - README: what Aty needs outside the plugin, the status check that tells it, and how to bring people to the app.

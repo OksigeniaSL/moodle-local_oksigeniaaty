@@ -92,7 +92,7 @@ class mobile {
         $cards = homecards::for_user((int) $USER->id);
         [$shown, $todo] = homecards::on_home($cards, $now);
         $name = self::greeting_name($USER);
-        // A family's account greets in a line, low, with the day: what it has to do comes right under it (design by Jujol).
+        // A family's account greets in a line, low, with the day: what it has to do comes right under it.
         $familyonly = $children !== null && \local_oksigeniaaty\local\familyaccount::is_own($USER);
         // «Your work»: the panel of the dashboard block of the Oksigenia plugins, for whoever runs something.
         $work = $familyonly ? null : yourwork::for_user((int) $USER->id);
@@ -410,7 +410,7 @@ class mobile {
         $brand = \local_oksigeniaaty\local\brand::for_user($childid);
         $centre = $brand !== null ? (string) $brand['name'] : format_string(get_site()->fullname);
 
-        // The plugins' blocks (the canteen, the library…), each in the frame of the family's app (design by Jujol). What
+        // The plugins' blocks (the canteen, the library…), each in the frame of the family's app. What
         // asks for something to do goes to the top, with its own mark.
         $todo = [];
         $blocks = [];
@@ -443,7 +443,7 @@ class mobile {
                 'isagenda' => false,
             ];
         }
-        // A plugin's own piece first (the canteen's day), then shelves and rows; the agenda goes last (design by Jujol).
+        // A plugin's own piece first (the canteen's day), then shelves and rows; the agenda goes last.
         usort($blocks, fn(array $a, array $b): int => (int) $b['hashtml'] - (int) $a['hashtml']);
         if ($events) {
             $blocks[] = [

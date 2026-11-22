@@ -20,7 +20,7 @@ use local_oksigeniaaty\local\linkroster;
 use local_oksigeniaaty\local\sendapp as logic;
 
 /**
- * The page «Send the app» (Jujol, 13 November 2026): one search for a course, a person or a cohort; the courses under way
+ * The page «Send the app» (13 November 2026): one search for a course, a person or a cohort; the courses under way
  * as cards, those with most people still without the app first; and, once one is chosen, a phone for each person, the
  * button for those still waiting, with its question in place, and the people by how they stand.
  *
