@@ -78,7 +78,7 @@ html body.hasstickyfooter:has(.local-oksigeniaaty-bar) oksigenia-access-panel {
     }
 
     /* stylelint-disable-next-line selector-type-no-unknown */
-    html body.hasstickyfooter:has(.local-oksigeniaaty-bar):has(#page.drawers:not(.scroll-down) .drawer-toggler) oksigenia-access-panel {
+    body.hasstickyfooter:has(.local-oksigeniaaty-bar):has(#page.drawers:not(.scroll-down) .drawer-toggler) oksigenia-access-panel {
         --oks-bottom-offset: calc(1vh + 142px + var(--local-oksigeniaaty-bar-height));
     }
 }
