@@ -40,8 +40,9 @@ class hook_callbacks {
     public static function after_config($hook): void {
         global $SCRIPT;
 
-        // Cheap for every other request.
-        if ($SCRIPT === '/login/token.php') {
+        // Cheap for every other request. Right after an upgrade, the web server may still hold the old list of classes for
+        // up to a minute (opcache): then token.php goes on as before, instead of failing for everyone.
+        if ($SCRIPT === '/login/token.php' && class_exists(\local_oksigeniaaty\local\mfagate::class)) {
             \local_oksigeniaaty\local\mfagate::check_token_request();
         }
     }

@@ -5,6 +5,12 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed (0.5.96-dev)
+
+- Right after installing 0.5.95, `login/token.php` failed for everyone for up to a minute on a site whose PHP cache
+  revalidates files every 60 seconds (`opcache.revalidate_freq`): the hook was seen before the new class. The hook now
+  checks the class is there, and `token.php` goes on as before until it is.
+
 ### Security (0.5.95-dev)
 
 - `login/token.php` no longer gives an app token for the password alone to whoever the site asks for a second factor:
