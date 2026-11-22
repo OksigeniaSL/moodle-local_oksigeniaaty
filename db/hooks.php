@@ -25,6 +25,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 $callbacks = [
+    // The app's password form, closed to whoever the site asks for a second factor (login/token.php skips tool_mfa).
+    [
+        'hook' => 'core\hook\after_config',
+        'callback' => [\local_oksigeniaaty\hook_callbacks::class, 'after_config'],
+    ],
     // "Open in the Aty app" in the user menu, so everyone finds their own QR whatever the theme or profile page.
     [
         'hook' => 'core_user\hook\extend_user_menu',

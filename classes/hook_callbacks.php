@@ -31,6 +31,22 @@ class hook_callbacks {
     private const BAR_SKIP_LAYOUTS = ['embedded', 'popup', 'frametop', 'print', 'redirect', 'maintenance', 'secure'];
 
     /**
+     * As soon as the site is set up: login/token.php does not give an app token for the password alone to whoever the
+     * site asks for a second factor.
+     *
+     * @param \core\hook\after_config $hook The hook.
+     * @return void
+     */
+    public static function after_config($hook): void {
+        global $SCRIPT;
+
+        // Cheap for every other request.
+        if ($SCRIPT === '/login/token.php') {
+            \local_oksigeniaaty\local\mfagate::check_token_request();
+        }
+    }
+
+    /**
      * Add "Open in the Aty app" (the user's own sign-in QR and button) to the user menu.
      *
      * The profile page also links to it, but a theme or a custom profile page may not show that section; the user

@@ -186,6 +186,15 @@ if ($hassiteconfig) {
             PARAM_URL
         ));
 
+        // With multi-factor authentication, the app's password form does not let in whoever the site asks for a second
+        // factor: the app finishes the sign-in on the site (launch.php).
+        $settings->add(new admin_setting_configcheckbox(
+            'local_oksigeniaaty/mfagate',
+            new lang_string('settings:mfagate', 'local_oksigeniaaty'),
+            new lang_string('settings:mfagate_desc', 'local_oksigeniaaty'),
+            1
+        ));
+
         // Which cohorts may use passwordless self-service sign-in. Nothing selected means everyone.
         $cohorts = $DB->get_records_menu('cohort', null, 'name ASC', 'id, name');
         $settings->add(new admin_setting_configmultiselect(

@@ -215,7 +215,7 @@ class api {
         $transaction = $DB->start_delegated_transaction();
 
         local\pin::delete($userid);
-        $scripts = [loginkey::SCRIPT, loginkey::ISSUED_SCRIPT, loginkey::RESET_SCRIPT, 'tool_mobile'];
+        $scripts = [loginkey::SCRIPT, loginkey::ISSUED_SCRIPT, loginkey::RESET_SCRIPT, local\mfagate::SCRIPT, 'tool_mobile'];
         [$insql, $params] = $DB->get_in_or_equal($scripts);
         $DB->delete_records_select('user_private_key', "script $insql AND userid = ?", array_merge($params, [$userid]));
 

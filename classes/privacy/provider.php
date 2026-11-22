@@ -34,6 +34,7 @@ use core_privacy\local\request\transform;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
 use local_oksigeniaaty\local\loginkey;
+use local_oksigeniaaty\local\mfagate;
 use local_oksigeniaaty\local\pin;
 
 /**
@@ -44,6 +45,9 @@ class provider implements
     \core_privacy\local\metadata\provider,
     \core_privacy\local\request\core_userlist_provider,
     \core_privacy\local\request\plugin\provider {
+    /** @var string[] The user key scripts of this plugin: the sign-in links, and the short launch keys of the app's sign-in. */
+    private const KEYSCRIPTS = [loginkey::SCRIPT, loginkey::ISSUED_SCRIPT, loginkey::RESET_SCRIPT, mfagate::SCRIPT];
+
     /**
      * Describe the personal data the plugin stores.
      *
@@ -79,7 +83,7 @@ class provider implements
 
         $contextlist = new contextlist();
         $haspin = $DB->record_exists('local_oksigeniaaty_pin', ['userid' => $userid]);
-        [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::ISSUED_SCRIPT, loginkey::RESET_SCRIPT]);
+        [$insql, $params] = $DB->get_in_or_equal(self::KEYSCRIPTS);
         $params[] = $userid;
         $haskey = $DB->record_exists_select('user_private_key', "script $insql AND userid = ?", $params);
         if ($haspin || $haskey) {
@@ -105,7 +109,7 @@ class provider implements
 
         $userid = $context->instanceid;
         $haspin = $DB->record_exists('local_oksigeniaaty_pin', ['userid' => $userid]);
-        [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::ISSUED_SCRIPT, loginkey::RESET_SCRIPT]);
+        [$insql, $params] = $DB->get_in_or_equal(self::KEYSCRIPTS);
         $params[] = $userid;
         $haskey = $DB->record_exists_select('user_private_key', "script $insql AND userid = ?", $params);
         if ($haspin || $haskey) {
@@ -140,7 +144,7 @@ class provider implements
                 );
             }
 
-            [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::ISSUED_SCRIPT, loginkey::RESET_SCRIPT]);
+            [$insql, $params] = $DB->get_in_or_equal(self::KEYSCRIPTS);
             $params[] = $user->id;
             $keys = $DB->get_records_select('user_private_key', "script $insql AND userid = ?", $params);
             if ($keys) {
@@ -215,7 +219,7 @@ class provider implements
         global $DB;
 
         pin::delete($userid);
-        [$insql, $params] = $DB->get_in_or_equal([loginkey::SCRIPT, loginkey::ISSUED_SCRIPT, loginkey::RESET_SCRIPT]);
+        [$insql, $params] = $DB->get_in_or_equal(self::KEYSCRIPTS);
         $params[] = $userid;
         $DB->delete_records_select('user_private_key', "script $insql AND userid = ?", $params);
     }

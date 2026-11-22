@@ -5,6 +5,21 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Security (0.5.95-dev)
+
+- `login/token.php` no longer gives an app token for the password alone to whoever the site asks for a second factor:
+  Moodle's `token.php` never goes through `tool_mfa`. The check comes after the password, with the factors that ask
+  nothing of the person (role, authentication type, cohort, IP range, no setup, grace period): a wrong password, a
+  locked or suspended account are left to `token.php` as before, everyone the site lets in without a second factor keeps
+  the app's form, and the sign-in links do not change. On by default; `mfagate` turns it off. Something unforeseen in
+  the check lets `token.php` go on, so it never closes the app's sign-in for everyone.
+- The refusal says where to go instead, in words that today's app shows as they are, and carries a launch address
+  (`oksigeniaatylaunch`). The app, from its next version, opens it in its own browser and the person only gives the
+  second factor: a one-time key of five minutes, bound to the network address, does the password step. `launch.php`
+  hands the token back through the app's scheme as tool_mobile's `launch.php` does, but whatever the site's type of
+  login, and only to the scheme the site forces (`forcedurlscheme`).
+- Each refusal goes to the logs (`app_signin_needs_factor`).
+
 ### Fixed (0.5.94-dev)
 
 - Oksigenia Family's pages opened from the home (a request for consent) have their style: the home's sheet is served
