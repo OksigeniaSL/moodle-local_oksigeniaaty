@@ -242,8 +242,8 @@ class mfagate {
         }
         if (!empty($CFG->authloginviaemail) && ($email = clean_param($username, PARAM_EMAIL))) {
             $select = 'mnethostid = :mnethostid AND LOWER(email) = LOWER(:email) AND deleted = 0';
-            $users = $DB->get_records_select('user', $select,
-                ['mnethostid' => $CFG->mnet_localhost_id, 'email' => $email], 'id', 'id', 0, 2);
+            $params = ['mnethostid' => $CFG->mnet_localhost_id, 'email' => $email];
+            $users = $DB->get_records_select('user', $select, $params, 'id', 'id', 0, 2);
             if (count($users) === 1) {
                 return \core_user::get_user(reset($users)->id) ?: null;
             }

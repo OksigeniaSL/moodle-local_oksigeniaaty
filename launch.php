@@ -97,13 +97,13 @@ if ($privatetoken && is_https() && !has_capability('moodle/site:config', context
 $location = $scheme . '://token=' . base64_encode($apptoken);
 
 if (core_useragent::is_ios()) {
-    // iOS opens another app only from a tap, which the page makes itself.
+    // On iOS, another app opens only from a tap, which the page makes itself.
     $PAGE->set_context(context_system::instance());
     $PAGE->set_pagelayout('embedded');
     $PAGE->set_title(get_string('clickheretolaunchtheapp', 'tool_mobile'));
     echo $OUTPUT->header();
-    echo $OUTPUT->box(html_writer::link($location, get_string('clickheretolaunchtheapp', 'tool_mobile'), ['id' => 'launchapp']),
-        'generalbox centerpara');
+    $link = html_writer::link($location, get_string('clickheretolaunchtheapp', 'tool_mobile'), ['id' => 'launchapp']);
+    echo $OUTPUT->box($link, 'generalbox centerpara');
     echo html_writer::script("window.onload = function() { document.getElementById('launchapp').click(); };");
     echo $OUTPUT->footer();
     exit;

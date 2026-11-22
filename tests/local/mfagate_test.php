@@ -76,9 +76,9 @@ final class mfagate_test extends \advanced_testcase {
         $this->assertSame('invalidlogin', $answer['errorcode']);
         $this->assertStringContainsString('/local/oksigeniaaty/launch.php?k=', $answer[mfagate::FIELD]);
         $this->assertNotEmpty($answer['error']);
-        $this->assertCount(1, array_filter($events,
-            fn($e) => $e instanceof \local_oksigeniaaty\event\app_signin_needs_factor));
-        $this->assertEquals($user->id, reset($events)->relateduserid);
+        $ours = array_filter($events, fn($e) => $e instanceof \local_oksigeniaaty\event\app_signin_needs_factor);
+        $this->assertCount(1, $ours);
+        $this->assertEquals($user->id, reset($ours)->relateduserid);
     }
 
     /**
