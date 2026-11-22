@@ -31,6 +31,15 @@ $callbacks = [
         'callback' => [\local_oksigeniaaty\hook_callbacks::class, 'after_config'],
     ],
     // "Open in the Aty app" in the user menu, so everyone finds their own QR whatever the theme or profile page.
+    // The way back to the app's launch page, which the site's policies may forget on a first sign-in.
+    [
+        'hook' => 'tool_mfa\hook\after_user_passed_mfa',
+        'callback' => [\local_oksigeniaaty\hook_callbacks::class, 'after_user_passed_mfa'],
+    ],
+    [
+        'hook' => 'core_user\hook\after_login_completed',
+        'callback' => [\local_oksigeniaaty\hook_callbacks::class, 'after_login_completed'],
+    ],
     [
         'hook' => 'core_user\hook\extend_user_menu',
         'callback' => [\local_oksigeniaaty\hook_callbacks::class, 'extend_user_menu'],

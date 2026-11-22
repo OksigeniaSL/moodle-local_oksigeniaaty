@@ -48,6 +48,27 @@ class hook_callbacks {
     }
 
     /**
+     * After the second factor: back to the app's launch page if a sign-in to the app is under way (the site's policies,
+     * on a first sign-in, forget the way back).
+     *
+     * @param \tool_mfa\hook\after_user_passed_mfa $hook The hook.
+     * @return void
+     */
+    public static function after_user_passed_mfa($hook): void {
+        \local_oksigeniaaty\local\mfagate::restore_launch(true);
+    }
+
+    /**
+     * After a sign-in on the site's page: back to the app's launch page if a sign-in to the app is under way.
+     *
+     * @param \core_user\hook\after_login_completed $hook The hook.
+     * @return void
+     */
+    public static function after_login_completed($hook): void {
+        \local_oksigeniaaty\local\mfagate::restore_launch(false);
+    }
+
+    /**
      * Add "Open in the Aty app" (the user's own sign-in QR and button) to the user menu.
      *
      * The profile page also links to it, but a theme or a custom profile page may not show that section; the user

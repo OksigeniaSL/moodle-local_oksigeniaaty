@@ -163,4 +163,33 @@ final class mfagate_test extends \advanced_testcase {
         $this->assertNull(mfagate::spend_key($second));
         $this->assertNull(mfagate::spend_key('nonsense'));
     }
+
+    /**
+     * A sign-in to the app under way comes back to its launch page after the second factor, even when the site's
+     * policies made the session forget it; without one, nothing changes.
+     */
+    public function test_way_back_to_the_app(): void {
+        global $SESSION;
+        $this->resetAfterTest();
+
+        $SESSION->wantsurl = '/';
+        mfagate::restore_launch(true);
+        $this->assertSame('/', $SESSION->wantsurl);
+
+        mfagate::remember_launch(['service' => 'moodle_mobile_app', 'passport' => '561.45', 'urlscheme' => 'oksigeniaaty',
+            'k' => 'never kept']);
+        \local_oksigeniaaty\hook_callbacks::after_user_passed_mfa(null);
+        $back = '/local/oksigeniaaty/launch.php?service=moodle_mobile_app&passport=561.45';
+        $this->assertStringContainsString($back, $SESSION->wantsurl);
+        $this->assertStringNotContainsString('never', $SESSION->wantsurl);
+        $this->assertTrue($SESSION->tool_mfa_has_been_redirected);
+
+        // A way back to the launch page already there stays as it is.
+        $SESSION->wantsurl = (new \moodle_url('/local/oksigeniaaty/launch.php', ['passport' => 'other']))->out(false);
+        \local_oksigeniaaty\hook_callbacks::after_login_completed(null);
+        $this->assertStringContainsString('passport=other', $SESSION->wantsurl);
+
+        mfagate::forget_launch();
+        $this->assertNull(mfagate::launch_under_way());
+    }
 }

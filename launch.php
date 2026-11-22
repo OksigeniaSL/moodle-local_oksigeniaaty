@@ -54,6 +54,8 @@ if ($scheme === '' || !preg_match('/^[a-zA-Z][a-zA-Z0-9-\+\.]*$/', $scheme)) {
 
 $params = ['service' => $serviceshortname, 'passport' => $passport, 'urlscheme' => $urlscheme];
 $self = new moodle_url('/local/oksigeniaaty/launch.php', $params);
+// The site's policies, on a first sign-in, forget the way back: the cookie keeps it (hook_callbacks).
+mfagate::remember_launch($params);
 
 if ($key !== '') {
     $userid = mfagate::spend_key($key);
@@ -95,6 +97,7 @@ if ($privatetoken && is_https() && !has_capability('moodle/site:config', context
     $apptoken .= ':::' . $privatetoken;
 }
 $location = $scheme . '://token=' . base64_encode($apptoken);
+mfagate::forget_launch();
 
 if (core_useragent::is_ios()) {
     // On iOS, another app opens only from a tap, which the page makes itself.

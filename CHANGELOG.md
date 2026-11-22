@@ -5,6 +5,14 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed (0.5.97-dev)
+
+- The app's sign-in with a second factor comes back to the app on a first sign-in too. On a phone, with campus: the
+  site's policies, which come before the second factor, made the session forget its way back, and after the code the
+  person was left on the site's dashboard inside the app. `launch.php` keeps the way back in a cookie of 15 minutes
+  and, after the second factor or the site's own sign-in, the hooks `after_user_passed_mfa` and
+  `after_login_completed` put it back, as tool_mobile does for its own launch page.
+
 ### Fixed (0.5.96-dev)
 
 - Right after installing 0.5.95, `login/token.php` failed for everyone for up to a minute on a site whose PHP cache

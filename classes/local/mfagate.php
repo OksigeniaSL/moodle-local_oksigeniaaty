@@ -43,6 +43,12 @@ class mfagate {
     /** Aty's URL scheme: the launch address is only offered where the site hands tokens back to Aty. */
     public const APPSCHEME = 'oksigeniaaty';
 
+    /** The cookie that keeps where to come back while the person signs in (the site's policies may forget it). */
+    public const COOKIE = 'local_oksigeniaaty_launch';
+
+    /** How long that cookie lives, in seconds, as tool_mobile's. */
+    public const COOKIELIFE = 15 * MINSECS;
+
     /**
      * Whether the gate is on: the site has multi-factor authentication and has not turned the gate off.
      *
@@ -206,6 +212,94 @@ class mfagate {
         delete_user_key(self::SCRIPT, (int) $record->userid);
 
         return (int) $record->userid;
+    }
+
+    /**
+     * Remember, in the browser, the sign-in to the app under way: the site's policies or a forced change of password take
+     * the person through other pages, which forget where to come back (as tool_mobile's launch cookie).
+     *
+     * @param array $params service, passport and urlscheme.
+     * @return void
+     */
+    public static function remember_launch(array $params): void {
+        global $CFG;
+
+        $value = json_encode(array_intersect_key($params, array_flip(['service', 'passport', 'urlscheme'])));
+        $_COOKIE[self::COOKIE] = $value;
+        if (!headers_sent()) {
+            setcookie(self::COOKIE, $value, self::cookie_options(time() + self::COOKIELIFE));
+        }
+    }
+
+    /**
+     * Forget the sign-in to the app under way.
+     *
+     * @return void
+     */
+    public static function forget_launch(): void {
+        unset($_COOKIE[self::COOKIE]);
+        if (!headers_sent()) {
+            setcookie(self::COOKIE, '', self::cookie_options(1));
+        }
+    }
+
+    /**
+     * The launch page of the sign-in to the app under way, from its cookie; null when there is none.
+     *
+     * @return \moodle_url|null
+     */
+    public static function launch_under_way(): ?\moodle_url {
+        $params = json_decode((string) ($_COOKIE[self::COOKIE] ?? ''), true);
+        if (!is_array($params) || !isset($params['service'], $params['passport'])) {
+            return null;
+        }
+
+        return new \moodle_url('/local/oksigeniaaty/launch.php', [
+            'service' => clean_param((string) $params['service'], PARAM_ALPHANUMEXT),
+            'passport' => clean_param((string) $params['passport'], PARAM_RAW_TRIMMED),
+            'urlscheme' => clean_param((string) ($params['urlscheme'] ?? ''), PARAM_NOTAGS),
+        ]);
+    }
+
+    /**
+     * After the sign-in or the second factor: back to the launch page, if a sign-in to the app is under way and the
+     * session lost its way back.
+     *
+     * @param bool $aftermfa Whether this comes after the second factor, which then follows the way back.
+     * @return void
+     */
+    public static function restore_launch(bool $aftermfa): void {
+        global $SESSION;
+
+        $launch = self::launch_under_way();
+        if (!$launch) {
+            return;
+        }
+        if (empty($SESSION->wantsurl) || strpos((string) $SESSION->wantsurl, '/local/oksigeniaaty/launch.php') === false) {
+            $SESSION->wantsurl = $launch->out(false);
+            if ($aftermfa) {
+                $SESSION->tool_mfa_has_been_redirected = true;
+            }
+        }
+    }
+
+    /**
+     * The options of the launch cookie.
+     *
+     * @param int $expires When it expires.
+     * @return array
+     */
+    private static function cookie_options(int $expires): array {
+        global $CFG;
+
+        return [
+            'expires' => $expires,
+            'path' => empty($CFG->sessioncookiepath) ? '/' : $CFG->sessioncookiepath,
+            'domain' => (string) ($CFG->sessioncookiedomain ?? ''),
+            'secure' => is_https(),
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ];
     }
 
     /**
