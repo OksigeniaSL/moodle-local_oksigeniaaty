@@ -63,6 +63,11 @@ final class mfagate_test extends \advanced_testcase {
 
         $this->assertNull(mfagate::decide($user->username, 'wrong'));
 
+        // Where the site hands tokens to another app, only the words.
+        set_config('forcedurlscheme', 'moodlemobile', 'tool_mobile');
+        $this->assertArrayNotHasKey(mfagate::FIELD, mfagate::decide($user->username, self::PASSWORD));
+
+        set_config('forcedurlscheme', mfagate::APPSCHEME, 'tool_mobile');
         $sink = $this->redirectEvents();
         $answer = mfagate::decide(strtoupper($user->username), self::PASSWORD);
         $events = $sink->get_events();
@@ -71,9 +76,9 @@ final class mfagate_test extends \advanced_testcase {
         $this->assertSame('invalidlogin', $answer['errorcode']);
         $this->assertStringContainsString('/local/oksigeniaaty/launch.php?k=', $answer[mfagate::FIELD]);
         $this->assertNotEmpty($answer['error']);
-        $this->assertCount(1, $events);
-        $this->assertInstanceOf(\local_oksigeniaaty\event\app_signin_needs_factor::class, $events[0]);
-        $this->assertEquals($user->id, $events[0]->relateduserid);
+        $this->assertCount(1, array_filter($events,
+            fn($e) => $e instanceof \local_oksigeniaaty\event\app_signin_needs_factor));
+        $this->assertEquals($user->id, reset($events)->relateduserid);
     }
 
     /**

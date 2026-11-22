@@ -40,6 +40,9 @@ class mfagate {
     /** The field of token.php's answer that carries the launch address. */
     public const FIELD = 'oksigeniaatylaunch';
 
+    /** Aty's URL scheme: the launch address is only offered where the site hands tokens back to Aty. */
+    public const APPSCHEME = 'oksigeniaaty';
+
     /**
      * Whether the gate is on: the site has multi-factor authentication and has not turned the gate off.
      *
@@ -120,12 +123,17 @@ class mfagate {
             'relateduserid' => $user->id,
         ])->trigger();
 
-        return [
+        $answer = [
             'error' => self::message($user),
             // The code that today's app answers by showing the words above as they are.
             'errorcode' => 'invalidlogin',
-            self::FIELD => self::launch_url((int) $user->id)->out(false),
         ];
+        // Only Aty reads the address, and launch.php hands the token to the app the site names: elsewhere, the words.
+        if (get_config('tool_mobile', 'forcedurlscheme') === self::APPSCHEME) {
+            $answer[self::FIELD] = self::launch_url((int) $user->id)->out(false);
+        }
+
+        return $answer;
     }
 
     /**

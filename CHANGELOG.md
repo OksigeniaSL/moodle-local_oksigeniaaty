@@ -17,7 +17,8 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
   (`oksigeniaatylaunch`). The app, from its next version, opens it in its own browser and the person only gives the
   second factor: a one-time key of five minutes, bound to the network address, does the password step. `launch.php`
   hands the token back through the app's scheme as tool_mobile's `launch.php` does, but whatever the site's type of
-  login, and only to the scheme the site forces (`forcedurlscheme`).
+  login, and only to the scheme the site forces (`forcedurlscheme`). The address goes only where that scheme is Aty's;
+  elsewhere, the words alone.
 - Each refusal goes to the logs (`app_signin_needs_factor`).
 
 ### Fixed (0.5.94-dev)
