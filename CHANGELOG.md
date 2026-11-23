@@ -5,6 +5,15 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed (0.6.0-dev)
+
+- An adult of a family whom the school's data brought (quiet in Oksigenia Family) and who comes into the app with the
+  link made for them (`familyaccount::link()`) gets the notices of the other plugins from then on:
+  `familyaccount::came_in()`, when the app gets its token and, for those already in, when they open the home. Before,
+  they saw their children, but stayed quiet and nobody could write to them. Neither sending nor opening the link wakes
+  anyone.
+- The page of a link already used asks for a new link, not a new code: claiming a code again makes another adult.
+
 ### Added (0.5.99-dev)
 
 - «Propose an improvement» of Oksigenia Marandu (from its 0.61.1) at the top right of «Send the app» and «Centre QR

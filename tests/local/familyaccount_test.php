@@ -108,6 +108,40 @@ final class familyaccount_test extends \advanced_testcase {
     }
 
     /**
+     * An adult the school's data brought is told nothing until they are in: neither the link opened nor the account made
+     * wakes them; coming into the app does, and so does the home for whoever was in already. A real account is left alone.
+     */
+    public function test_coming_in_wakes_a_quiet_adult(): void {
+        global $DB;
+        [$student, $adult] = $this->claimed();
+        $table = 'local_oksigeniafamily_adult';
+        $DB->set_field($table, 'quiet', 1, ['id' => $adult->id]);
+        $DB->set_field('external_services', 'enabled', 1, ['shortname' => MOODLE_OFFICIAL_MOBILE_SERVICE]);
+
+        $userid = familyaccount::ensure((int) $adult->id);
+        $key = loginkey::create_issued($userid, 1);
+        $this->assertSame([], family::adults_of_child((int) $student->id));
+
+        $this->assertArrayHasKey('token', tokenexchange::respond($key, '', true));
+        $this->assertSame([(int) $adult->id], array_keys(family::adults_of_child((int) $student->id)));
+        $this->assertTrue(familyaccount::in_app($userid));
+
+        // In already before this was said.
+        $DB->set_field($table, 'quiet', 1, ['id' => $adult->id]);
+        $this->setUser($userid);
+        mobile::mobile_home([]);
+        $this->assertEquals(0, $DB->get_field($table, 'quiet', ['id' => $adult->id]));
+
+        // A teacher who is also a parent, in the app as a teacher.
+        $teacher = $this->getDataGenerator()->create_user();
+        [, $other] = $this->claimed();
+        family::set_adult_user((int) $other->id, (int) $teacher->id);
+        $DB->set_field($table, 'quiet', 1, ['id' => $other->id]);
+        familyaccount::came_in($teacher);
+        $this->assertEquals(1, $DB->get_field($table, 'quiet', ['id' => $other->id]));
+    }
+
+    /**
      * With no surname or address, Moodle would send the account to fill in a profile it cannot edit.
      */
     public function test_account_is_complete_with_little_data(): void {

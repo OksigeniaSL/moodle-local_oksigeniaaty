@@ -166,6 +166,28 @@ class familyaccount {
     }
 
     /**
+     * An adult is in the app with the account made here: they have come in, so the other plugins may write to them. Those
+     * the school's data brings are quiet in Oksigenia Family until they join or the school welcomes them, and quiet ones
+     * get no notice, although they see their children. Only being in counts: not the link sent, which somebody may never
+     * use, nor the link opened, which a mail scanner opens too.
+     *
+     * @param \stdClass $user The account, with auth and username.
+     * @return void
+     */
+    public static function came_in(\stdClass $user): void {
+        global $DB;
+
+        $family = '\local_oksigeniafamily\api';
+        if (!self::is_own($user) || !class_exists($family) || !method_exists($family, 'wake_adult')) {
+            return;
+        }
+        $quiet = ['userid' => (int) $user->id, 'status' => 'active', 'quiet' => 1];
+        foreach ($DB->get_records('local_oksigeniafamily_adult', $quiet, 'id', 'id') as $adult) {
+            $family::wake_adult((int) $adult->id);
+        }
+    }
+
+    /**
      * An adult has left their family: their account goes too, if it is one made here.
      *
      * @param int $userid The account.

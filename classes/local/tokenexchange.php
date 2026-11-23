@@ -149,6 +149,14 @@ class tokenexchange {
         \core\session\manager::set_user($user);
         $apptoken = loginkey::app_token($user, $service);
 
+        // An adult of a family who comes in with the account made here gets the notices from now on. Never at the cost of
+        // the sign-in: the key is spent already.
+        try {
+            familyaccount::came_in($user);
+        } catch (\Throwable $e) {
+            debugging('Family adult in the app: ' . $e->getMessage(), DEBUG_DEVELOPER);
+        }
+
         // When the user has no PIN yet, tell the app to offer setting one (trust on first use), with the pad wording
         // already localised here. The user's own language travels back too, so the app can dress itself in it: open a
         // link, land in your language.

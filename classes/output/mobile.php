@@ -94,6 +94,10 @@ class mobile {
         $name = self::greeting_name($USER);
         // A family's account greets in a line, low, with the day: what it has to do comes right under it.
         $familyonly = $children !== null && \local_oksigeniaaty\local\familyaccount::is_own($USER);
+        if ($familyonly) {
+            // Those who came in before 0.6.0: their sign-in did not say it.
+            \local_oksigeniaaty\local\familyaccount::came_in($USER);
+        }
         // «Your work»: the panel of the dashboard block of the Oksigenia plugins, for whoever runs something.
         $work = $familyonly ? null : yourwork::for_user((int) $USER->id);
 
