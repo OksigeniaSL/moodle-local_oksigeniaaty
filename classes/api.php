@@ -36,6 +36,16 @@ class api {
     public const ATY_PACKAGE = 'com.oksigenia.aty';
 
     /**
+     * Whether the site has the app on (web services and the mobile service): without it, no invitation to install the
+     * app, no link into it and no sign-in from it can work.
+     *
+     * @return bool
+     */
+    public static function app_on(): bool {
+        return local\sendapp::app_on();
+    }
+
+    /**
      * A one-time sign-in link to the app for a user.
      *
      * @param int $userid The user.

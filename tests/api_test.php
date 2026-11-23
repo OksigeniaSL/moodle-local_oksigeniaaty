@@ -123,8 +123,26 @@ final class api_test extends \advanced_testcase {
     }
 
     /**
-     * The page in between only ever leads to this site.
+     * The app is on only where the site has both web services and the mobile service on.
      */
+    public function test_app_on(): void {
+        global $CFG;
+        $this->resetAfterTest();
+
+        $CFG->enablewebservices = 1;
+        $CFG->enablemobilewebservice = 1;
+        $this->assertTrue(api::app_on());
+
+        $CFG->enablemobilewebservice = 0;
+        $this->assertFalse(api::app_on());
+
+        $CFG->enablemobilewebservice = 1;
+        $CFG->enablewebservices = 0;
+        $this->assertFalse(api::app_on());
+    }
+
+    /**
+     * The page in between only ever leads to this site.
     public function test_local_target(): void {
         global $CFG;
         $this->resetAfterTest();

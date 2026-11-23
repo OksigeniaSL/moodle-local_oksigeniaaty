@@ -5,6 +5,11 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Added (0.5.98-dev)
+
+- `api::app_on()`: whether the site has the app on (web services and the mobile service), for the plugins that invite
+  to install the app, so that none of them keeps its own copy of the check (Oksigenia Meals, from its 0.115.0).
+
 ### Fixed (0.5.97-dev)
 
 - The app's sign-in with a second factor comes back to the app on a first sign-in too. On a phone, with campus: the
