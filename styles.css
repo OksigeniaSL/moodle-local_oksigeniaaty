@@ -83,6 +83,14 @@ html body.hasstickyfooter:has(.local-oksigeniaaty-bar) oksigenia-access-panel {
     }
 }
 
+/* «Propose an improvement» of Oksigenia Marandu, at the top right of the staff's screens (23 Nov 2026). */
+
+.local-oksigeniaaty-propose {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: .75rem;
+}
+
 /* "Send the app" (13 Nov 2026). Only the theme's variables, so it follows the site's colours in light and in
    dark. One search, the courses under way as the app's own tiles (the big number of who is missing), a phone for each
    person, and the people by how they stand. Chrome 93 and Firefox 98: no :has(), no color-mix(). States, always in this

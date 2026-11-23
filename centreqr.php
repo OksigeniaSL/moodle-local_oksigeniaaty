@@ -47,8 +47,10 @@ if (optional_param('download', 0, PARAM_BOOL)) {
 $title = get_string('centreqr:heading', 'local_oksigeniaaty');
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
+$propose = \local_oksigeniaaty\local\proposal::button($title);
 
 echo $OUTPUT->header();
+echo $propose;
 echo html_writer::tag('p', get_string('centreqr:intro', 'local_oksigeniaaty', format_string($SITE->fullname, true, ['context' => context_system::instance()])));
 echo html_writer::div(
     html_writer::empty_tag('img', [

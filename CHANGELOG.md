@@ -5,6 +5,16 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Added (0.5.99-dev)
+
+- «Propose an improvement» of Oksigenia Marandu (from its 0.61.1) at the top right of «Send the app» and «Centre QR
+  code»: the staff mark on a picture of the screen what they would change. Nothing shows on a site without Marandu.
+
+### Changed (0.5.99-dev)
+
+- The check of GitHub gives write permission to the plugin's git files after the checkout: git now writes the reverse
+  indexes of its packs read-only, and «grunt» of moodle-plugin-ci could not put back its copy of the plugin over them.
+
 ### Added (0.5.98-dev)
 
 - `api::app_on()`: whether the site has the app on (web services and the mobile service), for the plugins that invite

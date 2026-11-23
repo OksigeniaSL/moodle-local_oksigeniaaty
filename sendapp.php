@@ -121,7 +121,9 @@ if (($sendto || $resetpin || $sendall) && data_submitted()) {
     redirect($here);
 }
 
+$propose = \local_oksigeniaaty\local\proposal::button($title);
 echo $OUTPUT->header();
+echo $propose;
 if ($view->kind === 'home' || $view->kind === 'search') {
     echo html_writer::tag('p', get_string('sendapp:intro', 'local_oksigeniaaty'));
 }
