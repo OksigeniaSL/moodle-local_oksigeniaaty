@@ -312,6 +312,18 @@ button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
     outline: 1.5px dashed var(--ion-color-medium); outline-offset: -1.5px; }
 .aty-puerta.aty-callado .aty-puerta-estado { color: var(--ion-text-color); font-weight: 600; }
 .aty-puerta-abierta-aviso.aty-callado .aty-duda { margin: 0 8px; }
+/* When what is on the screen was made, once it is no longer recent: at the top, above the greeting. Then the line of the day
+   and the greeting's date, which say «today», are not shown. Without a connection, nothing to press. */
+.aty-desde { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin: 0 0 10px; padding: 12px 14px;
+    border-radius: 14px; background: var(--ion-item-background, var(--ion-background-color)); box-shadow: var(--aty-card-shadow);
+    outline: 1.5px dashed var(--ion-color-medium); outline-offset: -1.5px; }
+.aty-desde[hidden] { display: none; }
+.aty-desde ion-icon { flex: 0 0 auto; width: 20px; height: 20px; }
+.aty-desde-texto { flex: 1 1 12em; min-width: 0; margin: 0; font-weight: 700; line-height: 1.3; }
+.aty-desde button.aty-desde-otra { min-height: 44px; margin-inline-start: auto; }
+:root.core-offline .aty-desde-otra, :root .core-offline .aty-desde-otra { display: none; }
+:root.dark .aty-desde-otra, :root .dark .aty-desde-otra { color: var(--ion-text-color); text-decoration: underline; }
+.aty-vieja .aty-franja-dia, .aty-vieja > .aty-saludo { display: none; }
 .aty-sin-saber { display: flex; align-items: center; gap: 10px; margin: 12px 4px; font-weight: 700; line-height: 1.3; }
 /* The line that says how many more are waiting, and opens them. */
 .aty-mas .aty-event-name { color: var(--primary); }

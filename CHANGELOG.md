@@ -5,6 +5,15 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Added (0.6.2-dev)
+
+- The app says when what it shows was made, once it is no longer recent (half an hour, or another day): «Así estaba el
+  martes 24 de noviembre, 9:12. Puede haber cambiado.», on the home, a child's page and «Your work». Without a connection,
+  or when the site does not answer, the app shows the last page it kept, and nothing said since when it was. Then the
+  line of the day and the family's greeting, which say «today», are not shown.
+- An app that comes back to a page no longer recent, with a connection, asks for it again by itself; if the site does not
+  answer, the page stays, with its line.
+
 ### Fixed (0.6.1-dev)
 
 - Nothing and not knowing are not the same. In «Your work», a service that does not answer no longer vanishes: with the

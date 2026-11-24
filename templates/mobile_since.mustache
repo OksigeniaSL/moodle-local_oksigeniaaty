@@ -1,0 +1,43 @@
+{{!
+    This file is part of Moodle - https://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_oksigeniaaty/mobile_since
+
+    The line that says when what the app shows was made (local\freshness), for a page that is no longer recent: without a
+    connection, when the site does not answer, or in an app left open. The app evaluates «hidden» with the phone's clock;
+    an app without that clock keeps the line hidden.
+
+    Classes required for JS:
+    * none
+
+    Context variables required for this template:
+    * due - From when the line shows, a timestamp.
+    * text - The line: the day and the time, never relative.
+    * refresh - The label of the button that asks for the page again; hidden without a connection.
+
+    Example context (json):
+    {
+        "due": 1764000000,
+        "text": "Así estaba el martes 24 de noviembre, 9:12. Puede haber cambiado.",
+        "refresh": "Actualizar"
+    }
+}}
+<div class="aty-desde" [hidden]="!(CoreTime?.timestamp?.() >= {{due}})">
+    <ion-icon name="fas-clock-rotate-left" aria-hidden="true"></ion-icon>
+    <p class="aty-desde-texto">{{text}}</p>
+    <button type="button" class="aty-ver aty-desde-otra" (click)="refreshContent?.(true)">{{refresh}}</button>
+</div>

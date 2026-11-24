@@ -30,6 +30,7 @@
     * hasgrades, gradesheading, grades - The latest grades: grade, name, context.
     * empty, nothing - Whether there is nothing to show, and what to say then.
     * unsure - The line for when a plugin failed (may be empty).
+    * since - When the page was made (see local_oksigeniaaty/mobile_since).
 
     Example context (json):
     {
@@ -39,6 +40,7 @@
     }
 }}
 <div class="aty-home aty-familia">
+    {{#since}}{{> local_oksigeniaaty/mobile_since }}{{/since}}
     <div class="aty-ficha-cab">
         <span class="aty-hijo-foto" aria-hidden="true">{{initial}}</span>
         <div>

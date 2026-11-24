@@ -25,6 +25,7 @@
 namespace local_oksigeniaaty\output;
 
 use local_oksigeniaaty\local\channels;
+use local_oksigeniaaty\local\freshness;
 use local_oksigeniaaty\local\homecards;
 use local_oksigeniaaty\local\template;
 use local_oksigeniaaty\local\yourwork;
@@ -46,7 +47,7 @@ class mobile {
      * not have.
      *
      * The server decides what is starting when it draws the home; the app asks for it again when it opens and when the
-     * home is refreshed, so no JavaScript is needed in the app.
+     * home is refreshed. A home no longer recent says when it was made (freshness).
      *
      * @param array $args The arguments the app sends (site URL, user id, language...).
      * @return array The template, javascript and data the app expects.
@@ -208,6 +209,7 @@ class mobile {
         }
         $data['shortcuts'] = $shortcuts;
         $data['hasshortcuts'] = !empty($shortcuts);
+        $data['since'] = freshness::line($now);
 
         return [
             'templates' => [
@@ -216,8 +218,8 @@ class mobile {
                     'html' => $OUTPUT->render_from_template('local_oksigeniaaty/mobile_home', $data),
                 ],
             ],
-            'javascript' => '',
-            'otherdata' => [],
+            'javascript' => freshness::JS,
+            'otherdata' => ['atydue' => $data['since']['due']],
         ];
     }
 
@@ -244,6 +246,7 @@ class mobile {
             'beyondlabel' => $work['beyondlabel'] ?? '',
             'beyondurl' => $work['beyondurl'] ?? '',
             'doors' => $work['doors'] ?? [],
+            'since' => freshness::line(time()),
         ];
 
         return [
@@ -253,8 +256,8 @@ class mobile {
                     'html' => $OUTPUT->render_from_template('local_oksigeniaaty/mobile_work', $data),
                 ],
             ],
-            'javascript' => '',
-            'otherdata' => [],
+            'javascript' => freshness::JS,
+            'otherdata' => ['atydue' => $data['since']['due']],
         ];
     }
 
@@ -477,6 +480,7 @@ class mobile {
         $data['hastodo'] = !empty($todo);
         $data['blocks'] = $blocks;
         $data['empty'] = !$todo && !$blocks && !$grades && !$failed;
+        $data['since'] = freshness::line(time());
 
         return [
             'templates' => [
@@ -485,8 +489,8 @@ class mobile {
                     'html' => $OUTPUT->render_from_template('local_oksigeniaaty/mobile_child', $data),
                 ],
             ],
-            'javascript' => '',
-            'otherdata' => [],
+            'javascript' => freshness::JS,
+            'otherdata' => ['atydue' => $data['since']['due']],
         ];
     }
 

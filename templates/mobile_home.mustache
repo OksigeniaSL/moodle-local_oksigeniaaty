@@ -21,8 +21,8 @@
     says the day; the children of an adult of a family; "Today", first what is about to start (with "Join"), then what
     there is to do and what is left of today; «Your work», for whoever runs something; what waits for a grade; what
     other plugins add, two rows each with their own "See all"; what comes next; and the shortcuts the tab bar does not
-    have. No JavaScript: the server decides what is starting, and the app asks for the home again when it opens and when
-    it is refreshed.
+    have. The server decides what is starting, and the app asks for the home again when it opens, when it is refreshed and
+    when it comes back to one no longer recent (local\freshness), which says when it was made and not what the day brings.
     Design: the home of 13 November 2026, on the common per-client template.
 
     Classes required for JS:
@@ -52,6 +52,7 @@
     * shortcutsheading, hasshortcuts, shortcuts - The shortcuts that are not in the tab bar, and the plugins' tiles:
       { label, icon, external; and url, or ispage, component, method, pagetitle, argsjson }.
     * opensoutside - Accessible label for the "opens outside the app" marker.
+    * since - When the page was made (see local_oksigeniaaty/mobile_since).
 
     Example context (json):
     {
@@ -60,7 +61,8 @@
         "dayline": "Hoy tienes una clase en directo y una entrega."
     }
 }}
-<div class="aty-home{{#familyonly}} aty-familia{{/familyonly}}">
+<div class="aty-home{{#familyonly}} aty-familia{{/familyonly}}" {{#since}}[class.aty-vieja]="CoreTime?.timestamp?.() >= {{due}}"{{/since}}>
+    {{#since}}{{> local_oksigeniaaty/mobile_since }}{{/since}}
     {{#familyonly}}<p class="aty-saludo">{{saludo}}</p>{{/familyonly}}
     {{#unsure}}<p class="aty-sin-saber"><span class="aty-duda" aria-hidden="true">?</span>{{unsure}}</p>{{/unsure}}
     {{^familyonly}}

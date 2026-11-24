@@ -30,6 +30,7 @@
     * beyondlabel, beyondurl - The line to the rest, on the web; none when there is no rest.
     * servicesheading, doors (mobile_work_door, with hasactions and actions: label, url, browser) - The services.
     * hasdoors, none - Whether there is anything; the line for when there is not.
+    * since - When the page was made (see local_oksigeniaaty/mobile_since).
 
     Example context (json):
     {
@@ -38,6 +39,7 @@
     }
 }}
 <div class="aty-home aty-trabajo">
+    {{#since}}{{> local_oksigeniaaty/mobile_since }}{{/since}}
     {{^hasdoors}}<p class="aty-trabajo-nada">{{none}}</p>{{/hasdoors}}
     {{#hasdoors}}
     {{#hasalerts}}
