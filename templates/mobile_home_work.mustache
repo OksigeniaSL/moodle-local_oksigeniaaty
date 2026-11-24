@@ -51,8 +51,9 @@
     </a>
     <div class="aty-puerta-abierta-avisos">
         {{#shown}}
-        <a class="aty-puerta-abierta-aviso{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="false"{{^browser}} inApp="true"{{/browser}}>
-            <span class="aty-puerta-abierta-punto"></span>
+        <a class="aty-puerta-abierta-aviso{{#urgent}} aty-urgent{{/urgent}}{{#unknown}} aty-callado{{/unknown}}" core-link href="{{url}}" capture="false"{{^browser}} inApp="true"{{/browser}}>
+            {{#unknown}}<span class="aty-duda" aria-hidden="true">?</span>{{/unknown}}
+            {{^unknown}}<span class="aty-puerta-abierta-punto"></span>{{/unknown}}
             <span class="aty-event-name">{{#urgent}}<span class="sr-only">{{#str}} yourwork:urgent, local_oksigeniaaty {{/str}} </span>{{/urgent}}{{text}}</span>
             <ion-icon name="fas-chevron-right" aria-hidden="true"></ion-icon>
         </a>

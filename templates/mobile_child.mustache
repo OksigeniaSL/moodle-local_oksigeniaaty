@@ -29,6 +29,7 @@
       events (name, day, month, time, timestamp, context). And open: label and where it leads.
     * hasgrades, gradesheading, grades - The latest grades: grade, name, context.
     * empty, nothing - Whether there is nothing to show, and what to say then.
+    * unsure - The line for when a plugin failed (may be empty).
 
     Example context (json):
     {
@@ -46,6 +47,7 @@
         </div>
     </div>
     {{#empty}}<p>{{nothing}}</p>{{/empty}}
+    {{#unsure}}<p class="aty-sin-saber"><span class="aty-duda" aria-hidden="true">?</span>{{unsure}}</p>{{/unsure}}
     {{#hastodo}}
     <h2 class="aty-section">{{todoheading}}</h2>
     <div class="aty-agenda aty-ficha-hacer">

@@ -57,7 +57,7 @@
     <h2 class="aty-section">{{servicesheading}}</h2>
     <div class="aty-servicios">
         {{#doors}}
-        <div class="aty-servicio">
+        <div class="aty-servicio{{#silent}} aty-callado{{/silent}}">
             {{> local_oksigeniaaty/mobile_work_door }}
             {{#hasactions}}
             <div class="aty-atajos">

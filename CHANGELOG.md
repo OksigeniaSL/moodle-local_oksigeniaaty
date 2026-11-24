@@ -5,6 +5,19 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed (0.6.1-dev)
+
+- Nothing and not knowing are not the same. In «Your work», a service that does not answer no longer vanishes: with the
+  block's 0.3.0 its door stays, with a question mark, a broken outline and since when it does not answer, and its line
+  is always in sight on the home, even with six urgent things. That line counts nothing: «2 things to sort out» are the
+  known ones. «See all» says «Nothing to sort out» only when everything could be asked.
+- The line of the day does not say «Nothing for today» when a plugin's cards or a service of «Your work» failed, but
+  that not everything could be checked.
+- A child's page, its card on the family's home and that home say that not everything could be loaded when a plugin
+  (the canteen, the library) fails, instead of leaving its part out in silence.
+- With a single service and something waiting, its door opens on the home with its lines inside, as 0.5.93-dev meant: the
+  template never got to know it was the only one.
+
 ### Fixed (0.6.0-dev)
 
 - An adult of a family whom the school's data brought (quiet in Oksigenia Family) and who comes into the app with the

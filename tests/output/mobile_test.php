@@ -281,6 +281,17 @@ final class mobile_test extends \advanced_testcase {
             $say('next', trim(userdate($later, $say('dateformat')))),
             $line->invoke(null, [], [], [], 0, [], [$event('', false, $later)], $now)
         );
+
+        // Something could not be asked: never that there is nothing; what is known is said as always.
+        $this->assertSame($say('unsure'), $line->invoke(null, [], [], [], 0, [], [], $now, 0, true));
+        $this->assertSame(
+            $say('unsure'),
+            $line->invoke(null, [], [], [], 0, [], [$event('', false, $later)], $now, 0, true)
+        );
+        $this->assertSame(
+            'Today you have 2 things to sort out.',
+            $line->invoke(null, [], [], [], 0, [], [], $now, 2, true)
+        );
     }
 
     /**

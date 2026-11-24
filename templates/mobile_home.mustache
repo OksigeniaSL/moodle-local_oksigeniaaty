@@ -62,6 +62,7 @@
 }}
 <div class="aty-home{{#familyonly}} aty-familia{{/familyonly}}">
     {{#familyonly}}<p class="aty-saludo">{{saludo}}</p>{{/familyonly}}
+    {{#unsure}}<p class="aty-sin-saber"><span class="aty-duda" aria-hidden="true">?</span>{{unsure}}</p>{{/unsure}}
     {{^familyonly}}
     <section class="aty-franja">
         {{#logourl}}<img class="aty-franja-logo" src="{{logourl}}" alt="">{{/logourl}}

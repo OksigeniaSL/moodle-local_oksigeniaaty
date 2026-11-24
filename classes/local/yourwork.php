@@ -26,6 +26,9 @@ namespace local_oksigeniaaty\local;
  * installed and enabled, which is the site's choice of having «Your work», and with the block's order and hidden services.
  * A plugin turned off in the app is not in it either.
  *
+ * Nothing and not knowing are not the same: a service that does not answer keeps its door, which says since when, and has
+ * its line among what is waiting (from the block's 0.3.0). That line counts nothing: how many things there are is not known.
+ *
  * @package    local_oksigeniaaty
  * @copyright  2026 Oksigenia SL <dev@oksigenia.cc>
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -53,11 +56,13 @@ class yourwork {
      * «Your work» of a person, ready for the templates, or null when there is none: no block, or nothing they run.
      *
      * @param int $userid The person.
+     * @param bool $failed Set to whether it could not be asked in full, so that a null is not read as nothing waiting.
      * @return array|null See shape().
      */
-    public static function for_user(int $userid): ?array {
+    public static function for_user(int $userid, bool &$failed = false): ?array {
         global $DB;
 
+        $failed = false;
         $board = self::BOARD;
         $services = self::SERVICES;
         if (
@@ -71,28 +76,20 @@ class yourwork {
         try {
             $settings = $services::settings();
             $off = homecards::off_in_app();
-            $raw = [];
-            foreach ($board::services() as $component => $function) {
-                if (in_array($component, $settings['hidden'], true) || isset($off[$component])) {
-                    continue;
-                }
-                // One service that fails does not take the home down, as in the block.
-                try {
-                    $doors = $function($userid);
-                } catch (\Throwable $e) {
-                    debugging('«Your work» in the app, ' . $component . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
-                    continue;
-                }
-                if (is_array($doors) && $doors) {
-                    $raw[$component] = $doors;
-                }
+            if (method_exists($board, 'ask')) {
+                // The block keeps apart the services that do not answer, with the doors the person had.
+                $asked = $board::ask($userid, array_keys($off));
+                [$raw, $silent] = [array_filter($asked['raw']), $asked['silent']];
+            } else {
+                [$raw, $silent] = [self::ask($userid, array_merge($settings['hidden'], array_keys($off)), $failed), []];
             }
-            if (!$raw) {
+            if (!$raw && !$silent) {
                 return null;
             }
-            $built = $board::build($raw, $settings['order'], [$board, 'icon']);
+            $built = $board::build($raw, $settings['order'], [$board, 'icon'], $silent);
         } catch (\Throwable $e) {
             debugging('«Your work» in the app: ' . $e->getMessage(), DEBUG_DEVELOPER);
+            $failed = true;
             return null;
         }
 
@@ -100,14 +97,45 @@ class yourwork {
     }
 
     /**
+     * The doors each service gives, with a block older than 0.3.0, which does not keep those of one that does not answer.
+     *
+     * @param int $userid The person.
+     * @param string[] $skip The components to leave out.
+     * @param bool $failed Set to true when a service does not answer.
+     * @return array Component => its doors.
+     */
+    private static function ask(int $userid, array $skip, bool &$failed): array {
+        $board = self::BOARD;
+        $raw = [];
+        foreach ($board::services() as $component => $function) {
+            if (in_array($component, $skip, true)) {
+                continue;
+            }
+            // One service that fails does not take the home down, as in the block.
+            try {
+                $doors = $function($userid);
+            } catch (\Throwable $e) {
+                debugging('«Your work» in the app, ' . $component . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
+                $failed = true;
+                continue;
+            }
+            if (is_array($doors) && $doors) {
+                $raw[$component] = $doors;
+            }
+        }
+
+        return $raw;
+    }
+
+    /**
      * What the block's board built, as the app's templates take it: every text inert, every address one the app can open
      * (in its own window, or in the phone's browser for the pages a plugin wants there).
      *
      * @param array $board From the block's board::build(): doors (ordered) and alerts (the urgent first, then by when due).
-     * @return array|null total (every alert), alerts («See all»'s, up to ALL_ALERTS), beyondlabel and beyondurl (the line to
-     *     the rest, on the web), shown (the home's), hasshown, morelabel and moreurgent (the home's line to the rest), doors,
-     *     single (one door with something waiting: the home opens it), hasmore (something only «See all» has), components;
-     *     null without doors.
+     * @return array|null total (every alert known), unsure (a service did not answer), alerts («See all»'s, up to ALL_ALERTS),
+     *     beyondlabel and beyondurl (the line to the rest, on the web), shown (the home's), hasshown, morelabel and moreurgent
+     *     (the home's line to the rest), doors, single (one door with something waiting: the home opens it), hasmore
+     *     (something only «See all» has), components; null without doors.
      */
     public static function shape(array $board): ?array {
         global $CFG;
@@ -129,25 +157,35 @@ class yourwork {
                 $alerts[] = $alert;
             }
         }
-        // The urgent first, up to six, and the others up to three in all; the rest, behind a line that says how many and
-        // opens «See all», marked when urgent ones are among them. A hard limit: a service that piles up a hundred alerts
-        // does not make the home a list of a hundred.
+        // The urgent first, up to six, then the services that did not answer, always, and the others up to three in all; the
+        // rest, behind a line that says how many and opens «See all», marked when urgent ones are among them. A hard limit: a
+        // service that piles up a hundred alerts does not make the home a list of a hundred.
+        $unknown = array_values(array_filter($alerts, fn(array $alert): bool => $alert['unknown']));
         $urgent = array_values(array_filter($alerts, fn(array $alert): bool => $alert['urgent']));
-        $others = array_values(array_filter($alerts, fn(array $alert): bool => !$alert['urgent']));
-        $shown = array_slice($urgent, 0, self::HOME_URGENT);
+        $others = array_values(array_filter($alerts, fn(array $alert): bool => !$alert['urgent'] && !$alert['unknown']));
+        $known = count($urgent) + count($others);
+        $shown = array_merge(array_slice($urgent, 0, self::HOME_URGENT), $unknown);
         $shown = array_merge($shown, array_slice($others, 0, max(0, self::HOME_ALERTS - count($shown))));
         $more = count($alerts) - count($shown);
-        $beyond = max(0, count($alerts) - self::ALL_ALERTS);
-        // The doors with something urgent first, then those with something waiting, then the rest; in each, the block's
-        // order (the site's, then by name).
-        $rank = fn(array $door): int => $door['urgent'] ? 0 : ($door['hasalerts'] ? 1 : 2);
+        $beyond = max(0, $known - self::ALL_ALERTS);
+        $listed = [];
+        $room = self::ALL_ALERTS;
+        foreach ($alerts as $alert) {
+            if ($alert['unknown'] || $room-- > 0) {
+                $listed[] = $alert;
+            }
+        }
+        // The doors with something urgent first, then those that did not answer, then those with something waiting, then the
+        // rest; in each, the block's order (the site's, then by name).
+        $rank = fn(array $door): int => $door['urgent'] ? 0 : ($door['silent'] ? 1 : ($door['hasalerts'] ? 2 : 3));
         $place = array_flip(array_keys($doors));
         uksort($doors, fn(int $a, int $b): int => [$rank($doors[$a]), $place[$a]] <=> [$rank($doors[$b]), $place[$b]]);
         $doors = array_values($doors);
 
         return [
-            'total' => count($alerts),
-            'alerts' => array_slice($alerts, 0, self::ALL_ALERTS),
+            'total' => $known,
+            'unsure' => (bool) $unknown,
+            'alerts' => $listed,
             'hasalerts' => (bool) $alerts,
             // Past what «See all» shows, the whole list is the dashboard's block, on the web.
             'beyondlabel' => $beyond ? template::inert(get_string('yourwork:moreweb', 'local_oksigeniaaty', $beyond)) : '',
@@ -169,7 +207,7 @@ class yourwork {
     /**
      * A door into a service.
      *
-     * @param array $door As the board gives it: component, title, url, status, icon, alertcount, urgent, actions.
+     * @param array $door As the board gives it: component, title, url, status, icon, alertcount, urgent, silent, actions.
      * @return array|null
      */
     private static function door(array $door): ?array {
@@ -190,6 +228,7 @@ class yourwork {
         // how many things each line is, so the door shows a dot, not a number that would say less than there is.
         $count = max(0, (int) ($door['alertcount'] ?? 0));
         $urgent = !empty($door['urgent']);
+        $silent = !empty($door['silent']);
         $status = trim((string) ($door['status'] ?? ''));
 
         return template::inert([
@@ -199,12 +238,14 @@ class yourwork {
             'alertlabel' => $count > 0
                 ? get_string($urgent ? 'yourwork:alertdoturgent' : 'yourwork:alertdot', 'local_oksigeniaaty')
                 : '',
+            'silentlabel' => $silent ? get_string('yourwork:silent', 'local_oksigeniaaty') : '',
         ]) + [
             'component' => (string) ($door['component'] ?? ''),
             'icon' => template::inert(self::icon($door['icon'] ?? ''), true),
             'alertcount' => $count,
             'hasalerts' => $count > 0,
             'urgent' => $urgent,
+            'silent' => $silent,
             'actions' => $actions,
             'hasactions' => (bool) $actions,
         ] + $target;
@@ -214,7 +255,7 @@ class yourwork {
      * A line of what is waiting to be sorted out: what, and of which service. When it is due only orders the list, as in
      * the block: it may be a time gone by (the oldest of the late books), and the text already says the hour that matters.
      *
-     * @param array $alert As the board gives it: text, url, urgent, service, serviceicon.
+     * @param array $alert As the board gives it: text, url, urgent, unknown (its service did not answer), service, serviceicon.
      * @return array|null
      */
     private static function alert(array $alert): ?array {
@@ -223,14 +264,17 @@ class yourwork {
         if ($text === '' || $target === null) {
             return null;
         }
+        $unknown = !empty($alert['unknown']);
 
         return template::inert([
-            // All alike, without the full stop some plugins put and others do not («…» and «?» stay).
-            'text' => preg_replace('/(?<!\.)\.$/u', '', $text),
+            // All alike, without the full stop some plugins put and others do not («…» and «?» stay); the block's own line of
+            // a service that did not answer is two sentences, whole.
+            'text' => $unknown ? $text : preg_replace('/(?<!\.)\.$/u', '', $text),
             'service' => self::name(trim((string) ($alert['service'] ?? ''))),
         ]) + [
             'icon' => template::inert(self::icon($alert['serviceicon'] ?? ''), true),
-            'urgent' => !empty($alert['urgent']),
+            'urgent' => !$unknown && !empty($alert['urgent']),
+            'unknown' => $unknown,
         ] + $target;
     }
 

@@ -89,7 +89,8 @@ class mobile {
         $children = self::children();
         // What other plugins add for this user, each of their texts already inert; what asks for something to do goes to
         // "Today".
-        $cards = homecards::for_user((int) $USER->id);
+        $cardsfailed = false;
+        $cards = homecards::for_user((int) $USER->id, $cardsfailed);
         [$shown, $todo] = homecards::on_home($cards, $now);
         $name = self::greeting_name($USER);
         // A family's account greets in a line, low, with the day: what it has to do comes right under it.
@@ -99,7 +100,10 @@ class mobile {
             \local_oksigeniaaty\local\familyaccount::came_in($USER);
         }
         // «Your work»: the panel of the dashboard block of the Oksigenia plugins, for whoever runs something.
-        $work = $familyonly ? null : yourwork::for_user((int) $USER->id);
+        $workfailed = false;
+        $work = $familyonly ? null : yourwork::for_user((int) $USER->id, $workfailed);
+        // Nothing and not knowing are not the same: when something could not be asked, the home does not say «nothing».
+        $unsure = $cardsfailed || $workfailed || !empty($work['unsure']);
 
         $data = template::inert([
             'logourl' => $logourl,
@@ -108,6 +112,8 @@ class mobile {
                 : get_string('home:hello', 'local_oksigeniaaty'),
             'familyheading' => get_string('family:heading', 'local_oksigeniaaty'),
             'familyonly' => $familyonly,
+            // A family's home has no line of the day: it says it on its own.
+            'unsure' => $familyonly && $cardsfailed ? get_string('family:unsure', 'local_oksigeniaaty') : '',
             'saludo' => get_string('family:saludo', 'local_oksigeniaaty', (object) [
                 'hello' => $name !== '' ? get_string('home:greeting', 'local_oksigeniaaty', $name)
                     : get_string('home:hello', 'local_oksigeniaaty'),
@@ -150,20 +156,15 @@ class mobile {
             $grading,
             $events,
             $now,
-            $work !== null ? $work['total'] : 0
+            $work !== null ? $work['total'] : 0,
+            $unsure
         ));
         $data['work'] = $work === null ? null : [
             'heading' => template::inert(get_string('yourwork:heading', 'local_oksigeniaaty')),
             'seeall' => template::inert(get_string('home:seeall', 'local_oksigeniaaty')),
-            'hasmore' => $work['hasmore'],
-            'hasshown' => $work['hasshown'],
-            'shown' => $work['shown'],
-            'morelabel' => $work['morelabel'],
-            'moreurgent' => $work['moreurgent'],
-            'doors' => $work['doors'],
             // The doors' lines of state in whole parts, never cut with «…»; the whole lines are behind «See all».
             'short' => true,
-        ];
+        ] + $work;
         $data['todo'] = $todo;
         $data['cards'] = $shown;
         // The course cards left the home for the tab "My courses"; where the app has no such tab, they come back.
@@ -230,11 +231,12 @@ class mobile {
     public static function mobile_work(array $args): array {
         global $OUTPUT, $USER;
 
-        $work = yourwork::for_user((int) $USER->id);
+        $failed = false;
+        $work = yourwork::for_user((int) $USER->id, $failed);
         $data = template::inert([
             'alertsheading' => get_string('yourwork:alerts', 'local_oksigeniaaty'),
             'servicesheading' => get_string('yourwork:services', 'local_oksigeniaaty'),
-            'none' => get_string('yourwork:none', 'local_oksigeniaaty'),
+            'none' => get_string($failed ? 'yourwork:unsure' : 'yourwork:none', 'local_oksigeniaaty'),
         ]) + [
             'hasdoors' => $work !== null,
             'hasalerts' => $work !== null && $work['hasalerts'],
@@ -418,7 +420,8 @@ class mobile {
         // asks for something to do goes to the top, with its own mark.
         $todo = [];
         $blocks = [];
-        foreach (homecards::for_child((int) $USER->id, $childid) as $card) {
+        $failed = false;
+        foreach (homecards::for_child((int) $USER->id, $childid, $failed) as $card) {
             $rows = [];
             foreach ($card['items'] as $item) {
                 if ($item['actionlabel'] !== '') {
@@ -463,6 +466,7 @@ class mobile {
             'initial' => \core_text::strtoupper(\core_text::substr($name, 0, 1)),
             'grouping' => implode(' · ', array_filter([$group, $centre])),
             'nothing' => get_string('family:nothing', $component),
+            'unsure' => $failed ? get_string('family:unsure', $component) : '',
             'todoheading' => get_string('family:todo', $component),
             'gradesheading' => get_string('family:grades', $component),
             'grades' => $grades,
@@ -472,7 +476,7 @@ class mobile {
         $data['todo'] = $todo;
         $data['hastodo'] = !empty($todo);
         $data['blocks'] = $blocks;
-        $data['empty'] = !$todo && !$blocks && !$grades;
+        $data['empty'] = !$todo && !$blocks && !$grades && !$failed;
 
         return [
             'templates' => [
@@ -496,7 +500,8 @@ class mobile {
      */
     private static function child_facets(int $adultuserid, int $childid): array {
         $facets = [];
-        foreach (homecards::for_child($adultuserid, $childid) as $card) {
+        $failed = false;
+        foreach (homecards::for_child($adultuserid, $childid, $failed) as $card) {
             if ($card['facet'] !== null) {
                 $facets[] = $card['facet'];
             }
@@ -519,7 +524,19 @@ class mobile {
             }
         }
 
-        return array_slice($facets, 0, 4);
+        $facets = array_slice($facets, 0, 4);
+        // A plugin that failed: what is not said of this child is not nothing.
+        if ($failed) {
+            $facets[] = template::inert([
+                'text' => get_string('family:unsureshort', 'local_oksigeniaaty'),
+                'icon' => 'fas-circle-question',
+                'urgent' => false,
+                'hasmenu' => false,
+                'menu' => '',
+            ]) + ['menucolor' => ''];
+        }
+
+        return $facets;
     }
 
     /**
@@ -1016,7 +1033,8 @@ JS;
 
     /**
      * The line under the greeting: what matters most of the day, in a few words. First what there is to do, then what
-     * there is today, then what is waiting for a grade; with nothing, what comes next.
+     * there is today, then what is waiting for a grade; with nothing, what comes next; and when something could not be asked, that it is not
+     * known, never that there is nothing.
      *
      * @param array $todo The rows of other plugins with something to do.
      * @param array $starting What is starting now.
@@ -1026,6 +1044,7 @@ JS;
      * @param array $events The agenda of the coming days, for what comes next.
      * @param int $now The time it is.
      * @param int $work What is waiting to be sorted out in «Your work».
+     * @param bool $unsure Whether something could not be asked, so that there is nothing is not known.
      * @return string
      */
     private static function day_line(
@@ -1036,7 +1055,8 @@ JS;
         array $grading,
         array $events,
         int $now,
-        int $work = 0
+        int $work = 0,
+        bool $unsure = false
     ): string {
         // A title that already ends a sentence (a question, an exclamation) does not take the sentence's full stop.
         $say = fn(string $id, $a = null) => preg_replace(
@@ -1081,6 +1101,10 @@ JS;
         $submissions = array_sum(array_column($grading, 'count'));
         if ($submissions > 0) {
             return $some('grading', $submissions);
+        }
+
+        if ($unsure) {
+            return $say('unsure');
         }
 
         $tomorrow = usergetmidnight($now) + DAYSECS;

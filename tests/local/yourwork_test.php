@@ -166,6 +166,66 @@ final class yourwork_test extends \advanced_testcase {
     }
 
     /**
+     * A service that did not answer: its door after those with something urgent, its line always on the home, even with six
+     * urgent, and whole; it counts as nothing known. An old block, which says nothing of it, changes nothing.
+     */
+    public function test_a_service_that_did_not_answer(): void {
+        global $OUTPUT;
+        $this->resetAfterTest();
+        $board = $this->board(time());
+        $says = 'No answer since 9:12. There may be something to sort out: go in and check.';
+        $board['doors'][3]['silent'] = true;
+        $board['doors'][3]['status'] = 'No answer since 9:12';
+        $silent = ['text' => $says, 'url' => 'https://example.org/library/', 'level' => 'unknown', 'urgent' => false,
+            'unknown' => true, 'service' => 'Library · Library of the school'];
+        $work = yourwork::shape(['doors' => $board['doors'], 'alerts' => array_merge($board['alerts'], [$silent])]);
+
+        $titles = ['Canteen', 'Screens', 'Library of the school', 'Families ｛｛ x ｝｝'];
+        $this->assertSame($titles, array_column($work['doors'], 'title'));
+        $library = $work['doors'][2];
+        $this->assertTrue($library['silent']);
+        $this->assertFalse($library['hasalerts']);
+        $this->assertSame('', $library['alertlabel']);
+        $this->assertSame('It is not known whether there is something to sort out', $library['silentlabel']);
+        $this->assertSame('No answer since 9:12', $library['statusshort']);
+        $this->assertFalse($work['doors'][0]['silent']);
+        $this->assertTrue($work['unsure']);
+        $this->assertSame(5, $work['total']);
+        $this->assertSame(['4 pupils without a menu', 'A screen gives no sign', $says], array_column($work['shown'], 'text'));
+        $this->assertSame('3 more to sort out', $work['morelabel']);
+
+        // Even with more urgent ones than the home or «See all» show.
+        $many = array_map(fn(int $i): array => ['text' => 'Urgent ' . $i, 'url' => 'https://example.org/' . $i,
+            'urgent' => true], range(1, 60));
+        $full = yourwork::shape(['doors' => $board['doors'], 'alerts' => array_merge($many, [$silent])]);
+        $this->assertCount(yourwork::HOME_URGENT + 1, $full['shown']);
+        $this->assertSame($says, end($full['shown'])['text']);
+        $this->assertSame('54 more to sort out', $full['morelabel']);
+        $this->assertCount(yourwork::ALL_ALERTS + 1, $full['alerts']);
+        $this->assertSame($says, end($full['alerts'])['text']);
+        $this->assertSame('10 more to sort out, on the web', $full['beyondlabel']);
+
+        $home = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_home', [
+            'work' => ['heading' => 'Your work', 'seeall' => 'See all', 'short' => true] + $work,
+        ]);
+        $this->assertSame(1, substr_count($home, 'class="aty-puerta aty-callado"'));
+        $this->assertSame(1, substr_count($home, 'class="aty-event aty-aviso aty-callado"'));
+        $this->assertStringContainsString('role="img" aria-label="It is not known whether', $home);
+
+        // Only that service: its door opens, with its line inside it.
+        $one = yourwork::shape(['doors' => [$board['doors'][3]], 'alerts' => [$silent]]);
+        $this->assertTrue($one['single']);
+        $this->assertSame(0, $one['total']);
+        $html = $OUTPUT->render_from_template('local_oksigeniaaty/mobile_home_work', [
+            'work' => ['heading' => 'Your work', 'seeall' => 'See all'] + $one,
+        ]);
+        $this->assertStringContainsString('class="aty-puerta-abierta-aviso aty-callado"', $html);
+        $this->assertStringNotContainsString('aty-puerta-abierta-punto', $html);
+
+        $this->assertFalse(yourwork::shape($this->board(time()))['unsure']);
+    }
+
+    /**
      * «See all» only when the panel has more than the home: here, two alerts and no shortcuts. Without doors, nothing.
      */
     public function test_see_all_and_nothing(): void {

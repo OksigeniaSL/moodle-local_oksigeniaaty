@@ -27,6 +27,7 @@
 
     Context variables required for this template:
     * title, status, icon - The service; short (from the home's context) for its line in whole parts, statusshort.
+    * silent, silentlabel - Whether the service did not answer (its line says since when), and what its question mark says.
     * hasalerts, alertlabel, urgent - Whether something of it is waiting, what the dot says, and whether it is urgent.
     * url, browser - Its main page, a page of the web: in the app's window, signed in, never through a plugin's handler of
       links (those are for the notices to readers and families, and may take a staff page to a reader's one); in the
@@ -39,10 +40,11 @@
     {}
 }}
 {{#title}}
-<a class="aty-puerta{{#urgent}} aty-urgent{{/urgent}}" core-link href="{{url}}" capture="false"{{^browser}} inApp="true"{{/browser}}>
+<a class="aty-puerta{{#urgent}} aty-urgent{{/urgent}}{{#silent}} aty-callado{{/silent}}" core-link href="{{url}}" capture="false"{{^browser}} inApp="true"{{/browser}}>
     <span class="aty-puerta-cab">
         <span class="aty-servicio-logo">{{#icon}}<img src="{{icon}}" alt="">{{/icon}}</span>
         {{#hasalerts}}<span class="aty-puerta-punto" role="img" aria-label="{{alertlabel}}"></span>{{/hasalerts}}
+        {{#silent}}<span class="aty-duda" role="img" aria-label="{{silentlabel}}">?</span>{{/silent}}
     </span>
     <span class="aty-puerta-nombre">{{title}}</span>
     {{#short}}{{#statusshort}}<span class="aty-puerta-estado">{{statusshort}}</span>{{/statusshort}}{{/short}}

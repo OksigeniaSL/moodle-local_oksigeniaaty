@@ -66,10 +66,12 @@ class homecards {
      * The cards of all the plugins for a user. One plugin that fails does not take the home down.
      *
      * @param int $userid The user.
+     * @param bool $failed Set to whether a plugin failed, so that nobody reads a card that is not there as nothing to see.
      * @return array A list of ['heading', 'hasitems', 'items', 'tile'], ready for the template.
      */
-    public static function for_user(int $userid): array {
+    public static function for_user(int $userid, bool &$failed = false): array {
         $cards = [];
+        $failed = false;
         $off = self::off_in_app();
         foreach (get_plugins_with_function('oksigeniaaty_home_cards') as $plugintype => $plugins) {
             foreach ($plugins as $pluginname => $function) {
@@ -80,6 +82,7 @@ class homecards {
                     $given = $function($userid);
                 } catch (\Throwable $e) {
                     debugging('Home cards of ' . $plugintype . '_' . $pluginname . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
+                    $failed = true;
                     continue;
                 }
                 foreach (is_array($given) ? $given : [] as $card) {
@@ -88,6 +91,7 @@ class homecards {
                         $card = self::clean($card, $plugintype . '_' . $pluginname);
                     } catch (\Throwable $e) {
                         debugging('A card of ' . $plugintype . '_' . $pluginname . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
+                        $failed = true;
                         continue;
                     }
                     if ($card !== null) {
@@ -108,10 +112,12 @@ class homecards {
      *
      * @param int $adultuserid The adult. Whoever calls this has checked that they are in the child's family.
      * @param int $childuserid The child.
+     * @param bool $failed Set to whether a plugin failed, as in for_user().
      * @return array A list of cards with items.
      */
-    public static function for_child(int $adultuserid, int $childuserid): array {
+    public static function for_child(int $adultuserid, int $childuserid, bool &$failed = false): array {
         $cards = [];
+        $failed = false;
         $off = self::off_in_app();
         foreach (get_plugins_with_function('oksigeniaaty_child_cards') as $plugintype => $plugins) {
             foreach ($plugins as $pluginname => $function) {
@@ -122,6 +128,7 @@ class homecards {
                     $given = $function($adultuserid, $childuserid);
                 } catch (\Throwable $e) {
                     debugging('Child cards of ' . $plugintype . '_' . $pluginname . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
+                    $failed = true;
                     continue;
                 }
                 foreach (is_array($given) ? $given : [] as $card) {
@@ -129,6 +136,7 @@ class homecards {
                         $card = self::clean($card, $plugintype . '_' . $pluginname, true);
                     } catch (\Throwable $e) {
                         debugging('A card of ' . $plugintype . '_' . $pluginname . ': ' . $e->getMessage(), DEBUG_DEVELOPER);
+                        $failed = true;
                         continue;
                     }
                     if ($card !== null && ($card['hasitems'] || $card['hasblock'] || $card['facet'] !== null)) {

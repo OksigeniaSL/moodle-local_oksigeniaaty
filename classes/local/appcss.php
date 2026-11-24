@@ -301,6 +301,18 @@ button.aty-atajo { border: 0; font-family: inherit; font-size: inherit; }
 .aty-puerta.aty-urgent .aty-puerta-punto, :root.dark .aty-puerta.aty-urgent .aty-puerta-punto,
 :root .dark .aty-puerta.aty-urgent .aty-puerta-punto { width: 18px; height: 18px; margin: 2px;
     border-color: var(--ion-color-danger); background: var(--ion-color-danger); }
+/* A service that did not answer: nothing and not knowing are not the same. A question mark where the dot goes, a broken
+   outline and, in the ink of the text, since when. Not by the colour alone, and no colour of danger: it is not known. */
+.aty-duda { flex: 0 0 auto; box-sizing: border-box; display: inline-grid; place-items: center; width: 24px; height: 24px;
+    border-radius: 50%; background: var(--ion-text-color); color: var(--ion-item-background, var(--ion-background-color));
+    font-size: .88rem; font-weight: 800; line-height: 1; }
+.aty-puerta.aty-callado, :root.dark .aty-puerta.aty-callado, :root .dark .aty-puerta.aty-callado,
+.aty-aviso.aty-callado, :root.dark .aty-aviso.aty-callado, :root .dark .aty-aviso.aty-callado,
+.aty-servicio.aty-callado, :root.dark .aty-servicio.aty-callado, :root .dark .aty-servicio.aty-callado {
+    outline: 1.5px dashed var(--ion-color-medium); outline-offset: -1.5px; }
+.aty-puerta.aty-callado .aty-puerta-estado { color: var(--ion-text-color); font-weight: 600; }
+.aty-puerta-abierta-aviso.aty-callado .aty-duda { margin: 0 8px; }
+.aty-sin-saber { display: flex; align-items: center; gap: 10px; margin: 12px 4px; font-weight: 700; line-height: 1.3; }
 /* The line that says how many more are waiting, and opens them. */
 .aty-mas .aty-event-name { color: var(--primary); }
 :root.dark .aty-mas .aty-event-name, :root .dark .aty-mas .aty-event-name { color: var(--ion-text-color); }
