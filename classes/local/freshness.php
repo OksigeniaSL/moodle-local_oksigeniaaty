@@ -36,13 +36,14 @@ class freshness {
 
     /**
      * @var string The same for every page and user: an app that comes back to a page no longer recent asks for it again, if
-     * there is a connection, so that the line is only seen when there is no way to know. First into the app's cache: if the
-     * site does not answer, the page stays as it was, with its line.
+     * there is a connection, so that the line is only seen when there is no way to know. With the app's own refresh, that
+     * gives back the page it kept if the site does not answer. Never with updateCachedContent(): its request takes nothing
+     * from the cache, and any other refresh asked meanwhile waits for that same request and is left with an empty page.
      */
     public const JS = <<<'EOF'
 var atyPage = this;
 var atyResume = this.CorePlatform && this.CorePlatform.resume;
-if (atyResume && this.updateCachedContent) {
+if (atyResume && this.refreshContent) {
     var atyAsking = false;
     var atySubscription = atyResume.subscribe(function () {
         var due = Number(atyPage.CONTENT_OTHERDATA && atyPage.CONTENT_OTHERDATA.atydue);
@@ -50,9 +51,7 @@ if (atyResume && this.updateCachedContent) {
             return;
         }
         atyAsking = true;
-        atyPage.updateCachedContent().then(function () {
-            return atyPage.fetchContent(true);
-        }).catch(function () {
+        atyPage.refreshContent(false).catch(function () {
             return undefined;
         }).then(function () {
             atyAsking = false;

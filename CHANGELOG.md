@@ -5,6 +5,11 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Fixed (0.6.3-dev)
+
+- A refresh asked while the app, back on a page no longer recent, was already asking for it left the page empty when the
+  site did not answer. Now it is the app's own refresh, and the page it kept stays, with its line.
+
 ### Added (0.6.2-dev)
 
 - The app says when what it shows was made, once it is no longer recent (half an hour, or another day): «Así estaba el

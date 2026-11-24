@@ -79,4 +79,13 @@ final class freshness_test extends \advanced_testcase {
             \local_oksigeniaaty\output\mobile::mobile_home([])['templates'][0]['html']
         );
     }
+
+    /**
+     * The page is asked for again with the app's own refresh: a request without the cache to fall back on would be shared
+     * with any other refresh, and leave the page empty when the site does not answer.
+     */
+    public function test_refresh_keeps_the_page(): void {
+        $this->assertStringContainsString('refreshContent(false)', freshness::JS);
+        $this->assertStringNotContainsString('updateCachedContent', freshness::JS);
+    }
 }
