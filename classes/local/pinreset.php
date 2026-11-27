@@ -131,16 +131,22 @@ class pinreset {
         if (self::has_mailbox($user)) {
             $data = (object) ['name' => fullname($user), 'link' => $link];
             $bodytext = get_string('forgotpin:emailbody', 'local_oksigeniaaty', $data);
-            $html = linkmail::html((int) $user->id, [
+            $content = [
                 'hello' => get_string('issued:hello', 'local_oksigeniaaty', (object) ['firstname' => $user->firstname]),
                 'heading' => get_string('forgotpin:emailheading', 'local_oksigeniaaty'),
                 'lead' => [get_string('forgotpin:emaillead', 'local_oksigeniaaty')],
                 'button' => ['url' => $link, 'text' => get_string('forgotpin:emailbutton', 'local_oksigeniaaty')],
-                'after' => [get_string('forgotpin:emailonce', 'local_oksigeniaaty')],
+                'after' => [],
+                'small' => [get_string('forgotpin:emailonce', 'local_oksigeniaaty')],
                 'why' => get_string('forgotpin:emailwhy', 'local_oksigeniaaty'),
-            ]);
+            ];
+            $html = linkmail::html((int) $user->id, $content);
             force_current_language($lang);
-            email_to_user($user, core_user::get_support_user(), $subject, $bodytext, $html);
+            // In the common look of the organization, by the way of Oksigenia Marandu, when it is there.
+            $went = commonmail::send($user, linkmail::pieces((int) $user->id, $subject, $content));
+            if ($went === null) {
+                email_to_user($user, core_user::get_support_user(), $subject, $bodytext, $html);
+            }
             return 'email';
         }
 

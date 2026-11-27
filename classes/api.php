@@ -16,6 +16,7 @@
 
 namespace local_oksigeniaaty;
 
+use local_oksigeniaaty\local\commonmail;
 use local_oksigeniaaty\local\linkmail;
 use local_oksigeniaaty\local\loginkey;
 
@@ -190,17 +191,22 @@ class api {
         ];
         $subject = get_string('issued:subject', $component, $a);
         $body = get_string('issued:body', $component, $a);
-        $html = linkmail::html($userid, [
+        $content = [
             'hello' => get_string('issued:hello', $component, $a),
             'heading' => get_string('issued:heading', $component, $a),
             'lead' => [get_string('issued:lead', $component)],
             'button' => ['url' => $link['url'], 'text' => get_string('issued:button', $component)],
-            'after' => [get_string('issued:noapp', $component), get_string('issued:once', $component, $a)],
+            'after' => [get_string('issued:noapp', $component)],
+            'small' => [get_string('issued:once', $component, $a)],
             'why' => get_string('issued:why', $component, $a),
-        ]);
+        ];
+        $html = linkmail::html($userid, $content);
         force_current_language($lang);
 
-        return email_to_user($user, linkmail::from($userid), $subject, $body, $html);
+        // In the common look of the organization, by the way of Oksigenia Marandu, when it is there.
+        $went = commonmail::send($user, linkmail::pieces($userid, $subject, $content));
+
+        return $went ?? email_to_user($user, linkmail::from($userid), $subject, $body, $html);
     }
 
     /**

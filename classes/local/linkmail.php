@@ -28,7 +28,8 @@ class linkmail {
      * The whole message, ready to send.
      *
      * @param int $userid Who it is for, whose centre's look it takes.
-     * @param array $content hello, heading, lead (paragraphs), button (url, text), after (paragraphs), why.
+     * @param array $content hello, heading, lead (paragraphs), button (url, text), after (paragraphs), small (paragraphs
+     *     in small print, which here go after the others), why.
      * @return string
      */
     public static function html(int $userid, array $content): string {
@@ -43,11 +44,60 @@ class linkmail {
             'lead' => array_values($content['lead']),
             'buttonurl' => $content['button']['url'],
             'buttontext' => $content['button']['text'],
-            'after' => array_values($content['after']),
+            'after' => array_values(array_merge($content['after'], $content['small'] ?? [])),
             'why' => $content['why'],
         ];
 
         return $OUTPUT->render_from_template('local_oksigeniaaty/email_link', $render);
+    }
+
+    /**
+     * The same message as pieces of the common mail of the organization (Oksigenia Marandu's api::mail_html()).
+     *
+     * @param int $userid Who it is for.
+     * @param string $subject The subject.
+     * @param array $content As html() takes it.
+     * @return array
+     */
+    public static function pieces(int $userid, string $subject, array $content): array {
+        $blocks = [];
+        foreach ($content['lead'] as $paragraph) {
+            $blocks[] = ['paragraph' => $paragraph];
+        }
+        $blocks[] = ['action' => ['actionurl' => $content['button']['url'], 'actiontext' => $content['button']['text']]];
+        foreach ($content['after'] as $paragraph) {
+            $blocks[] = ['paragraph' => $paragraph];
+        }
+        foreach ($content['small'] ?? [] as $paragraph) {
+            $blocks[] = ['small' => $paragraph];
+        }
+
+        return [
+            'subject' => $subject,
+            'heading' => $content['heading'],
+            'preheader' => $content['lead'][0] ?? '',
+            'hello' => $content['hello'],
+            'blocks' => $blocks,
+            'reason' => $content['why'],
+            'unit' => self::unit($userid),
+        ];
+    }
+
+    /**
+     * The person's centre, when the site holds several and it is not the site itself: the common mail carries the brand
+     * of the site, and says the centre beside its name.
+     *
+     * @param int $userid The person.
+     * @return string
+     */
+    private static function unit(int $userid): string {
+        $brand = brand::for_user($userid);
+        if ($brand === null) {
+            return '';
+        }
+        $name = format_string($brand['name'], true, ['escape' => false]);
+
+        return $name === format_string(get_site()->fullname, true, ['escape' => false]) ? '' : $name;
     }
 
     /**

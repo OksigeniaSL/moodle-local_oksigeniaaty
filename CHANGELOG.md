@@ -5,6 +5,13 @@ All notable changes to `local_oksigeniaaty` are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed (0.6.4-dev)
+
+- The mails «Send the app» and «Forgot my PIN» go in the common look of the organization, by the way of Oksigenia Marandu
+  0.70 or later when it is there: its name, colour and logo inside the mail, one button and a text version. To an
+  address of the school they go by the site's mail; to the rest, by Mailjet if the site chose it. On a site with several
+  centres, the person's centre is said beside the name. Without Marandu they go as before.
+
 ### Fixed (0.6.3-dev)
 
 - A refresh asked while the app, back on a page no longer recent, was already asking for it left the page empty when the

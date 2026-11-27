@@ -217,7 +217,12 @@ final class linkroster_test extends \advanced_testcase {
         $message = $sink->get_messages()[0];
         $raw = quoted_printable_decode($message->body);
         $this->assertStringContainsString('local/oksigeniaaty/open.php', $raw);
-        $this->assertStringContainsString('#17574c', $raw);
+        if (commonmail::available()) {
+            // In the common look of the organization, which takes its colour from Oksigenia Marandu (commonmail_test).
+            $this->assertStringContainsString('Auto-Submitted: auto-generated', $message->header);
+        } else {
+            $this->assertStringContainsString('#17574c', $raw);
+        }
         $this->assertStringContainsString('Ana', $raw);
     }
 }
